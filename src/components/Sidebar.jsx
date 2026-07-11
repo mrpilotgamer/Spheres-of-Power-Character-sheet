@@ -1,4 +1,7 @@
 import SphereMark from './SphereMark.jsx';
+import classes from '../data/classes.json';
+
+const classesById = Object.fromEntries(classes.map((c) => [c.id, c]));
 
 export default function Sidebar({ characters, activeId, onSelect, onNew, onDelete }) {
   return (
@@ -61,9 +64,9 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
 }
 
 function summarizeClasses(c) {
-  const levels = c.classLevels || [];
+  const levels = (c.classLevels || []).filter((l) => l.classId);
   if (levels.length === 0) return 'No class yet';
   const total = levels.reduce((s, l) => s + (l.level || 0), 0);
-  const names = levels.map((l) => l.classId).join(' / ');
+  const names = levels.map((l) => classesById[l.classId]?.name || l.classId).join(' / ');
   return `Level ${total} · ${names}`;
 }
