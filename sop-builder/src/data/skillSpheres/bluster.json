@@ -1,0 +1,11 @@
+{
+  "id": "bluster",
+  "name": "Bluster",
+  "tagline": "Intimidate and dominate social encounters through force of presence.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

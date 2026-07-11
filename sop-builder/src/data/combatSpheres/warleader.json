@@ -1,0 +1,11 @@
+{
+  "id": "warleader",
+  "name": "Warleader",
+  "tagline": "Command allies in battle with shouted orders and tactics.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

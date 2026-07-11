@@ -1,0 +1,22 @@
+{
+  "id": "weather",
+  "name": "Weather",
+  "tagline": "Control storms, wind, and the temper of the sky.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Control Weather",
+    "description": "Standard action, medium range, 0 SP. Adjust the severity of wind, temperature, or precipitation/aridity within range (wind and precipitation each have 7 severity steps, temperature has 13 split between heat and cold). Severity shifts by 1 step per round toward your target level, capped by your caster level; lasts while you concentrate (moving with you), or 1 SP for 1 min/CL fixed in place. When the effect ends, weather drifts back to normal at 1 step per round."
+  },
+  "talents": [
+    { "id": "wind-lord", "name": "Wind Lord", "type": "basic", "spCost": 0, "description": "Increase the maximum wind severity you can create or suppress." },
+    { "id": "rain-lord", "name": "Rain Lord", "type": "basic", "spCost": 0, "description": "Increase the maximum precipitation/aridity severity you can create or suppress." },
+    { "id": "heat-lord", "name": "Heat Lord", "type": "basic", "spCost": 0, "description": "Increase the maximum heat severity you can create or suppress." },
+    { "id": "cold-lord", "name": "Cold Lord", "type": "basic", "spCost": 0, "description": "Increase the maximum cold severity you can create or suppress." },
+    { "id": "quick-weather", "name": "Quick Weather", "type": "basic", "spCost": "0-1", "description": "Reduce the casting time of Control Weather, and optionally shift severity faster each round." },
+    { "id": "targeted-storm", "name": "Directed Storm", "type": "basic", "spCost": 0, "description": "Choose exactly where storm effects (like lightning strikes) land instead of them being randomly placed." },
+    { "id": "mantle", "name": "Mantle (mantle)", "type": "basic", "spCost": 0, "description": "Touch a creature to grant it a themed benefit while inside weather of the matching category." },
+    { "id": "shroud", "name": "Shroud (shroud)", "type": "basic", "spCost": 0, "description": "Wrap yourself in a personal weather effect that follows you, granting a themed benefit tied to that weather category." },
+    { "id": "expanded-weather", "name": "Ranged Weather", "type": "basic", "tags": ["range"], "spCost": 0, "description": "Increase the range at which you can control weather by one step. Repeatable." },
+    { "id": "climate", "name": "Climate (advanced)", "type": "basic", "spCost": 0, "description": "Advanced ability: sustain large-scale weather control over a much wider area for an extended time." }
+  ]
+}

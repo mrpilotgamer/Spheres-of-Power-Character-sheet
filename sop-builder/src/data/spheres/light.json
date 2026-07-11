@@ -1,0 +1,22 @@
+{
+  "id": "light",
+  "name": "Light",
+  "tagline": "Command light, radiance, and vision itself.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Glow / Lens",
+    "description": "Standard action, medium range, touch or ranged touch attack. Glow: make a target shed light (normal, then bright on command) for 1 min/CL; can be upgraded with (light) add-ons, one per glow. Lens: standard action, apply a lens effect to a target (e.g. the starting lens grants a Perception bonus for sight-based checks). Both last while you concentrate, or 1 SP more to sustain without concentration."
+  },
+  "talents": [
+    { "id": "encompassing-light", "name": "Encompassing Light (light)", "type": "basic", "spCost": 0, "description": "A (light) add-on: bright light makes the glowing creature function as if larger, useful for combat maneuvers and reach." },
+    { "id": "disorienting-patterns", "name": "Disorienting Patterns (light)", "type": "basic", "spCost": "0-1", "description": "A (light) add-on: turns the bright light area into difficult terrain, and can force a save or fall prone for 1 SP." },
+    { "id": "black-light", "name": "Black Light", "type": "basic", "spCost": 0, "description": "Your glow can shed darkness instead of light, functioning oppositely for the purposes of interacting with the Dark sphere." },
+    { "id": "lingering-glow", "name": "Lingering Glow", "type": "basic", "spCost": 0, "description": "Bright light from your glow persists briefly after you stop concentrating on it." },
+    { "id": "searing-light", "name": "Searing Light (lens)", "type": "basic", "spCost": 1, "description": "New lens: deal fire damage to a target with your light instead of just illuminating it." },
+    { "id": "revealing-light", "name": "Revealing Light (light)", "type": "basic", "spCost": 0, "description": "A (light) add-on: bright light negates invisibility and concealment bonuses within it." },
+    { "id": "true-seeing-lens", "name": "True Seeing (lens)", "type": "basic", "spCost": 1, "description": "New lens: grant a target the ability to see through illusions, invisibility, and polymorph for the duration." },
+    { "id": "camouflage-lens", "name": "Camouflage (lens)", "type": "basic", "spCost": "0-1", "description": "New lens: bend light around a target to help it blend into surroundings, improving Stealth." },
+    { "id": "additional-lens", "name": "Additional Lens", "type": "basic", "spCost": 0, "description": "Learn another (lens) effect immediately." },
+    { "id": "intensity-control", "name": "Intensity Control", "type": "basic", "spCost": 0, "description": "Shape your glow's illuminated area more freely, extending its reach and reshaping which squares it covers." }
+  ]
+}

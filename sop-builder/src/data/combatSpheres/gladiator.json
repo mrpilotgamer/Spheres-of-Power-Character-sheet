@@ -1,0 +1,11 @@
+{
+  "id": "gladiator",
+  "name": "Gladiator",
+  "tagline": "Perform for a crowd while fighting, turning showmanship into power.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

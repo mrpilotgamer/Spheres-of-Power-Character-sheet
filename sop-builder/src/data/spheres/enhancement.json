@@ -1,0 +1,22 @@
+{
+  "id": "enhancement",
+  "name": "Enhancement",
+  "tagline": "Boost a creature's or object's natural capabilities.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Enhance",
+    "description": "Standard action, close range. Grant a weapon, suit of armor, shield, or up to 50 pieces of grouped ammunition a +1 enhancement bonus (improving by +1 per 4 CL). Lasts while you concentrate, or spend 1 SP to sustain it for 1 min/CL without concentrating. Unwilling creatures/intelligent items get a Will save to resist."
+  },
+  "talents": [
+    { "id": "physical-enhancement", "name": "Physical Enhancement", "type": "basic", "tags": ["enhance"], "spCost": 0, "description": "New enhancement: grant a creature a bonus to a physical ability score." },
+    { "id": "mental-enhancement", "name": "Mental Enhancement", "type": "basic", "tags": ["enhance"], "spCost": 0, "description": "New enhancement: grant a creature a bonus to a mental ability score." },
+    { "id": "resilient-enhancement", "name": "Resilient Enhancement", "type": "basic", "tags": ["enhance"], "spCost": 0, "description": "New enhancement: grant a creature an untyped bonus to one saving throw." },
+    { "id": "animate-object", "name": "Animate Object", "type": "basic", "tags": ["enhance"], "spCost": 1, "description": "New enhancement: bring an object to life as a construct that obeys simple commands, sized according to your caster level." },
+    { "id": "spectral-enhancement", "name": "Spectral Enhancement", "type": "basic", "tags": ["enhance"], "spCost": 0, "description": "New enhancement: grant gear the ghost touch property, or make an object solid/graspable to incorporeal creatures." },
+    { "id": "weapon-special-ability", "name": "Weapon Special Ability", "type": "basic", "tags": ["enhance"], "spCost": "0-1", "description": "New enhancement: grant a weapon a specific magic weapon special ability (such as flaming or keen) instead of just a flat bonus." },
+    { "id": "armor-special-ability", "name": "Armor Special Ability", "type": "basic", "tags": ["enhance"], "spCost": "0-1", "description": "New enhancement: grant armor a specific magic armor special ability instead of just a flat bonus." },
+    { "id": "mass-enhancement", "name": "Mass Enhancement", "type": "basic", "spCost": 1, "description": "Apply the same enhancement to 1 extra target per 2 CL (min 1) at once." },
+    { "id": "ranged-enhancement", "name": "Ranged Enhancement", "type": "basic", "tags": ["range"], "spCost": 0, "description": "Enhance works at medium range instead of close. Repeatable to extend range further." },
+    { "id": "enhance-creature", "name": "Enhance Creature", "type": "basic", "spCost": 0, "description": "Weapon/armor enhancements can be applied directly to a creature's natural weapons or natural armor instead of requiring gear." }
+  ]
+}

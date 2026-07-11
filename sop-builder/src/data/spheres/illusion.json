@@ -1,0 +1,22 @@
+{
+  "id": "illusion",
+  "name": "Illusion",
+  "tagline": "Deceive the senses with figments, phantasms, and shadows.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Figment / Glamer / Trick",
+    "description": "Standard action, 1 SP. Figment: create an illusion in an area (concealment if it blocks sight; disbelieved on interaction, with +5 to the save per missing sensory talent you lack). Glamer: attach an illusion to a creature or object, altering its apparent appearance. Trick: a short simple illusion effect (e.g. minor sensory tricks) lasting a set duration or until dismissed. Lasts while you concentrate, or 1 more SP for a longer fixed duration."
+  },
+  "talents": [
+    { "id": "illusionary-sound", "name": "Illusionary Sound (sensory)", "type": "basic", "spCost": 0, "description": "Your illusions can convincingly include sound, removing the auto-disbelieve penalty for that sense." },
+    { "id": "illusionary-touch", "name": "Illusionary Touch (sensory)", "type": "basic", "spCost": 0, "description": "Your illusions can convincingly include touch/texture, and illusionary creatures/attacks can deal a little real damage to those who don't disbelieve." },
+    { "id": "illusionary-odor", "name": "Illusionary Odor (sensory)", "type": "basic", "spCost": 0, "description": "Your illusions can convincingly include smell, fooling creatures who rely on scent." },
+    { "id": "illusionary-disguise", "name": "Illusionary Disguise (glamer)", "type": "basic", "spCost": 0, "description": "New glamer: change a creature or object's apparent appearance, like a magical disguise." },
+    { "id": "complex-illusions", "name": "Complex Illusions", "type": "basic", "spCost": 0, "description": "Your figments can include multiple independent creatures/objects instead of one static scene." },
+    { "id": "lingering-illusion", "name": "Lingering Illusion", "type": "basic", "spCost": 0, "description": "Illusions persist for a while after you stop concentrating instead of vanishing immediately." },
+    { "id": "selective-illusions", "name": "Selective Illusions", "type": "basic", "spCost": 0, "description": "Choose specific creatures who automatically see through your illusions (typically your allies)." },
+    { "id": "greater-illusions", "name": "Greater Illusions", "type": "basic", "spCost": 0, "description": "Increase the maximum size and complexity of illusions you can create." },
+    { "id": "coaxing-decoy", "name": "Coaxing Decoy (trick)", "type": "basic", "spCost": 0, "description": "New trick: create a decoy illusionary creature that grants a miss chance to attacks against a target." },
+    { "id": "shadow-lurk", "name": "Shadow Lurk", "type": "basic", "spCost": 0, "description": "Animate a temporary quasi-real duplicate of yourself out of shadowstuff to act as a decoy or minor combatant." }
+  ]
+}
