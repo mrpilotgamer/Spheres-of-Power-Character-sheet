@@ -1,0 +1,66 @@
+:root {
+  /* Color: midnight grimoire - a dark arcane shell around warm, lamplit pages */
+  --ink-950: #12101c;
+  --ink-900: #181527;
+  --ink-800: #211d35;
+  --ink-700: #2c2645;
+  --ink-600: #3b3358;
+
+  --parchment-100: #f6ecd9;
+  --parchment-200: #ede0c4;
+  --parchment-300: #ddcda3;
+
+  --gold-400: #e0b355;
+  --gold-500: #c99a3d;
+  --gold-600: #a97f2f;
+
+  --arcane-400: #a48af0;
+  --arcane-500: #8768e6;
+  --arcane-600: #6a4dc9;
+
+  --ember-500: #d1684a;
+
+  --ok-500: #6fae7a;
+  --warn-500: #d9a441;
+
+  /* Type */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Manrope", "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-card: 0 1px 2px rgba(10, 8, 20, 0.4), 0 8px 24px rgba(10, 8, 20, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, var(--ink-800) 0%, var(--ink-950) 70%);
+  color: var(--parchment-100);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--gold-400); }
+
+::selection {
+  background: var(--arcane-500);
+  color: var(--ink-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold-400);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

@@ -1,0 +1,22 @@
+{
+  "id": "death",
+  "name": "Death",
+  "tagline": "Command undead and drain the life force of the living.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Ghost Strike / Reanimate",
+    "description": "Standard action. Ghost Strike (0 SP): ranged touch attack (medium range) that fatigues a living target for 1 round/CL (Fort negates); has no effect on undead or constructs. Reanimate (1 SP, touch): raise an intact corpse as a skeleton or zombie for 1 min/CL, obeying simple commands. You also choose one bonus (undead) talent when you first gain this sphere."
+  },
+  "talents": [
+    { "id": "improved-reanimation", "name": "Improved Reanimation", "type": "basic", "spCost": 0, "description": "Reanimated undead gain a +4 enhancement bonus to Strength and Dexterity." },
+    { "id": "sustained-reanimation", "name": "Sustained Reanimation", "type": "basic", "spCost": 0, "description": "Maintain one reanimated undead through concentration instead of a fixed duration, at half the usual HD cost against your undead limit." },
+    { "id": "permanent-undead", "name": "Permanent Undead", "type": "basic", "spCost": 1, "description": "Make a reanimated undead permanent instead of temporary." },
+    { "id": "mass-reanimate", "name": "Mass Reanimate", "type": "basic", "spCost": 1, "description": "Reanimate multiple corpses with a single casting." },
+    { "id": "ranged-death", "name": "Ranged Death", "type": "basic", "tags": ["range"], "spCost": 0, "description": "Increase the range of your ghost strike, reanimate touch, and dominion abilities by one step. Repeatable." },
+    { "id": "corpse-bomb", "name": "Corpse Bomb", "type": "basic", "tags": ["ghost strike"], "spCost": 0, "description": "Detonate a corpse or mindless undead into a ghost-strike burst, destroying it in the process." },
+    { "id": "necrotic-feeding", "name": "Necrotic Feeding", "type": "basic", "tags": ["ghost strike"], "spCost": 1, "description": "A harsher ghost strike option that deals direct damage and can heal you or your undead for some of the damage dealt." },
+    { "id": "instill-ghost-strike", "name": "Instill Ghost Strike", "type": "basic", "spCost": 1, "description": "Bottle a ghost strike into a splash-weapon liquid that anyone can throw later." },
+    { "id": "inflict-disease", "name": "Inflict Disease", "type": "basic", "tags": ["ghost strike"], "spCost": 1, "description": "Ghost strike can inflict an ongoing disease on a failed save instead of its normal effect." },
+    { "id": "dominion", "name": "Dominion", "type": "basic", "spCost": 0, "description": "Gain a limited command ability over undead that fail a save, useful for negotiating with or controlling undead you didn't personally raise." }
+  ]
+}
