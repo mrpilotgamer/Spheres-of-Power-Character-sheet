@@ -1,0 +1,11 @@
+{
+  "id": "equipment",
+  "name": "Equipment",
+  "tagline": "Gain proficiency and tricks tied to specific gear and martial traditions.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

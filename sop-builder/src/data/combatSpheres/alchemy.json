@@ -1,0 +1,11 @@
+{
+  "id": "alchemy",
+  "name": "Alchemy",
+  "tagline": "Brew and throw volatile concoctions in the middle of a fight.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

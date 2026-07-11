@@ -1,0 +1,11 @@
+{
+  "id": "vocation",
+  "name": "Vocation",
+  "tagline": "Turn a trade or profession into a source of real power.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

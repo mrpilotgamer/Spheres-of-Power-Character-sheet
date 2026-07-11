@@ -1,0 +1,44 @@
+{
+  "id": "life",
+  "name": "Life",
+  "tagline": "Heal the living, and unmake the undead.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Cure / Invigorate / Restore",
+    "description": "Standard action, touch range. Cure (1 SP): heal 1d8 + CL damage (harmful to undead, Will half). Invigorate (free): grant temporary HP equal to CL to an injured creature for 1 hour, can't push them above their max HP. Restore (1 SP): remove a fatigued/sickened/shaken/staggered/dazzled/battered condition (or lessen a worse version of it) and heal 1d4 ability damage to one score; ongoing effects are only suppressed for CL rounds instead of removed."
+  },
+  "talentTypes": {
+    "cure": "Boosts what your cure ability does when it heals someone.",
+    "vitality": "A free rider buff (pick one per casting) you can attach whenever you use a Life ability on an ally; lasts up to 1 minute or until they take damage."
+  },
+  "talents": [
+    { "id": "adrenaline-surge", "name": "Adrenaline Surge", "type": "basic", "spCost": 1, "description": "Grant an ally you heal an immediate action: attack, move, Escape Artist check, ready a weapon, or stand up." },
+    { "id": "affliction", "name": "Affliction", "type": "basic", "spCost": 0, "description": "Turn restore into an offensive touch attack that fatigues/exhausts the target (Will save for the lesser effect) instead of healing an ally." },
+    { "id": "break-enchantment", "name": "Break Enchantment", "type": "basic", "spCost": 1, "description": "Restore can strip ongoing magical effects (including curses) via a magic skill check per effect instead of restoring mind/body/soul." },
+    { "id": "clarified-strike", "name": "Clarified Strike", "type": "basic", "tags": ["strike"], "spCost": 0, "description": "Deliver a Life ability through a weapon attack instead of a separate touch." },
+    { "id": "empathic-healing", "name": "Empathic Healing", "type": "basic", "spCost": 0, "description": "Reduce the SP cost of a healing effect by 1 by taking the removed condition/damage onto yourself instead." },
+    { "id": "esoteric-healing", "name": "Esoteric Healing", "type": "basic", "spCost": 0, "description": "Life abilities stop counting as positive energy, letting them affect constructs and undead too." },
+    { "id": "fount-of-life", "name": "Fount of Life", "type": "basic", "spCost": 1, "description": "Bank rolled cure healing (up to 10 x CL) to dispense later without spending further spell points." },
+    { "id": "greater-healing", "name": "Greater Healing", "type": "basic", "spCost": 0, "description": "Cure heals 2 HP/CL instead of 1 (repeatable up to +5 HP/CL total)." },
+    { "id": "greater-invigorate", "name": "Greater Invigorate", "type": "basic", "spCost": 0, "description": "Invigorate adds your casting modifier to the temp HP granted and lasts 1 hour/CL instead of 1 hour flat." },
+    { "id": "greater-restore", "name": "Greater Restore", "type": "basic", "spCost": 0, "description": "Restore fully removes (rather than lessens) exhausted/nauseated/frightened/panicked, and also cures all ability damage and the stunned condition." },
+    { "id": "mass-healing", "name": "Mass Healing", "type": "basic", "spCost": 1, "description": "Cure or invigorate can hit 1 extra target per 2 CL (min 1) simultaneously." },
+    { "id": "mass-restore", "name": "Mass Restore", "type": "basic", "spCost": 1, "description": "Restore can hit 1 extra target per 2 CL (min 1) simultaneously." },
+    { "id": "ranged-healing", "name": "Ranged Healing", "type": "basic", "tags": ["range"], "spCost": 0, "description": "Cure/invigorate/restore work at close range instead of requiring touch." },
+    { "id": "resuscitate", "name": "Resuscitate", "type": "basic", "spCost": 0, "description": "Cure/invigorate can bring back a creature dead for no more than 1 round if the healing brings them above the negative-HP death threshold; they gain a temporary negative level." },
+    { "id": "revitalize", "name": "Revitalize", "type": "basic", "spCost": 0, "description": "Convert a cure into fast healing 1 (plus your Greater Healing count) for 1 minute/CL instead of an instant heal." },
+    { "id": "self-renewal", "name": "Self-Renewal", "type": "basic", "spCost": 0, "description": "Use cure or restore on yourself as a swift action." },
+    { "id": "sudden-invigoration", "name": "Sudden Invigoration", "type": "basic", "spCost": 1, "description": "Use invigorate as an immediate action, even choosing to apply it before or after incoming damage." }
+  ],
+  "cureTalents": [
+    { "id": "restore-health", "name": "Restore Health", "type": "cure", "description": "Cure heals +1d8 more; restoring body also lets you roll a magic skill check to cure an ongoing poison or disease outright." },
+    { "id": "restore-mind", "name": "Restore Mind", "type": "cure", "description": "Cure heals +1d8 more; restoring mind also clears confused and dazed." },
+    { "id": "restore-senses", "name": "Restore Senses", "type": "cure", "description": "Cure heals +1d8 more; restoring mind also fixes any magical blindness/deafness/lost special senses." },
+    { "id": "restore-soul", "name": "Restore Soul", "type": "cure", "description": "Cure heals +1d8 more; restoring soul also cures all ability drain and temporary negative levels." }
+  ],
+  "vitalityTalents": [
+    { "id": "aggressive-vitality", "name": "Aggressive Vitality", "type": "vitality", "description": "+2 circumstance bonus on weapon attack and damage rolls." },
+    { "id": "energizing-vitality", "name": "Energizing Vitality", "type": "vitality", "description": "+30 ft. circumstance bonus to all movement speeds." },
+    { "id": "sustaining-vitality", "name": "Sustaining Vitality", "type": "vitality", "description": "+4 circumstance bonus to AC and saving throws." }
+  ]
+}

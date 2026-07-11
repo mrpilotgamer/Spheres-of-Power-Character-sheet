@@ -1,0 +1,22 @@
+{
+  "id": "fate",
+  "name": "Fate",
+  "tagline": "Bend luck, fortune, and alignment-charged power to your will.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Word / Consecration",
+    "description": "Word: standard action, touch, 1 SP. Place a temporary effect ('word') on a target based on a (word) talent you know; lasts while you concentrate, or 1 min/CL for 1 more SP. Consecration: standard action, self-centered 20-ft. aura that moves with you. You start with Serendipity, granting allies in the aura a +1 luck bonus to attacks, skill/ability checks, and saves."
+  },
+  "talents": [
+    { "id": "align-object", "name": "Align Object (word)", "type": "basic", "spCost": 0, "description": "New word: imbue a weapon or object with an alignment-based property relevant to your Fate magic." },
+    { "id": "classify", "name": "Classify (word)", "type": "basic", "spCost": 0, "description": "New word: compel a target to truthfully identify themselves." },
+    { "id": "geas", "name": "Geas (word)", "type": "basic", "spCost": 2, "description": "New word: a long-duration compulsion forcing a target to complete a task, similar to the geas spell." },
+    { "id": "hallow-word", "name": "Hallow (word)", "type": "basic", "spCost": 1, "description": "New word: grant protections against your opposed alignment to the area or target." },
+    { "id": "truth", "name": "Truth (word)", "type": "basic", "spCost": 0, "description": "New word: prevent the target from speaking deliberate lies for the duration." },
+    { "id": "perfect-word", "name": "Perfect (word)", "type": "basic", "spCost": 1, "description": "New word: boost one of the target's ability scores along with a themed side benefit." },
+    { "id": "greater-serendipity", "name": "Greater Serendipity", "type": "basic", "spCost": 0, "description": "Your Serendipity consecration also curses enemies in the area with a matching penalty." },
+    { "id": "mass-word", "name": "Mass Words", "type": "basic", "spCost": 1, "description": "Apply the same word to 1 extra target per 2 CL (min 1) at once." },
+    { "id": "instill-word", "name": "Instill Motif or Word", "type": "basic", "spCost": "0-1", "description": "Bottle a word or motif effect into a liquid usable later like a potion." },
+    { "id": "additional-consecration", "name": "Additional Consecration (consecration)", "type": "basic", "spCost": 0, "description": "Learn another consecration effect you can raise instead of (or alongside) Serendipity." }
+  ]
+}

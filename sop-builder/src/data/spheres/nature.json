@@ -1,0 +1,22 @@
+{
+  "id": "nature",
+  "name": "Nature",
+  "tagline": "Command the elements: air, earth, fire, water, metal, and plant.",
+  "populated": true,
+  "baseAbility": {
+    "name": "Geomancing",
+    "description": "You choose one elemental package (air, earth, fire, water, plant, or the non-core metal package) the moment you gain this sphere, unlocking that package's geomancing abilities (e.g. earth grants Tremor/Bury, fire grants Create Fire/Affect Fire, water grants Wave, air grants Gust of Wind/Create Air). Each geomancing ability is a standard action within close range, using the natural material tied to its package; effects generally last while you concentrate, or 1 SP more for 1 min/CL."
+  },
+  "talents": [
+    { "id": "expanded-geomancing", "name": "Expanded Geomancing", "type": "basic", "spCost": 0, "description": "Gain an additional elemental package you don't already have. Repeatable." },
+    { "id": "tremor", "name": "Tremor (earth)", "type": "basic", "spCost": 0, "description": "Earth package ability: shake the ground in an area, knocking creatures prone on a failed save." },
+    { "id": "bury", "name": "Bury (earth)", "type": "basic", "spCost": 0, "description": "Earth package ability: entangle or immobilize a creature standing on suitable ground." },
+    { "id": "wave", "name": "Wave (water)", "type": "basic", "spCost": 0, "description": "Water package ability: create a wave that knocks creatures back and can extinguish fire." },
+    { "id": "gust-of-wind", "name": "Gust of Wind (air)", "type": "basic", "spCost": 0, "description": "Air package ability: a line or cone of wind that can push back creatures and disperse gases/fog." },
+    { "id": "affect-fire", "name": "Affect Fire (fire)", "type": "basic", "spCost": 0, "description": "Fire package ability: manipulate existing fire's size, shape, or intensity, or create it outright." },
+    { "id": "whirlwind-nature", "name": "Whirlwind (geomancing)", "type": "basic", "spCost": 0, "description": "New geomancing ability: create a sustained damaging vortex in your chosen element." },
+    { "id": "natural-armor-nature", "name": "Stoneskin (spirit)", "type": "basic", "tags": ["spirit"], "spCost": 0, "description": "A (spirit) talent: grant yourself or a touched ally a deflection/armor bonus while concentrating on an earth geomancing ability." },
+    { "id": "elemental-resistance-nature", "name": "Elemental Resilience (spirit)", "type": "basic", "tags": ["spirit"], "spCost": "0-1", "description": "A (spirit) talent: gain energy resistance tied to your element, with a chance to heal from matching damage." },
+    { "id": "ranged-nature", "name": "Ranged Geomancing", "type": "basic", "tags": ["range"], "spCost": 0, "description": "Increase the range of your geomancing abilities by one step. Repeatable." }
+  ]
+}
