@@ -1,0 +1,11 @@
+{
+  "id": "lancer",
+  "name": "Lancer",
+  "tagline": "Fight from horseback or with reach weapons and charges.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

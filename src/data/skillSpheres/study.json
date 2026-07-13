@@ -1,0 +1,11 @@
+{
+  "id": "study",
+  "name": "Study",
+  "tagline": "Turn deep research and knowledge into practical advantages.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

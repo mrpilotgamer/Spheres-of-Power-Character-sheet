@@ -79,19 +79,123 @@ export function magicSkillDefense(msb) {
   return 11 + msb;
 }
 
-// Magic talents: baseline rule is "1 per caster class level, plus 2 bonus
-// talents the first time you take a level in ANY casting class." Classes
-// with a documented exception can override this via talentProgression.
+// Talent progression works the same way as caster level and BAB: High
+// progression gains 1 talent/level, Mid gains 3/4ths of a talent/level,
+// Low gains 1/2 a talent/level - confirmed against multiple classes'
+// published tables (e.g. Hedgewitch's Magic Talents column exactly matches
+// the Mid/3-4ths formula). For magic talents this defaults to matching the
+// class's caster type, since that's true for most classes - set
+// `talentProgression: "high"/"mid"/"low"` explicitly only for documented
+// exceptions (e.g. Thaumaturge is a High-Caster but has Low progression).
+function progressionRate(tier) {
+  if (tier === 'high') return 'full';
+  if (tier === 'mid') return 'threeQuarter';
+  if (tier === 'low') return 'half';
+  return 'full';
+}
+
+function defaultTalentProgression(casterType) {
+  if (casterType === 'high') return 'high';
+  if (casterType === 'mid') return 'mid';
+  if (casterType === 'low') return 'low';
+  return null;
+}
+
 export function magicTalentsGained(classLevels, classesById) {
   let total = 0;
   let grantedFirstCasterBonus = false;
   for (const cl of classLevels) {
     const cls = classesById[cl.classId];
     if (!cls || !cls.casterType || cls.casterType === 'none') continue;
-    total += cl.level; // 1 per level, standard progression
+    if (cls.system === 'champion') continue;
+    const tier = cls.talentProgression || defaultTalentProgression(cls.casterType);
+    total += babAtLevel(progressionRate(tier), cl.level);
+    // Some classes stack an extra bonus talent every N levels on top of
+    // their normal progression (confirmed: Incanter gains +1 bonus talent
+    // every odd level, i.e. bonusTalentEvery: 2, in addition to its
+    // standard 1/level High progression).
+    if (cls.bonusTalentEvery) {
+      total += Math.ceil(cl.level / cls.bonusTalentEvery);
+    }
     if (!grantedFirstCasterBonus) {
       total += 2;
       grantedFirstCasterBonus = true;
+    }
+  }
+  return total;
+}
+
+// Combat talents (Spheres of Might): defaults to High progression since
+// most per-class tables are still unverified. Set `talentProgression`
+// explicitly for confirmed exceptions (e.g. Troubadour is documented Low
+// progression for combat talents).
+export function combatTalentsGained(classLevels, classesById) {
+  let total = 0;
+  let grantedFirstBonus = false;
+  for (const cl of classLevels) {
+    const cls = classesById[cl.classId];
+    if (!cls || cls.system !== 'might') continue;
+    total += babAtLevel(progressionRate(cls.talentProgression || 'high'), cl.level);
+    if (!grantedFirstBonus) {
+      total += 2;
+      grantedFirstBonus = true;
+    }
+  }
+  return total;
+}
+
+// Universal talents (Champions of the Spheres): a shared pool that can be
+// spent on EITHER a magic talent or a combat talent, from classes like
+// Sage and Prodigy. Sage is confirmed Low progression (1st level and every
+// 2 levels thereafter) and does NOT get the usual +2 bonus for a first
+// casting class level - both flagged per-class since they're documented
+// exceptions, not guesses.
+export function universalTalentsGained(classLevels, classesById) {
+  let total = 0;
+  let grantedFirstBonus = false;
+  for (const cl of classLevels) {
+    const cls = classesById[cl.classId];
+    if (!cls || cls.system !== 'champion') continue;
+    const tier = cls.talentProgression || 'high';
+    if (tier === 'virtuoso') {
+      total += cl.level + Math.floor(cl.level / 4);
+    } else {
+      total += babAtLevel(progressionRate(tier), cl.level);
+    }
+    if (cls.bonusTalentEvery) {
+      total += Math.ceil(cl.level / cls.bonusTalentEvery);
+    }
+    if (!grantedFirstBonus && cls.grantsFirstCasterBonus !== false) {
+      total += 2;
+      grantedFirstBonus = true;
+    }
+  }
+  return total;
+}
+
+// Skill talents (Spheres of Guile): talent gain is actually split into
+// "Any" and "Utility" sub-tracks, but the net effect per Operative Type is
+// well-defined: Journeyman totals exactly 1/level (same as the standard
+// "high" tier), while Virtuoso is stronger - its Any column alone reaches
+// 15 by level 20 (vs Journeyman's ~10), with Utility matching Journeyman's
+// rate. Approximated here as level + floor(level/4) for Virtuoso, which
+// lands on the confirmed 20th-level figure; this is a simplification of
+// the real two-track table, not an exact per-level match.
+export function skillTalentsGained(classLevels, classesById) {
+  let total = 0;
+  let grantedFirstBonus = false;
+  for (const cl of classLevels) {
+    const cls = classesById[cl.classId];
+    if (!cls || cls.system !== 'guile') continue;
+    const tier = cls.talentProgression || 'high';
+    if (tier === 'virtuoso') {
+      total += cl.level + Math.floor(cl.level / 4);
+    } else {
+      total += babAtLevel(progressionRate(tier), cl.level);
+    }
+    if (!grantedFirstBonus) {
+      total += 2;
+      grantedFirstBonus = true;
     }
   }
   return total;

@@ -1,15 +1,35 @@
 # Spherecaster
 
-A free, open-source character builder for **[Spheres of Power](http://spheresofpower.wikidot.com/start)**,
-the third-party magic system for the Pathfinder Roleplaying Game by Drop Dead Studios.
+A free, open-source character builder for the whole **Spheres** system for the
+Pathfinder Roleplaying Game by Drop Dead Studios: **[Spheres of Power](http://spheresofpower.wikidot.com/start)**
+(magic), **Spheres of Might** (martial combat), **Spheres of Guile** (skills), and
+**Champions of the Spheres** (the official Power+Might hybrid classes).
 
 It auto-calculates the stuff that's tedious by hand — base attack bonus, saves, caster level,
-spell points, sphere DC, magic skill bonus/defense — and lets you pick spheres and talents
-against a live talent budget, the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
+spell points, sphere DCs, magic skill bonus/defense — and lets you pick spheres and talents
+against a live talent budget for all three systems, the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
 does for core Pathfinder.
 
 Characters are saved in your browser (nothing leaves your device), and the whole site costs
 nothing to run: it's a static site hosted for free on GitHub Pages.
+
+## A built-in house rule
+
+This app bakes in one permanent house rule for this table, applied to every Power/Champion
+casting class regardless of its official casting ability: instead of one fixed casting stat,
+casters use all three mental stats for different things -
+
+- **Intelligence** sets the spell point pool (caster-class levels + Int mod)
+- **The highest of Int/Wis/Cha** sets sphere DCs
+- **Wisdom** adds to duration ("per caster level" rounds/minutes/hours), adds as bonus targets
+  for `[mass]`-tagged or multi-target abilities, and adds half its mod to Alteration trait count
+- **Charisma** governs any effect that explicitly adds "casting ability modifier" to damage
+  dealt/healed or targets affected (e.g. Healing Aegis, Selective Blast)
+
+This is why you won't find a "casting ability" picker anywhere in the app even for classes
+that normally choose one (Incanter, Mageknight, etc.) - under this rule that choice doesn't
+apply. If your group doesn't use this house rule, the main things to change by hand are the
+Spell Points and Sphere DC formulas in `src/components/CharacterSheet.jsx`.
 
 ## Running it locally
 
@@ -54,21 +74,37 @@ more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format.
 
 ## What's in here so far
 
-- **Engine**: fully accurate — caster level table, spell point formula, sphere DC,
-  magic skill bonus/defense, magic talent budget, standard Pathfinder BAB/save math,
-  multiclassing.
-- **Classes**: the Incanter is fully verified against the wiki. The other 11 core
-  Spherecaster classes are seeded with reasonable stats but flagged `unverified` in
-  the data and in the UI dropdown — double check them against the wiki before you
-  rely on them, or better yet, help fix them (see CONTRIBUTING.md).
-- **Spheres**: all 23 core magic spheres are populated with a real base ability and a
-  curated set of talents (roughly 10-14 each), written in original wording. This isn't
-  every talent from the books — some spheres have 30+ in print — but it's enough to
-  actually build and play a character with any of them. See CONTRIBUTING.md if you
-  want to keep expanding any sphere toward full completeness.
-- **Not modeled yet**: combat spheres, skill spheres, packages, drawbacks, feats,
-  casting traditions, and every class/sphere from expansions beyond the core book.
-  Equipment/skills/feats currently just live in the freeform Notes box.
+- **Engine**: Power (magic) math is fully accurate — caster level table, spell point
+  formula, sphere DC, magic skill bonus/defense, magic talent budget. Standard
+  Pathfinder BAB/save math and multiclassing work for all classes across all four
+  systems. Might (combat talent budget, combat sphere DC) and Guile (skill talent
+  budget, skill sphere DC) are wired up but use **approximated** talent-budget formulas
+  pending exact per-class verification - see the note on each system's card in the app.
+  Champions of the Spheres (Sage, Prodigy) gets its own shared "universal" talent pool
+  that can be spent on either magic or combat talents - see the Champion Talent Pool
+  card, which tracks this separately from the two dedicated picker budgets.
+- **Classes**: 28 total across all four systems (12 Power, 8 Might, 5 Guile, 3 Champion).
+  10 of the 12 Power classes are now verified against the wiki (only Hedgewitch and
+  Thaumaturge remain unconfirmed on hit die/BAB, though Hedgewitch's casting ability
+  and caster type are confirmed). Might, Guile, and most Champion classes are still
+  flagged `unverified` - reasonable estimates, not confirmed numbers yet.
+- **Champions of the Spheres**: added as its own system, unifying Power + Might (this
+  is the official scope of that book - it does not include Guile). Sage and Troubadour
+  are verified against the wiki/published reviews; Prodigy's chassis is an estimate.
+  None of the three classes' bespoke subsystems (Sage's Esotery, Prodigy's combo
+  Sequences, Troubadour's Personas) are mechanically modeled yet - they're described in
+  the class text but not simulated.
+- **Spheres**: all 23 magic spheres, all 23 combat spheres, and all 15 skill spheres
+  exist. Fully populated with real base abilities and curated talent lists: Life,
+  Destruction, Alteration, Blood, Conjuration, Creation, Dark, Death, Divination,
+  Enhancement, Fallen Fey, Fate, Illusion, Light, Mana, Mind, Nature, Protection,
+  Telekinesis, Time, War, Warp, and Weather (all 23 magic spheres), plus Guardian and
+  Boxing (combat) and Infiltration and Investigation (skill) as a starting sample of
+  those two systems. The rest of the combat and skill spheres exist as stubs (name +
+  one-line tagline) ready to be filled in — see CONTRIBUTING.md.
+- **Not modeled yet**: packages, drawbacks, feats, casting/martial/trade traditions,
+  and anything from expansions beyond the three core books. Equipment/skills/feats
+  currently just live in the freeform Notes box.
 
 ## Cloud saves (optional, still free)
 

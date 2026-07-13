@@ -1,0 +1,11 @@
+{
+  "id": "survivalism",
+  "name": "Survivalism",
+  "tagline": "Endure and thrive in hostile environments.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

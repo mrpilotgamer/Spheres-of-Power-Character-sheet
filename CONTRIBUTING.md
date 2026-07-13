@@ -9,9 +9,16 @@ keep it short and mechanical (what it costs, what it does), not the original fla
 
 ## Adding or completing a sphere
 
-Each sphere is one file in `src/data/spheres/`, named after its id (e.g. `nature.json`).
-There are already stub files for every sphere that isn't fully filled in yet — just edit
-the existing file rather than creating a new one.
+There are three sphere folders now, one per system - use whichever matches what you're adding:
+
+- `src/data/spheres/` - magic spheres (Spheres of Power)
+- `src/data/combatSpheres/` - combat spheres (Spheres of Might)
+- `src/data/skillSpheres/` - skill spheres (Spheres of Guile)
+
+Each sphere is one file in its folder, named after its id (e.g. `nature.json`, or
+`guardian.json` under combatSpheres). There are already stub files for every sphere
+that isn't fully filled in yet — just edit the existing file rather than creating a
+new one. The JSON shape is identical across all three folders:
 
 ```json
 {
@@ -50,13 +57,22 @@ Notes:
 
 ## Adding or fixing a class
 
-Classes live together in `src/data/classes.json` as one array. Add an object like:
+Classes are split across four files by system - add to whichever matches:
+
+- `src/data/classes.json` - Spherecaster classes (Power)
+- `src/data/mightClasses.json` - Practitioner classes (Might)
+- `src/data/guileClasses.json` - Operative classes (Guile)
+- `src/data/championClasses.json` - Champion classes (Champions of the Spheres - the
+  official Power+Might hybrid book)
+
+All four share the same shape. Add an object like:
 
 ```json
 {
   "id": "your-class-id",
   "name": "Your Class",
   "category": "Spherecaster",
+  "system": "power",
   "verified": false,
   "hitDie": 8,
   "babType": "threeQuarter",
@@ -72,12 +88,36 @@ Classes live together in `src/data/classes.json` as one array. Add an object lik
 ```
 
 Field notes:
+- `category`: the display grouping shown in the class dropdown - `"Spherecaster"`,
+  `"Practitioner"`, `"Operative"`, or `"Champion"` for the four systems.
+- `system`: `"power"`, `"might"`, `"guile"`, or `"champion"` - this is what the engine
+  uses to route talent-budget and DC math, so it must match the folder/file you're
+  adding to.
 - `babType`: `"full"`, `"threeQuarter"`, or `"half"` — the engine derives the whole
   base attack bonus table from this, so you don't need to type out 20 rows.
 - `goodSaves`: array containing any of `"fort"`, `"ref"`, `"will"` — same deal, the
   engine derives the save progression.
-- `casterType`: `"high"`, `"mid"`, `"low"`, or `"none"` for non-casting classes.
-- `casterAbility`: `"int"`, `"wis"`, `"cha"`, or `"choice"` if the class picks at 1st level.
+- Power classes only: `casterType` (`"high"`/`"mid"`/`"low"`/`"none"`) and
+  `casterAbility` (`"int"`/`"wis"`/`"cha"`/`"choice"`).
+- Might and Guile classes: set `"casterType": "none"`. Guile classes should also set
+  `"operativeAbility": "choice"` (this is accurate to the real rules - operatives pick
+  Int/Wis/Cha the first time they gain a skill talent).
+- `talentRate`: optional, defaults to `"full"` (1 talent/level). Set to `"half"` for a
+  class that gains talents at roughly half the normal rate (e.g. Troubadour's combat
+  talents, Sage's Style Talents).
+- Champion classes: set `"system": "champion"`. If the class casts magic (like Sage),
+  set `casterType`/`casterAbility` as normal - caster level and spell points still work
+  through the standard Power math. But its **talent gain** is tracked separately via
+  the "universal" pool (spendable on magic OR combat), so it deliberately does *not*
+  also count toward the dedicated magic/combat talent budgets - see `progression.js`'s
+  `universalTalentsGained` if you're curious how that's wired up. Set
+  `"grantsFirstCasterBonus": false` if the class explicitly doesn't get the usual +2
+  bonus talents for a first casting class level (Sage is a documented exception to
+  that rule - double check the wiki before assuming a class does or doesn't get it).
+  A Champion class that's Might-only (like Troubadour) should instead use
+  `"system": "might"` with `casterType: "none"` and a `talentRate`, same as any other
+  Practitioner class — it'll still show up in the "Champion" category dropdown group
+  since that's controlled by `category`, separate from `system`.
 - Set `"verified": true` once you've checked the numbers against the wiki page for
   that class — until then, leave it `false` so the UI keeps warning people.
 
