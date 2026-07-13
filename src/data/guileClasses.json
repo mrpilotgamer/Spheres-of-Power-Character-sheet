@@ -99,8 +99,7 @@
     "casterType": "none",
     "operativeAbility": "choice",
     "description": "An inspiring virtuoso built around Communication and Performance. Virtuoso (stronger) skill talent progression despite half BAB. Several signature features (dispiriting words, confident presence pool, incredible confidence AC bonus) are keyed specifically to Charisma regardless of the operative modifier chosen.",
-    "source": "Spheres of Guile - full chassis verified against class reference table + wiki",
-    "talentProgression": "virtuoso"
+    "source": "Spheres of Guile - full chassis verified against class reference table + wiki"
   },
   {
     "id": "genius",
@@ -117,7 +116,6 @@
     "classSkills": [],
     "casterType": "none",
     "operativeAbility": "choice",
-    "talentProgression": "low",
     "description": "Officially a Thaumaturge (Spheres of Power) archetype, presented as its own class since it replaces almost everything - like Spheres of Might's Savant. A three-way hybrid: gains Thaumaturge-style invocations plus a very slow (Trained) magic/combat talent track (capped around 5 by 20th level) alongside its skill talents. Class skills are entirely determined by chosen trade tradition, not a fixed list. Talent output modeled here only as a rough Low-progression approximation - the real Trained track and invocations aren't separately simulated.",
     "source": "Spheres of Guile - chassis (HD/BAB/saves/skill points) verified against class reference table + wiki; talent progression is a rough placeholder given its unique hybrid mechanics"
   },
@@ -156,7 +154,6 @@
     ],
     "casterType": "none",
     "operativeAbility": "choice",
-    "talentProgression": "virtuoso",
     "description": "A planner built around Investigation and Faction. Virtuoso skill talent progression. Each Mastermind 'conspiracy' assigns its own separate key ability modifier (Int, Wis, or a choice) governing Insightful Defense's AC bonus and several stratagem DCs, independent of the general operative modifier.",
     "source": "Spheres of Guile - full chassis verified against class reference table + wiki"
   },
@@ -182,7 +179,6 @@
     ],
     "casterType": "none",
     "operativeAbility": "choice",
-    "talentProgression": "virtuoso",
     "description": "A generalist expert who can be built around almost any single skill sphere. Virtuoso skill talent progression. Without a trade tradition, gains ten more class skills of the player's choice at 1st level.",
     "source": "Spheres of Guile - full chassis verified against class reference table + wiki"
   },

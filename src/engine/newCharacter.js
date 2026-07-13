@@ -23,7 +23,6 @@ export function blankCharacter() {
     martialFocusMax: 1,
     operativeAbilityOverride: null,
     practitionerAbilityOverride: null,
-    championTalentsSpent: 0,
     notes: ''
   };
 }

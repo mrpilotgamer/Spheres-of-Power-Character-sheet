@@ -12,8 +12,6 @@
     "classSkills": ["Acrobatics", "Diplomacy", "Heal", "Knowledge (all)", "Perception", "Sense Motive"],
     "casterType": "high",
     "casterAbility": "wis",
-    "grantsFirstCasterBonus": false,
-    "talentProgression": "low",
     "description": "Uses ki (fluff name for their spell pool) to empower both body and magic. Gains a Style Talent every 2 levels - a bonus combat OR magic talent of their choice - treated as a High-Caster using Wisdom whenever a talent is spent on magic. Does NOT get the usual +2 bonus talents for a first casting class level. Also has a SEPARATE dedicated Combat Talents column at half (Proficient) rate alongside the Style Talent pool - that second track isn't modeled here, only the shared Style Talent pool is. Esotery (unique combo talents) and bonus Skill Focus every 2-3 levels aren't mechanically modeled either.",
     "source": "Champions of the Spheres - full chassis verified against class reference table + wiki + published reviews"
   },
@@ -30,7 +28,6 @@
     "classSkills": ["Bluff", "Diplomacy", "Disguise", "Knowledge (all)", "Perform", "Sense Motive"],
     "casterType": "none",
     "practitionerAbility": "cha",
-    "talentProgression": "low",
     "description": "A master of changing roles like masks (Personas built from Tropes - Hero, Villain, Lover, Mentor, etc.). Gains a dedicated Combat Talents track at Proficient (half) rate, modeled here via casterType:none + system:might. RAW also lists Troubadour as an official Low-Caster with a separate, much slower Magic Talents side-track (one bonus magic talent at 5th level and every 4 levels after, 4 total by 20th) - that side-track and the Persona/Trope subsystem itself are NOT modeled here, only the combat talent track.",
     "source": "Champions of the Spheres - full chassis verified against class reference table + wiki + published reviews; magic side-track intentionally left unmodeled"
   },
@@ -62,7 +59,6 @@
     "skillsPerLevel": 4,
     "classSkills": ["Acrobatics", "Bluff", "Climb", "Intimidate", "Perception", "Sense Motive"],
     "casterType": "none",
-    "talentProgression": "virtuoso",
     "description": "A pure combat/skill hybrid (no magic talents at all) built around Whims - chosen combat + skill sphere pairings (e.g. Athletics/Bluster, Alchemy/Study) - plus a percentile-miss-chance Dodge Pool. Blended Training grants talents spendable on combat OR skill talents (via the shared Champion Talent Pool), at an accelerating rate reaching ~25 total by 20th level. No ability score is restated for it in the official class-summary guide since it grants no magic talents. The Whim/Dodge Pool subsystem itself isn't modeled here, only the chassis and talent pool.",
     "source": "Champions of the Spheres - full chassis verified directly against the wiki class page + class reference table"
   },
@@ -95,8 +91,6 @@
     "classSkills": ["Bluff", "Diplomacy", "Intimidate", "Knowledge (all)", "Sense Motive", "Spellcraft"],
     "casterType": "mid",
     "casterAbility": "choice",
-    "talentProgression": "low",
-    "bonusTalentEvery": 2,
     "description": "Built around a two-sided Struggle (e.g. Defiance/Harmony, Logic/Instinct) that shifts attunement and unlocks different talents/spheres depending which side the character leans toward. One of only two Champion classes (with Theorist) that explicitly blend magic, combat, AND skill talents through one Blended Training pool. Modeled here as half-rate progression plus a separate utility-style bonus every 2 levels (approximating the real main+utility split, which lands at the same ~20-talent total by 20th level). The Struggle subsystem itself isn't modeled.",
     "source": "Champions of the Spheres - full chassis verified against class reference table + wiki"
   },
@@ -129,7 +123,6 @@
     "classSkills": ["Appraise", "Craft", "Knowledge (all)", "Linguistics", "Profession", "Spellcraft"],
     "casterType": "high",
     "casterAbility": "choice",
-    "talentProgression": "virtuoso",
     "description": "Built around Hypothesis Dice assigned to one of many Models (Biological, Mathematical, Narrative, etc.), each granting a distinct Theory Bonus use. One of only two Champion classes (with Dissident) that explicitly blend magic, combat, AND skill talents through one Blended Training pool, at the same accelerating rate as Bravo (~25 total by 20th level). No ability score explicitly restated in the class-summary guide; assumed standard Any Mental Score choice. The Hypothesis Dice/Model subsystem itself isn't modeled here.",
     "source": "Champions of the Spheres - full chassis verified against class reference table + wiki"
   },
