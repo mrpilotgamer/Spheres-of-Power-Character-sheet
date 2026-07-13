@@ -19,10 +19,15 @@ import {
 } from '../engine/progression.js';
 import SphereBuilder from './SphereBuilder.jsx';
 
+function newId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
 
   const abilityMods = character.abilityMods || {};
+  const racialTraits = character.racialTraits || [];
   const scores = finalScores(character.baseAbilities, abilityMods);
   const mods = Object.fromEntries(ABILITY_KEYS.map((k) => [k, abilityModifier(scores[k])]));
 
@@ -104,6 +109,15 @@ export default function CharacterSheet({ character, onChange }) {
   function removeClassLevel(idx) {
     const next = character.classLevels.filter((_, i) => i !== idx);
     update({ classLevels: next.length ? next : [{ classId: '', level: 1 }] });
+  }
+  function addRacialTrait() {
+    update({ racialTraits: [...racialTraits, { id: newId(), name: '', description: '' }] });
+  }
+  function updateRacialTrait(id, patch) {
+    update({ racialTraits: racialTraits.map((t) => (t.id === id ? { ...t, ...patch } : t)) });
+  }
+  function removeRacialTrait(id) {
+    update({ racialTraits: racialTraits.filter((t) => t.id !== id) });
   }
 
   return (
@@ -188,6 +202,41 @@ export default function CharacterSheet({ character, onChange }) {
           ))}
         </div>
         <div className="section-note">Base score entered; add any racial or other flat modifier in the small box below it - the total shown in parentheses includes both.</div>
+      </div>
+
+      {/* Racial traits */}
+      <div className="card">
+        <h2 className="card-title">Racial Traits</h2>
+
+        {racialTraits.length === 0 && (
+          <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+            No racial traits yet - add one below and name it whatever you like.
+          </p>
+        )}
+
+        <div className="trait-grid">
+          {racialTraits.map((t) => (
+            <div className="talent-edit-row" key={t.id}>
+              <div className="field">
+                <input
+                  placeholder="Trait name"
+                  value={t.name}
+                  onChange={(e) => updateRacialTrait(t.id, { name: e.target.value })}
+                />
+              </div>
+              <button className="btn btn-danger btn-sm" onClick={() => removeRacialTrait(t.id)}>✕</button>
+              <div className="field talent-edit-desc">
+                <textarea
+                  rows={2}
+                  placeholder="Description"
+                  value={t.description}
+                  onChange={(e) => updateRacialTrait(t.id, { description: e.target.value })}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={addRacialTrait}>+ Add trait</button>
       </div>
 
       {/* Classes & levels */}
