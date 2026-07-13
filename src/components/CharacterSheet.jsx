@@ -1,4 +1,4 @@
-import races from '../data/races.json';
+import { useState } from 'react';
 import { classesById, classesByCategory } from '../engine/classLoader.js';
 import {
   ABILITY_KEYS,
@@ -17,14 +17,13 @@ import {
   magicSkillBonus,
   magicSkillDefense
 } from '../engine/progression.js';
-import { spheres, combatSpheres, skillSpheres } from '../engine/sphereLoader.js';
-import TalentPicker from './TalentPicker.jsx';
-
-const racesById = Object.fromEntries(races.map((r) => [r.id, r]));
+import SphereBuilder from './SphereBuilder.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
-  const race = racesById[character.raceId] || null;
-  const scores = finalScores(character.baseAbilities, race, character.chosenBonusAbility);
+  const [activeTab, setActiveTab] = useState('main');
+
+  const abilityMods = character.abilityMods || {};
+  const scores = finalScores(character.baseAbilities, abilityMods);
   const mods = Object.fromEntries(ABILITY_KEYS.map((k) => [k, abilityModifier(scores[k])]));
 
   const classLevels = character.classLevels.filter((cl) => cl.classId);
@@ -90,6 +89,10 @@ export default function CharacterSheet({ character, onChange }) {
     const n = Math.max(1, Math.min(40, parseInt(value, 10) || 0));
     update({ baseAbilities: { ...character.baseAbilities, [key]: n } });
   }
+  function updateAbilityMod(key, value) {
+    const n = parseInt(value, 10);
+    update({ abilityMods: { ...abilityMods, [key]: Number.isNaN(n) ? 0 : n } });
+  }
   function updateClassLevel(idx, patch) {
     const next = [...character.classLevels];
     next[idx] = { ...next[idx], ...patch };
@@ -114,12 +117,29 @@ export default function CharacterSheet({ character, onChange }) {
             onChange={(e) => update({ name: e.target.value })}
           />
           <div className="tagline">
-            {race?.name || 'No race'} · Level {totalLevel || 0}
+            {character.race || 'No race'} · Level {totalLevel || 0}
             {classLevels.length > 0 && ` · ${classLevels.map((c) => `${classesById[c.classId]?.name || '?'} ${c.level}`).join(' / ')}`}
           </div>
         </div>
       </div>
 
+      <div className="pill-tabs">
+        <button
+          className={`pill-tab${activeTab === 'main' ? ' active' : ''}`}
+          onClick={() => setActiveTab('main')}
+        >
+          Character
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'spheres' ? ' active' : ''}`}
+          onClick={() => setActiveTab('spheres')}
+        >
+          Spheres
+        </button>
+      </div>
+
+      {activeTab === 'main' && (
+      <>
       {/* Identity */}
       <div className="card">
         <h2 className="card-title">Identity</h2>
@@ -130,22 +150,8 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
           <div className="field">
             <label>Race</label>
-            <select value={character.raceId} onChange={(e) => update({ raceId: e.target.value })}>
-              {races.map((r) => (
-                <option key={r.id} value={r.id}>{r.name}</option>
-              ))}
-            </select>
+            <input value={character.race || ''} onChange={(e) => update({ race: e.target.value })} />
           </div>
-          {race?.abilityNote && (
-            <div className="field">
-              <label>+2 Bonus To</label>
-              <select value={character.chosenBonusAbility} onChange={(e) => update({ chosenBonusAbility: e.target.value })}>
-                {ABILITY_KEYS.map((k) => (
-                  <option key={k} value={k}>{k.toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
-          )}
           <div className="field">
             <label>Alignment</label>
             <input value={character.alignment} onChange={(e) => update({ alignment: e.target.value })} />
@@ -155,11 +161,6 @@ export default function CharacterSheet({ character, onChange }) {
             <input value={character.deity} onChange={(e) => update({ deity: e.target.value })} />
           </div>
         </div>
-        {race && (
-          <div className="section-note">
-            {race.name} traits: {race.traits.join(', ')}
-          </div>
-        )}
       </div>
 
       {/* Ability scores */}
@@ -174,11 +175,19 @@ export default function CharacterSheet({ character, onChange }) {
                 value={character.baseAbilities[key]}
                 onChange={(e) => updateAbility(key, e.target.value)}
               />
+              <input
+                type="number"
+                className="ab-adjust"
+                placeholder="+0"
+                title="Modifier (racial or otherwise)"
+                value={abilityMods[key] ?? 0}
+                onChange={(e) => updateAbilityMod(key, e.target.value)}
+              />
               <div className="ab-mod">{formatMod(mods[key])} ({scores[key]})</div>
             </div>
           ))}
         </div>
-        <div className="section-note">Base score entered; race modifiers are applied automatically to the total shown in parentheses.</div>
+        <div className="section-note">Base score entered; add any racial or other flat modifier in the small box below it - the total shown in parentheses includes both.</div>
       </div>
 
       {/* Classes & levels */}
@@ -360,33 +369,6 @@ export default function CharacterSheet({ character, onChange }) {
         )}
       </div>
 
-      <TalentPicker
-        title="Magic Spheres (Power)"
-        spheres={spheres}
-        character={character}
-        onChange={onChange}
-        knownKey="spheresKnown"
-        talentKey="talentsKnown"
-      />
-
-      <TalentPicker
-        title="Combat Spheres (Might)"
-        spheres={combatSpheres}
-        character={character}
-        onChange={onChange}
-        knownKey="combatSpheresKnown"
-        talentKey="combatTalentsKnown"
-      />
-
-      <TalentPicker
-        title="Skill Spheres (Guile)"
-        spheres={skillSpheres}
-        character={character}
-        onChange={onChange}
-        knownKey="skillSpheresKnown"
-        talentKey="skillTalentsKnown"
-      />
-
       <div className="card">
         <h2 className="card-title">Notes &amp; Equipment</h2>
         <div className="field">
@@ -398,6 +380,33 @@ export default function CharacterSheet({ character, onChange }) {
           />
         </div>
       </div>
+      </>
+      )}
+
+      {activeTab === 'spheres' && (
+      <>
+      <SphereBuilder
+        title="Magic Spheres (Power)"
+        character={character}
+        onChange={onChange}
+        spheresKey="customSpheres"
+      />
+
+      <SphereBuilder
+        title="Combat Spheres (Might)"
+        character={character}
+        onChange={onChange}
+        spheresKey="customCombatSpheres"
+      />
+
+      <SphereBuilder
+        title="Skill Spheres (Guile)"
+        character={character}
+        onChange={onChange}
+        spheresKey="customSkillSpheres"
+      />
+      </>
+      )}
     </>
   );
 }

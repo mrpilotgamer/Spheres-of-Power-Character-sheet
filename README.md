@@ -6,9 +6,10 @@ Pathfinder Roleplaying Game by Drop Dead Studios: **[Spheres of Power](http://sp
 **Champions of the Spheres** (the official Power+Might hybrid classes).
 
 It auto-calculates the stuff that's tedious by hand — base attack bonus, saves, caster level,
-spell points, sphere DCs, magic skill bonus/defense — and lets you pick which spheres and
-talents your character knows for all three systems, the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
-does for core Pathfinder.
+spell points, sphere DCs, magic skill bonus/defense — the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
+does for core Pathfinder. Spheres and talents are fully freeform: each character sheet has
+its own Magic/Combat/Skill Spheres cards where you name your own spheres and write your own
+talents, rather than picking from a fixed built-in list.
 
 Characters are saved in your browser (nothing leaves your device), and the whole site costs
 nothing to run: it's a static site hosted for free on GitHub Pages.
@@ -67,10 +68,10 @@ it — their characters save locally in *their* browser, separate from everyone 
 
 ## Adding content
 
-This is the important part, since the game has way more content than made it into this
-first version (see "What's in here so far" below). Everything about spheres, classes,
-and races lives in plain JSON files under `src/data/` — no code changes needed to add
-more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format.
+Classes live in plain JSON files under `src/data/` — no code changes needed to add
+more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format. Race and
+spheres/talents aren't data files at all — they're written directly on each character
+sheet (see "Spheres" below).
 
 ## What's in here so far
 
@@ -78,8 +79,8 @@ more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format.
   formula, sphere DC, magic skill bonus/defense. Standard Pathfinder BAB/save math and
   multiclassing work for all classes across all four systems. Might (combat sphere DC)
   and Guile (skill sphere DC) are wired up the same way. There's no talent budget or
-  talent-count tracking - the sphere/talent pickers just record which ones a character
-  knows, and it's on you to judge how many they should have.
+  talent-count tracking - you write your own spheres and talents directly on the sheet,
+  and it's on you to judge how many they should have.
 - **Classes**: 28 total across all four systems (12 Power, 8 Might, 5 Guile, 3 Champion).
   10 of the 12 Power classes are now verified against the wiki (only Hedgewitch and
   Thaumaturge remain unconfirmed on hit die/BAB, though Hedgewitch's casting ability
@@ -91,14 +92,11 @@ more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format.
   None of the three classes' bespoke subsystems (Sage's Esotery, Prodigy's combo
   Sequences, Troubadour's Personas) are mechanically modeled yet - they're described in
   the class text but not simulated.
-- **Spheres**: all 23 magic spheres, all 23 combat spheres, and all 15 skill spheres
-  exist. Fully populated with real base abilities and curated talent lists: Life,
-  Destruction, Alteration, Blood, Conjuration, Creation, Dark, Death, Divination,
-  Enhancement, Fallen Fey, Fate, Illusion, Light, Mana, Mind, Nature, Protection,
-  Telekinesis, Time, War, Warp, and Weather (all 23 magic spheres), plus Guardian and
-  Boxing (combat) and Infiltration and Investigation (skill) as a starting sample of
-  those two systems. The rest of the combat and skill spheres exist as stubs (name +
-  one-line tagline) ready to be filled in — see CONTRIBUTING.md.
+- **Spheres**: fully freeform, per character. There's no built-in sphere or talent
+  library — each character sheet has a Magic/Combat/Skill Spheres card where you add
+  a sphere, name it whatever you like, and add talents under it with their own name
+  and description. Nothing to look up in a data file; it's on you to track what your
+  table's homebrew or house-ruled spheres actually do.
 - **Not modeled yet**: packages, drawbacks, feats, casting/martial/trade traditions,
   and anything from expansions beyond the three core books. Equipment/skills/feats
   currently just live in the freeform Notes box.
