@@ -1,0 +1,11 @@
+{
+  "id": "navigation",
+  "name": "Navigation",
+  "tagline": "Chart courses and keep a group oriented and safe while traveling.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

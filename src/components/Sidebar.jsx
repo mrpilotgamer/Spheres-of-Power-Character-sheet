@@ -1,7 +1,5 @@
 import SphereMark from './SphereMark.jsx';
-import classes from '../data/classes.json';
-
-const classesById = Object.fromEntries(classes.map((c) => [c.id, c]));
+import { classesById } from '../engine/classLoader.js';
 
 export default function Sidebar({ characters, activeId, onSelect, onNew, onDelete }) {
   return (

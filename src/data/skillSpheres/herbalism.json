@@ -1,0 +1,11 @@
+{
+  "id": "herbalism",
+  "name": "Herbalism",
+  "tagline": "Identify, gather, and mix herbs into useful concoctions.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}

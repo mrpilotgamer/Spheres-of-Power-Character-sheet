@@ -1,0 +1,11 @@
+{
+  "id": "sniper",
+  "name": "Sniper",
+  "tagline": "Land devastating attacks from far outside melee range.",
+  "populated": false,
+  "baseAbility": {
+    "name": "(not yet added)",
+    "description": "This sphere's base ability and talents haven't been entered yet."
+  },
+  "talents": []
+}
