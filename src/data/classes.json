@@ -21,11 +21,9 @@
     ],
     "casterType": "high",
     "casterAbility": "choice",
-    "talentProgression": "standard",
     "description": "A generalist caster whose power comes almost entirely from choice of spheres. Gains a bonus feat at 1st and every 2 levels, which can buy extra talents, drawbacks, or casting-related feats, plus a specialization that trades some of that flexibility for a themed package of extra abilities.",
     "source": "Ultimate Spheres of Power - full chassis verified against the wiki; magic talent progression confirmed as base 1/level (High progression) plus a stacking bonus talent every odd level",
-    "system": "power",
-    "bonusTalentEvery": 2
+    "system": "power"
   },
   {
     "id": "elementalist",
@@ -60,7 +58,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "cha",
-    "talentProgression": "standard",
     "description": "A caster focused on elemental destruction, gaining the Destruction sphere for free at 1st level with full caster-level progression in it regardless of being a Mid-Caster elsewhere, plus evasion and bonus combat feats.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -98,7 +95,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "cha",
-    "talentProgression": "standard",
     "description": "A social, Mind-sphere-leaning caster who blends magical influence with charisma-driven class features. Gains the Mind sphere for free at 1st level, using class level as caster level for it.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -135,7 +131,6 @@
     ],
     "casterType": "high",
     "casterAbility": "cha",
-    "talentProgression": "standard",
     "description": "A caster bound to a fey patron, drawing on Illusion, Fallen Fey, and Nature-flavored talents.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -170,7 +165,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "choice",
-    "talentProgression": "standard",
     "description": "A hearth-magic generalist who picks two paths at 1st level, each adding further class skills, secrets, and a capstone mastery, trading raw power for wide-ranging utility.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -206,7 +200,6 @@
     ],
     "casterType": "low",
     "casterAbility": "choice",
-    "talentProgression": "standard",
     "description": "A martial spellcaster who fights in melee while weaving in sphere magic, similar in spirit to a magus.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -243,7 +236,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "wis",
-    "talentProgression": "standard",
     "description": "A caster built around the Alteration sphere, gained for free at 1st level with class level as caster level for it, fighting and adventuring in altered forms.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -277,7 +269,6 @@
     ],
     "casterType": "high",
     "casterAbility": "cha",
-    "talentProgression": "standard",
     "description": "A caster who binds spirits and souls to fuel their magic, with class features built around a bound nexus of spirits.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -310,7 +301,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "int",
-    "talentProgression": "standard",
     "description": "A caster fused with a symbiotic bonded creature, sharing power and abilities with it.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -343,7 +333,6 @@
     ],
     "casterType": "high",
     "casterAbility": "choice",
-    "talentProgression": "low",
     "description": "A studious caster who channels magic through crafted implements and careful research. High-Caster for caster level purposes, but a documented exception: gains magic talents at only half rate despite that, trading raw talent breadth for occult knowledge, forbidden lore, and bonus feats instead.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -380,7 +369,6 @@
     ],
     "casterType": "mid",
     "casterAbility": "cha",
-    "talentProgression": "standard",
     "description": "A stealthy caster drawing on Dark and Death sphere talents to strike from the shadows.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"
@@ -413,7 +401,6 @@
     ],
     "casterType": "low",
     "casterAbility": "wis",
-    "talentProgression": "standard",
     "description": "A martial caster who conjures and enhances armor and weapons out of magical force, fighting on the front line.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
     "system": "power"

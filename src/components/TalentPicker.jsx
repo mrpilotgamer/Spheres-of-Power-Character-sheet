@@ -15,19 +15,14 @@ export default function TalentPicker({
   spheres,
   character,
   onChange,
-  talentsAvailable,
   knownKey,
-  talentKey,
-  budgetNote,
-  emptyNote
+  talentKey
 }) {
   const [expanded, setExpanded] = useState(null);
   const [query, setQuery] = useState('');
 
   const known = character[knownKey] || [];
   const talents = character[talentKey] || [];
-  const talentsSpent = known.length + talents.length;
-  const remaining = talentsAvailable - talentsSpent;
 
   const filteredSpheres = useMemo(() => {
     if (!query.trim()) return spheres;
@@ -84,25 +79,6 @@ export default function TalentPicker({
         <span className="sphere-orb" style={{ display: 'inline-block', verticalAlign: 'middle' }} />
         {title}
       </h2>
-
-      <div className="talent-budget">
-        <span className="big">{Math.max(remaining, 0)}</span>
-        <span className={remaining < 0 ? 'over' : 'ok'}>
-          {remaining < 0 ? `${-remaining} over budget` : 'talents remaining'}
-        </span>
-        <span style={{ opacity: 0.6, fontSize: '0.8rem' }}>
-          ({talentsSpent} spent of {talentsAvailable} gained)
-        </span>
-      </div>
-      {budgetNote && (
-        <p className="section-note" style={{ marginTop: -4, marginBottom: 14 }}>
-          {budgetNote}
-        </p>
-      )}
-
-      {talentsAvailable === 0 && emptyNote && (
-        <p className="stub-note" style={{ marginBottom: 12 }}>{emptyNote}</p>
-      )}
 
       <input
         className="search-input"

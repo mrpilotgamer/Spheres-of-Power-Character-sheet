@@ -6,8 +6,8 @@ Pathfinder Roleplaying Game by Drop Dead Studios: **[Spheres of Power](http://sp
 **Champions of the Spheres** (the official Power+Might hybrid classes).
 
 It auto-calculates the stuff that's tedious by hand — base attack bonus, saves, caster level,
-spell points, sphere DCs, magic skill bonus/defense — and lets you pick spheres and talents
-against a live talent budget for all three systems, the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
+spell points, sphere DCs, magic skill bonus/defense — and lets you pick which spheres and
+talents your character knows for all three systems, the same way [charactersheet.co.uk](https://charactersheet.co.uk/pathfinder/#/)
 does for core Pathfinder.
 
 Characters are saved in your browser (nothing leaves your device), and the whole site costs
@@ -75,14 +75,11 @@ more. See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the exact format.
 ## What's in here so far
 
 - **Engine**: Power (magic) math is fully accurate — caster level table, spell point
-  formula, sphere DC, magic skill bonus/defense, magic talent budget. Standard
-  Pathfinder BAB/save math and multiclassing work for all classes across all four
-  systems. Might (combat talent budget, combat sphere DC) and Guile (skill talent
-  budget, skill sphere DC) are wired up but use **approximated** talent-budget formulas
-  pending exact per-class verification - see the note on each system's card in the app.
-  Champions of the Spheres (Sage, Prodigy) gets its own shared "universal" talent pool
-  that can be spent on either magic or combat talents - see the Champion Talent Pool
-  card, which tracks this separately from the two dedicated picker budgets.
+  formula, sphere DC, magic skill bonus/defense. Standard Pathfinder BAB/save math and
+  multiclassing work for all classes across all four systems. Might (combat sphere DC)
+  and Guile (skill sphere DC) are wired up the same way. There's no talent budget or
+  talent-count tracking - the sphere/talent pickers just record which ones a character
+  knows, and it's on you to judge how many they should have.
 - **Classes**: 28 total across all four systems (12 Power, 8 Might, 5 Guile, 3 Champion).
   10 of the 12 Power classes are now verified against the wiki (only Hedgewitch and
   Thaumaturge remain unconfirmed on hit die/BAB, though Hedgewitch's casting ability

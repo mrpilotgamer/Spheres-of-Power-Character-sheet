@@ -81,7 +81,6 @@ All four share the same shape. Add an object like:
   "classSkills": ["Bluff", "Knowledge (arcana)"],
   "casterType": "mid",
   "casterAbility": "cha",
-  "talentProgression": "standard",
   "description": "One or two sentences about the class's theme.",
   "source": "where these numbers came from"
 }
@@ -91,8 +90,7 @@ Field notes:
 - `category`: the display grouping shown in the class dropdown - `"Spherecaster"`,
   `"Practitioner"`, `"Operative"`, or `"Champion"` for the four systems.
 - `system`: `"power"`, `"might"`, `"guile"`, or `"champion"` - this is what the engine
-  uses to route talent-budget and DC math, so it must match the folder/file you're
-  adding to.
+  uses to route DC/caster math, so it must match the folder/file you're adding to.
 - `babType`: `"full"`, `"threeQuarter"`, or `"half"` — the engine derives the whole
   base attack bonus table from this, so you don't need to type out 20 rows.
 - `goodSaves`: array containing any of `"fort"`, `"ref"`, `"will"` — same deal, the
@@ -102,20 +100,10 @@ Field notes:
 - Might and Guile classes: set `"casterType": "none"`. Guile classes should also set
   `"operativeAbility": "choice"` (this is accurate to the real rules - operatives pick
   Int/Wis/Cha the first time they gain a skill talent).
-- `talentRate`: optional, defaults to `"full"` (1 talent/level). Set to `"half"` for a
-  class that gains talents at roughly half the normal rate (e.g. Troubadour's combat
-  talents, Sage's Style Talents).
 - Champion classes: set `"system": "champion"`. If the class casts magic (like Sage),
   set `casterType`/`casterAbility` as normal - caster level and spell points still work
-  through the standard Power math. But its **talent gain** is tracked separately via
-  the "universal" pool (spendable on magic OR combat), so it deliberately does *not*
-  also count toward the dedicated magic/combat talent budgets - see `progression.js`'s
-  `universalTalentsGained` if you're curious how that's wired up. Set
-  `"grantsFirstCasterBonus": false` if the class explicitly doesn't get the usual +2
-  bonus talents for a first casting class level (Sage is a documented exception to
-  that rule - double check the wiki before assuming a class does or doesn't get it).
-  A Champion class that's Might-only (like Troubadour) should instead use
-  `"system": "might"` with `casterType: "none"` and a `talentRate`, same as any other
+  through the standard Power math. A Champion class that's Might-only (like Troubadour)
+  should instead use `"system": "might"` with `casterType: "none"`, same as any other
   Practitioner class — it'll still show up in the "Champion" category dropdown group
   since that's controlled by `category`, separate from `system`.
 - Set `"verified": true` once you've checked the numbers against the wiki page for

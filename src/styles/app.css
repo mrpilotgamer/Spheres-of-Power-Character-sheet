@@ -315,20 +315,6 @@
   margin-bottom: 10px;
 }
 
-.talent-budget {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  font-family: var(--font-mono);
-  margin-bottom: 12px;
-}
-.talent-budget .big {
-  font-size: 1.6rem;
-  font-weight: 700;
-}
-.talent-budget .over { color: var(--ember-500); }
-.talent-budget .ok { color: var(--ok-500); }
-
 .sphere-list {
   display: flex;
   flex-direction: column;
