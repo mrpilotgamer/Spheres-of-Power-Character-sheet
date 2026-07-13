@@ -1,9 +1,0 @@
-[
-  { "id": "human", "name": "Human", "size": "Medium", "speed": 30, "abilityMods": {}, "abilityNote": "+2 to one ability score of choice", "traits": ["Bonus feat at 1st level", "Extra skill rank per level", "Medium/Normal speed"], "languages": ["Common", "+1 bonus language"] },
-  { "id": "elf", "name": "Elf", "size": "Medium", "speed": 30, "abilityMods": { "dex": 2, "int": 2, "con": -2 }, "traits": ["Low-light vision", "Immune to sleep, +2 vs enchantment", "Keen Senses (+2 Perception)"], "languages": ["Common", "Elven"] },
-  { "id": "dwarf", "name": "Dwarf", "size": "Medium", "speed": 20, "abilityMods": { "con": 2, "wis": 2, "cha": -2 }, "traits": ["Darkvision 60 ft.", "Defensive training vs giants", "Hardy (+2 vs poison, spells, spell-like)"], "languages": ["Common", "Dwarven"] },
-  { "id": "halfling", "name": "Halfling", "size": "Small", "speed": 20, "abilityMods": { "dex": 2, "cha": 2, "str": -2 }, "traits": ["+1 attack with thrown/slings", "Fearless (+2 vs fear)", "Keen senses (+2 Perception)"], "languages": ["Common", "Halfling"] },
-  { "id": "gnome", "name": "Gnome", "size": "Small", "speed": 20, "abilityMods": { "con": 2, "cha": 2, "str": -2 }, "traits": ["Low-light vision", "+2 vs illusions", "Keen senses (+2 Perception)"], "languages": ["Common", "Gnome", "Sylvan"] },
-  { "id": "half-elf", "name": "Half-Elf", "size": "Medium", "speed": 30, "abilityMods": {}, "abilityNote": "+2 to one ability score of choice", "traits": ["Low-light vision", "Immune to sleep, +2 vs enchantment", "Skill Focus as bonus feat at 1st"], "languages": ["Common", "Elven"] },
-  { "id": "half-orc", "name": "Half-Orc", "size": "Medium", "speed": 30, "abilityMods": {}, "abilityNote": "+2 to one ability score of choice", "traits": ["Darkvision 60 ft.", "Orc Ferocity (1/day fight on at 0 hp)"], "languages": ["Common", "Orc"] }
-]
