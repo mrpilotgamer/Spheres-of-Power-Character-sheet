@@ -4,16 +4,10 @@ export function abilityModifier(score) {
   return Math.floor((score - 10) / 2);
 }
 
-export function finalScore(baseScore, raceMod = 0, chosenBonus = 0) {
-  return baseScore + raceMod + chosenBonus;
-}
-
-export function finalScores(baseScores, race, chosenBonusAbility) {
+export function finalScores(baseScores, abilityMods) {
   const result = {};
   for (const key of ABILITY_KEYS) {
-    const raceMod = race?.abilityMods?.[key] || 0;
-    const chosen = race?.abilityNote && chosenBonusAbility === key ? 2 : 0;
-    result[key] = finalScore(baseScores[key] ?? 10, raceMod, chosen);
+    result[key] = (baseScores[key] ?? 10) + (abilityMods?.[key] ?? 0);
   }
   return result;
 }

@@ -1,59 +1,20 @@
 # Adding content
 
 Everything game-specific lives in `src/data/` as plain JSON. You don't need to know
-React or touch any component code to add a sphere, class, or race — just add or edit
-a JSON file in the right shape and it shows up automatically next time the site builds.
+React or touch any component code to add a class — just add or edit a JSON file in
+the right shape and it shows up automatically next time the site builds.
 
 Please write descriptions in your own words rather than copy-pasting from the wiki —
 keep it short and mechanical (what it costs, what it does), not the original flavor text.
 
-## Adding or completing a sphere
+## Spheres and talents aren't data files anymore
 
-There are three sphere folders now, one per system - use whichever matches what you're adding:
-
-- `src/data/spheres/` - magic spheres (Spheres of Power)
-- `src/data/combatSpheres/` - combat spheres (Spheres of Might)
-- `src/data/skillSpheres/` - skill spheres (Spheres of Guile)
-
-Each sphere is one file in its folder, named after its id (e.g. `nature.json`, or
-`guardian.json` under combatSpheres). There are already stub files for every sphere
-that isn't fully filled in yet — just edit the existing file rather than creating a
-new one. The JSON shape is identical across all three folders:
-
-```json
-{
-  "id": "nature",
-  "name": "Nature",
-  "tagline": "One line describing the sphere's theme.",
-  "populated": true,
-  "baseAbility": {
-    "name": "Geomancing",
-    "description": "What the sphere lets you do with no talents spent."
-  },
-  "talents": [
-    {
-      "id": "some-talent-slug",
-      "name": "Some Talent",
-      "type": "basic",
-      "spCost": 0,
-      "description": "One or two sentences: what it costs to activate and what it does."
-    }
-  ]
-}
-```
-
-Notes:
-- `id` must be unique and match the filename (minus `.json`).
-- Set `"populated": true` once the sphere has a real talent list — this removes the
-  "stub" badge in the UI.
-- `spCost` is the spell-point cost to *use* the talent's effect (often `0`), which is
-  separate from the fact that every talent always costs **1 magic talent** to acquire.
-- If a sphere has themed sub-groups (Destruction's blast shapes/types, Life's
-  cure/vitality talents), you can add extra arrays like `"blastShapes": [...]` or
-  `"cureTalents": [...]` alongside `"talents"` — look at `destruction.json` and
-  `life.json` for real examples. Any array of talent-shaped objects you add will
-  need a matching label in `TYPE_LABELS` in `src/components/SpherePicker.jsx` (one
-  line each) if you introduce a new group name.
+There's no built-in sphere/talent library to edit. Each character sheet has its own
+"Magic Spheres", "Combat Spheres", and "Skill Spheres" cards where you type in your
+own sphere names and, inside each one, your own talents (name + description) —
+see `src/components/SphereBuilder.jsx`. Nothing to contribute here in JSON form; if
+you want to change how spheres/talents are structured or displayed, that's the
+component to edit.
 
 ## Adding or fixing a class
 
@@ -109,20 +70,20 @@ Field notes:
 - Set `"verified": true` once you've checked the numbers against the wiki page for
   that class — until then, leave it `false` so the UI keeps warning people.
 
-## Adding a race
+## Race isn't a data file either
 
-Races live together in `src/data/races.json`. Follow the existing entries' shape —
-`abilityMods` for fixed +/- modifiers, or `abilityNote` + no `abilityMods` for a
-floating "+2 to one ability score of your choice" race like Human.
+Like spheres/talents, race is a freeform text field on the character sheet (Identity
+card) and ability-score modifiers are typed directly into each ability box — there's
+no `races.json` to edit anymore.
 
-## Bigger additions (packages, drawbacks, feats, combat/skill spheres)
+## Bigger additions (packages, drawbacks, feats)
 
-These aren't modeled in the app yet at all. If you want to add a new category:
+These aren't modeled in the app yet at all. If you want to add a new category that
+needs real data-driven math (not freeform text like spheres/talents):
 1. Add a new JSON file/array under `src/data/` for it.
-2. Add a small loader in `src/engine/` if it needs derived math (see `sphereLoader.js`
+2. Add a small loader in `src/engine/` if it needs derived math (see `classLoader.js`
    and `progression.js` for the pattern).
-3. Add a UI section in `src/components/` to display and select it, similar to
-   `SpherePicker.jsx`.
+3. Add a UI section in `src/components/` to display and select it.
 
 Opening an issue or a draft PR with just the data (even without UI code) is still
 useful — someone else can wire up the display.
