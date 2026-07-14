@@ -18,16 +18,12 @@ import {
   magicSkillDefense
 } from '../engine/progression.js';
 import SphereBuilder from './SphereBuilder.jsx';
-
-function newId() {
-  return Math.random().toString(36).slice(2, 10);
-}
+import TraitList from './TraitList.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
 
   const abilityMods = character.abilityMods || {};
-  const racialTraits = character.racialTraits || [];
   const scores = finalScores(character.baseAbilities, abilityMods);
   const mods = Object.fromEntries(ABILITY_KEYS.map((k) => [k, abilityModifier(scores[k])]));
 
@@ -110,16 +106,6 @@ export default function CharacterSheet({ character, onChange }) {
     const next = character.classLevels.filter((_, i) => i !== idx);
     update({ classLevels: next.length ? next : [{ classId: '', level: 1 }] });
   }
-  function addRacialTrait() {
-    update({ racialTraits: [...racialTraits, { id: newId(), name: '', description: '' }] });
-  }
-  function updateRacialTrait(id, patch) {
-    update({ racialTraits: racialTraits.map((t) => (t.id === id ? { ...t, ...patch } : t)) });
-  }
-  function removeRacialTrait(id) {
-    update({ racialTraits: racialTraits.filter((t) => t.id !== id) });
-  }
-
   return (
     <>
       <div className="sheet-header">
@@ -149,6 +135,24 @@ export default function CharacterSheet({ character, onChange }) {
           onClick={() => setActiveTab('spheres')}
         >
           Spheres
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'feats' ? ' active' : ''}`}
+          onClick={() => setActiveTab('feats')}
+        >
+          Feats
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'equipment' ? ' active' : ''}`}
+          onClick={() => setActiveTab('equipment')}
+        >
+          Equipment
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'notes' ? ' active' : ''}`}
+          onClick={() => setActiveTab('notes')}
+        >
+          Notes &amp; Backstory
         </button>
       </div>
 
@@ -204,40 +208,13 @@ export default function CharacterSheet({ character, onChange }) {
         <div className="section-note">Base score entered; add any racial or other flat modifier in the small box below it - the total shown in parentheses includes both.</div>
       </div>
 
-      {/* Racial traits */}
-      <div className="card">
-        <h2 className="card-title">Racial Traits</h2>
-
-        {racialTraits.length === 0 && (
-          <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
-            No racial traits yet - add one below and name it whatever you like.
-          </p>
-        )}
-
-        <div className="trait-grid">
-          {racialTraits.map((t) => (
-            <div className="talent-edit-row" key={t.id}>
-              <div className="field">
-                <input
-                  placeholder="Trait name"
-                  value={t.name}
-                  onChange={(e) => updateRacialTrait(t.id, { name: e.target.value })}
-                />
-              </div>
-              <button className="btn btn-danger btn-sm" onClick={() => removeRacialTrait(t.id)}>✕</button>
-              <div className="field talent-edit-desc">
-                <textarea
-                  rows={2}
-                  placeholder="Description"
-                  value={t.description}
-                  onChange={(e) => updateRacialTrait(t.id, { description: e.target.value })}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        <button className="btn btn-ghost btn-sm" onClick={addRacialTrait}>+ Add trait</button>
-      </div>
+      <TraitList
+        title="Racial Traits"
+        character={character}
+        onChange={onChange}
+        traitsKey="racialTraits"
+        itemNoun="trait"
+      />
 
       {/* Classes & levels */}
       <div className="card">
@@ -418,17 +395,13 @@ export default function CharacterSheet({ character, onChange }) {
         )}
       </div>
 
-      <div className="card">
-        <h2 className="card-title">Notes &amp; Equipment</h2>
-        <div className="field">
-          <textarea
-            rows={6}
-            placeholder="Feats, skills, gear, backstory, anything else you're tracking..."
-            value={character.notes}
-            onChange={(e) => update({ notes: e.target.value })}
-          />
-        </div>
-      </div>
+      <TraitList
+        title="Class Features"
+        character={character}
+        onChange={onChange}
+        traitsKey="classFeatures"
+        itemNoun="feature"
+      />
       </>
       )}
 
@@ -455,6 +428,52 @@ export default function CharacterSheet({ character, onChange }) {
         spheresKey="customSkillSpheres"
       />
       </>
+      )}
+
+      {activeTab === 'feats' && (
+        <TraitList
+          title="Feats"
+          character={character}
+          onChange={onChange}
+          traitsKey="feats"
+          itemNoun="feat"
+        />
+      )}
+
+      {activeTab === 'equipment' && (
+        <SphereBuilder
+          title="Equipment"
+          character={character}
+          onChange={onChange}
+          spheresKey="customEquipment"
+          groupNoun="Category"
+          groupNounPlural="Categories"
+          itemNoun="Item"
+        />
+      )}
+
+      {activeTab === 'notes' && (
+        <div className="card">
+          <h2 className="card-title">Notes &amp; Backstory</h2>
+          <div className="field" style={{ marginBottom: 14 }}>
+            <label>Notes</label>
+            <textarea
+              rows={6}
+              placeholder="Feats, skills, gear, anything else you're tracking..."
+              value={character.notes}
+              onChange={(e) => update({ notes: e.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label>Backstory</label>
+            <textarea
+              rows={10}
+              placeholder="Your character's history..."
+              value={character.backstory || ''}
+              onChange={(e) => update({ backstory: e.target.value })}
+            />
+          </div>
+        </div>
       )}
     </>
   );

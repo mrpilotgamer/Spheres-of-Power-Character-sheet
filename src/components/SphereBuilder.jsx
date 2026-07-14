@@ -2,8 +2,19 @@ function newId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-export default function SphereBuilder({ title, character, onChange, spheresKey }) {
+export default function SphereBuilder({
+  title,
+  character,
+  onChange,
+  spheresKey,
+  groupNoun = 'Sphere',
+  groupNounPlural = `${groupNoun}s`,
+  itemNoun = 'Talent'
+}) {
   const spheres = character[spheresKey] || [];
+  const groupNounLower = groupNoun.toLowerCase();
+  const groupNounPluralLower = groupNounPlural.toLowerCase();
+  const itemNounLower = itemNoun.toLowerCase();
 
   function update(nextSpheres) {
     onChange({ ...character, [spheresKey]: nextSpheres });
@@ -49,7 +60,7 @@ export default function SphereBuilder({ title, character, onChange, spheresKey }
 
       {spheres.length === 0 && (
         <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
-          No spheres yet - add one below and name it whatever you like.
+          No {groupNounPluralLower} yet - add one below and name it whatever you like.
         </p>
       )}
 
@@ -59,7 +70,7 @@ export default function SphereBuilder({ title, character, onChange, spheresKey }
             <div className="sphere-edit-head">
               <div className="field" style={{ flex: 2 }}>
                 <input
-                  placeholder="Sphere name"
+                  placeholder={`${groupNoun} name`}
                   value={sphere.name}
                   onChange={(e) => updateSphere(sphere.id, { name: e.target.value })}
                 />
@@ -79,7 +90,7 @@ export default function SphereBuilder({ title, character, onChange, spheresKey }
                 <div className="talent-edit-row" key={t.id}>
                   <div className="field">
                     <input
-                      placeholder="Talent name"
+                      placeholder={`${itemNoun} name`}
                       value={t.name}
                       onChange={(e) => updateTalent(sphere.id, t.id, { name: e.target.value })}
                     />
@@ -95,13 +106,13 @@ export default function SphereBuilder({ title, character, onChange, spheresKey }
                   </div>
                 </div>
               ))}
-              <button className="btn btn-ghost btn-sm" onClick={() => addTalent(sphere.id)}>+ Add talent</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => addTalent(sphere.id)}>+ Add {itemNounLower}</button>
             </div>
           </div>
         ))}
       </div>
 
-      <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addSphere}>+ Add sphere</button>
+      <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addSphere}>+ Add {groupNounLower}</button>
     </div>
   );
 }
