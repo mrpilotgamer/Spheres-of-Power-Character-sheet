@@ -18,9 +18,13 @@ export function blankCharacter() {
     customSpheres: [], // { id, name, tagline, talents: [{ id, name, description }] }
     customCombatSpheres: [],
     customSkillSpheres: [],
+    customEquipment: [],
     martialFocusMax: 1,
     operativeAbilityOverride: null,
     practitionerAbilityOverride: null,
-    notes: ''
+    classFeatures: [], // { id, name, description }
+    feats: [],
+    notes: '',
+    backstory: ''
   };
 }
