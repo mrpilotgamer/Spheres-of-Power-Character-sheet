@@ -142,6 +142,9 @@
 .main {
   padding: 32px 40px 80px;
   max-width: 1040px;
+  /* Grid items default to min-width auto; without this the 1fr column can't
+     shrink below the widest input's intrinsic width on narrow screens. */
+  min-width: 0;
 }
 
 @media (max-width: 640px) {
@@ -215,14 +218,15 @@
   display: grid;
   gap: 14px;
 }
-.grid-6 { grid-template-columns: repeat(6, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 @media (max-width: 720px) {
-  .grid-6 { grid-template-columns: repeat(3, 1fr); }
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-2 { grid-template-columns: 1fr; }
 }
 
 .field {
@@ -245,6 +249,7 @@
   padding: 7px 9px;
   background: #fffdf8;
   color: var(--ink-950);
+  min-width: 0;
 }
 .field textarea { font-family: var(--font-body); resize: vertical; }
 
@@ -272,6 +277,7 @@
   background: transparent;
   color: var(--ink-950);
   margin: 2px 0;
+  min-width: 0;
 }
 .ability-box .ab-mod {
   font-family: var(--font-mono);
@@ -320,7 +326,7 @@
 
 .class-row {
   display: grid;
-  grid-template-columns: 1fr 90px 32px;
+  grid-template-columns: minmax(0, 1fr) 90px 32px;
   gap: 10px;
   align-items: end;
   margin-bottom: 10px;
@@ -345,6 +351,9 @@
   padding: 10px 12px;
   background: #fffdf8;
 }
+.sphere-edit-head .field {
+  min-width: 0;
+}
 
 .sphere-row-body {
   padding: 12px 14px 14px;
@@ -356,7 +365,7 @@
 
 .talent-edit-row {
   display: grid;
-  grid-template-columns: 1fr 32px;
+  grid-template-columns: minmax(0, 1fr) 32px;
   gap: 6px 10px;
   padding: 10px 12px;
   border: 1px solid var(--parchment-300);
@@ -373,7 +382,7 @@
 
 .trait-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 10px;
 }

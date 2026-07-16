@@ -9,10 +9,10 @@
     "babType": "half",
     "goodSaves": ["fort", "ref", "will"],
     "skillsPerLevel": 4,
-    "classSkills": ["Acrobatics", "Diplomacy", "Heal", "Knowledge (all)", "Perception", "Sense Motive"],
+    "classSkills": ["Acrobatics", "Appraise", "Climb", "Craft", "Diplomacy", "Escape Artist", "Intimidate", "Knowledge (all)", "Perception", "Perform", "Profession", "Ride", "Sense Motive", "Stealth", "Swim"],
     "casterType": "high",
     "casterAbility": "wis",
-    "description": "Uses ki (fluff name for their spell pool) to empower both body and magic. Gains a Style Talent every 2 levels - a bonus combat OR magic talent of their choice - treated as a High-Caster using Wisdom whenever a talent is spent on magic. Does NOT get the usual +2 bonus talents for a first casting class level. Also has a SEPARATE dedicated Combat Talents column at half (Proficient) rate alongside the Style Talent pool - that second track isn't modeled here, only the shared Style Talent pool is. Esotery (unique combo talents) and bonus Skill Focus every 2-3 levels aren't mechanically modeled either.",
+    "description": "Uses ki (fluff name for their spell pool) to empower both body and magic. Gains a Style Talent every 2 levels - a bonus combat OR magic talent of their choice - treated as a High-Caster using Wisdom whenever a talent is spent on magic. DOES gain the usual two bonus magic talents when Sage is their first casting class level (per errata, the ki pool counts as both the casting and spell pool class features). Also has a SEPARATE dedicated Combat Talents column at half (Proficient) rate alongside the Style Talent pool - that second track isn't modeled here, only the shared Style Talent pool is. Esotery (unique combo talents) and bonus Skill Focus every 2-3 levels aren't mechanically modeled either.",
     "source": "Champions of the Spheres - full chassis verified against class reference table + wiki + published reviews"
   },
   {

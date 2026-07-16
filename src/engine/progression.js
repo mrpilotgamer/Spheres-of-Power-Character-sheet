@@ -45,11 +45,16 @@ export function casterLevelAtLevel(casterType, level) {
 // A character can have levels in multiple casting classes; caster levels,
 // spell points, and magic talents from all of them stack together.
 export function totalCasterLevel(classLevels, classesById) {
-  return classLevels.reduce((sum, cl) => {
+  let hasCastingClass = false;
+  const total = classLevels.reduce((sum, cl) => {
     const cls = classesById[cl.classId];
     if (!cls || !cls.casterType || cls.casterType === 'none') return sum;
+    hasCastingClass = true;
     return sum + casterLevelAtLevel(cls.casterType, cl.level);
   }, 0);
+  // A caster level of 0 is treated as 1 for a character that has casting-class levels.
+  if (hasCastingClass && total === 0) return 1;
+  return total;
 }
 
 export function totalCasterClassLevels(classLevels, classesById) {

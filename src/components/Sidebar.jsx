@@ -52,7 +52,7 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
 
       <div className="sidebar-footer">
         Saved locally in this browser. Free &amp; open source —{' '}
-        <a href="https://github.com" target="_blank" rel="noreferrer">
+        <a href="https://github.com/mrpilotgamer/Spheres-of-Power-Character-sheet" target="_blank" rel="noreferrer">
           fork it on GitHub
         </a>
         .
