@@ -76,12 +76,17 @@ export default function CharacterSheet({ character, onChange }) {
 
   const primaryMightClass = mightLevels.map((cl) => classesById[cl.classId]).find(Boolean);
   const practitionerAbilityKey = character.practitionerAbilityOverride || 'wis';
-  const practitionerMod =
-    primaryMightClass?.practitionerAbility === 'higher_cha_int'
+  const practitionerModFor = (cls) =>
+    cls?.practitionerAbility === 'higher_cha_int'
       ? Math.max(mods.cha, mods.int)
-      : primaryMightClass?.practitionerAbility === 'choice'
+      : cls?.practitionerAbility === 'choice'
         ? mods[practitionerAbilityKey] ?? 0
-        : mods[primaryMightClass?.practitionerAbility] ?? 0;
+        : mods[cls?.practitionerAbility] ?? 0;
+  // Multiclassing into a second practitioner class uses the higher modifier.
+  const mightClasses = mightLevels.map((cl) => classesById[cl.classId]).filter(Boolean);
+  const practitionerMod = mightClasses.length
+    ? Math.max(...mightClasses.map(practitionerModFor))
+    : 0;
 
   function update(patch) {
     onChange({ ...character, ...patch });
@@ -357,7 +362,9 @@ export default function CharacterSheet({ character, onChange }) {
               <div className="stat-label">Combat Sphere DC</div>
               <div className="stat-value">{10 + Math.floor(totalBab / 2) + practitionerMod}</div>
               <div className="stat-sub">
-                10 + ½BAB + {primaryMightClass?.practitionerAbility === 'higher_cha_int' ? 'higher of CHA/INT' : (primaryMightClass?.practitionerAbility === 'choice' ? practitionerAbilityKey.toUpperCase() : (primaryMightClass?.practitionerAbility || 'wis').toUpperCase())}
+                {mightClasses.length > 1
+                  ? '10 + ½BAB + best practitioner mod'
+                  : `10 + ½BAB + ${primaryMightClass?.practitionerAbility === 'higher_cha_int' ? 'higher of CHA/INT' : (primaryMightClass?.practitionerAbility === 'choice' ? practitionerAbilityKey.toUpperCase() : (primaryMightClass?.practitionerAbility || 'wis').toUpperCase())}`}
               </div>
             </div>
             <div className="field">
@@ -373,7 +380,7 @@ export default function CharacterSheet({ character, onChange }) {
             <div className="stat-box" style={{ gridColumn: 'span 2' }}>
               <div className="stat-label">About Martial Focus</div>
               <div className="stat-sub" style={{ textAlign: 'left' }}>
-                A single resource (2 with a feat like Greater Focus) spent to trigger powerful combat talents, regained via specific talents/abilities rather than refilling automatically.
+                A single resource spent to trigger powerful combat talents or to treat a Fort/Ref save as a rolled 13. Regained after a minute of rest or by taking the total defense action (max once per round).
               </div>
             </div>
           </div>

@@ -1,4 +1,12 @@
+import { blankCharacter } from './newCharacter.js';
+
 const KEY = 'sop-characters-v1';
+
+// Fill in fields added to the schema after a character was saved, so
+// older stored characters don't feed undefined into controlled inputs.
+function normalizeCharacter(stored) {
+  return { ...blankCharacter(), ...stored, id: stored.id };
+}
 
 function readAll() {
   try {
@@ -22,12 +30,14 @@ function writeAll(all) {
 
 export function listCharacters() {
   const all = readAll();
-  return Object.values(all).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  return Object.values(all)
+    .map(normalizeCharacter)
+    .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
 
 export function getCharacter(id) {
   const all = readAll();
-  return all[id] || null;
+  return all[id] ? normalizeCharacter(all[id]) : null;
 }
 
 export function saveCharacter(character) {
