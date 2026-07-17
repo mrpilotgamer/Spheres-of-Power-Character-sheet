@@ -11,8 +11,9 @@ import {
   magicSkillBonus,
   magicSkillDefense
 } from './progression.js';
-import { collectBonuses, collectMany, stackEffects } from './modifiers.js';
+import { collectBonuses, collectCombined, collectMany, stackEffects } from './modifiers.js';
 import skillsData from '../data/skills.json';
+import conditionsData from '../data/conditions.json';
 import {
   fixedSkills,
   placeholdersByFamily,
@@ -23,6 +24,13 @@ import {
 } from './skills.js';
 
 const MENTAL = ['int', 'wis', 'cha'];
+
+// Static condition library (src/data/conditions.json). Guarded so the module
+// still loads if the data file is momentarily absent or empty. Each entry is
+// { id, name, description, effects: [{ target, type, value }] } — the effects
+// use the same shape as a modifier source, so an active condition is treated as
+// an always-on modifier source in computeSheet.
+const CONDITIONS = conditionsData || [];
 
 // PF1e size modifier to AC and attack rolls (Table: Size Modifiers). CMB/CMD
 // use the "special size modifier", which is the inverse of this value.
@@ -46,8 +54,25 @@ export const SIZE_MODS = {
 export function computeSheet(character, opts = {}) {
   const classesById = opts.classesById || defaultClassesById;
 
+  // Active conditions (character.conditions: array of ids) resolve to modifier
+  // sources appended to the enabled `modifiers`. Conditions can't be toggled
+  // individually — presence in the array means active. Unknown ids are skipped.
+  const conditionSources = (character.conditions || [])
+    .map((cid) => CONDITIONS.find((c) => c && c.id === cid))
+    .filter(Boolean)
+    .map((c) => ({
+      id: `condition:${c.id}`,
+      name: c.name,
+      enabled: true,
+      effects: c.effects || []
+    }));
+
   // Only enabled sources contribute; old saves have no `modifiers` field.
-  const sources = (character.modifiers || []).filter((s) => s && s.enabled === true);
+  // Active conditions are always-on sources appended here.
+  const sources = [
+    ...(character.modifiers || []).filter((s) => s && s.enabled === true),
+    ...conditionSources
+  ];
 
   // Final ability scores: base + flat abilityMods + `ability.*` modifier effects.
   const abilityMods = character.abilityMods || {};
@@ -172,29 +197,45 @@ export function computeSheet(character, opts = {}) {
     }
   }
   const NON_TOUCH_TYPES = new Set(['armor', 'shield', 'natural_armor']);
-  const acEffTotal = stackEffects(acEffects);
-  const acEffTouch = stackEffects(acEffects.filter((e) => !NON_TOUCH_TYPES.has(e.type || 'untyped')));
-  const acEffNoDodge = stackEffects(acEffects.filter((e) => (e.type || 'untyped') !== 'dodge'));
+  // The manual defense inputs are typed bonuses: seed them into the same
+  // stack as `ac` effects so e.g. worn armor and Mage Armor (both armor
+  // bonuses) take the higher value instead of summing (PF1e stacking).
+  const acSeeds = [
+    { type: 'armor', value: armorBonus },
+    { type: 'shield', value: shieldBonus },
+    { type: 'natural_armor', value: naturalArmor },
+    { type: 'deflection', value: deflection }
+  ].filter((e) => e.value !== 0);
+  const acEffTotal = stackEffects([...acSeeds, ...acEffects]);
+  const acEffTouch = stackEffects(
+    [...acSeeds, ...acEffects].filter((e) => !NON_TOUCH_TYPES.has(e.type || 'untyped'))
+  );
+  const acEffNoDodge = stackEffects(
+    [...acSeeds, ...acEffects].filter((e) => (e.type || 'untyped') !== 'dodge')
+  );
   const acEffDodge = stackEffects(acEffects.filter((e) => (e.type || 'untyped') === 'dodge'));
+  // Deflection applies to CMD too (stacked with the seed so same-type
+  // deflection effects don't double up).
+  const cmdDeflection = stackEffects(
+    [...acSeeds, ...acEffects].filter((e) => e.type === 'deflection')
+  );
   const acTouchExtra = collectBonuses(sources, 'ac.touch');
   const acFlatExtra = collectBonuses(sources, 'ac.flatFooted');
 
   const acTotals = {
     // Full AC: everything applies.
-    ac: 10 + armorBonus + shieldBonus + naturalArmor + deflection + dodgeMisc +
-        miscAc + dexToAc + sizeMod + acEffTotal,
+    ac: 10 + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTotal,
     // Touch: drop armor/shield/natural; keep dex, dodge, deflection, size, misc.
-    touch: 10 + deflection + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTouch + acTouchExtra,
+    touch: 10 + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTouch + acTouchExtra,
     // Flat-footed: drop dex and all dodge bonuses.
-    flatFooted: 10 + armorBonus + shieldBonus + naturalArmor + deflection + miscAc +
-        sizeMod + acEffNoDodge + acFlatExtra
+    flatFooted: 10 + miscAc + sizeMod + acEffNoDodge + acFlatExtra
   };
 
   const init = mods.dex + (character.initiativeMisc || 0) + bonuses.init;
 
   const cmb = bab + mods.str + specialSizeMod + bonuses.cmb;
   const cmd = 10 + bab + mods.str + dexToAc + specialSizeMod + bonuses.cmd +
-              deflection + dodgeMisc + acEffDodge;
+              cmdDeflection + dodgeMisc + acEffDodge;
 
   const speed = (character.speed || 30) + bonuses.speed;
 
@@ -219,7 +260,9 @@ export function computeSheet(character, opts = {}) {
       misc: state.misc || 0,
       abilityMod: mods[entry.ability] ?? 0,
       classSkill,
-      effectBonus: collectBonuses(sources, `skill.${entry.id}`),
+      // `skill.all` effects apply to every skill row; pool them with this
+      // skill's own `skill.<id>` effects into one stack (normal typed rules).
+      effectBonus: collectCombined(sources, ['skill.all', `skill.${entry.id}`]),
       acp
     });
     return {
@@ -267,6 +310,35 @@ export function computeSheet(character, opts = {}) {
       notes: w.notes || ''
     };
   });
+
+  // ---- Stage 3: play state (mutable at-the-table resources) ----
+  // hpCurrent missing (undefined/null) means an untouched save that starts at
+  // full HP; an explicit 0 is a downed character and stays 0.
+  const hpMax = character.hpMax || 0;
+  const hpCurrent = character.hpCurrent == null ? hpMax : character.hpCurrent;
+  const hpNonlethal = character.hpNonlethal || 0;
+
+  // Spell points: max is the computed pool; `spellPointsSpent` is drawn down.
+  const spMax = pool;
+  const spSpent = character.spellPointsSpent || 0;
+
+  // Martial focus: missing current means an untouched save that starts focused
+  // (full); otherwise clamp the stored value into [0, max].
+  const mfMax = character.martialFocusMax || 0;
+  const mfRaw = character.martialFocusCurrent == null ? mfMax : character.martialFocusCurrent;
+
+  // Generic resource trackers, passed through with `current` clamped to [0, max].
+  const trackers = (character.trackers || []).map((t) => {
+    const max = t.max || 0;
+    return { id: t.id, name: t.name, max, current: Math.max(0, Math.min(max, t.current || 0)) };
+  });
+
+  const play = {
+    hp: { max: hpMax, current: hpCurrent, nonlethal: hpNonlethal },
+    spellPoints: { max: spMax, spent: spSpent, remaining: Math.max(0, spMax - spSpent) },
+    martialFocus: { max: mfMax, current: Math.max(0, Math.min(mfMax, mfRaw)) },
+    trackers
+  };
 
   return {
     castingRules,
@@ -322,6 +394,8 @@ export function computeSheet(character, opts = {}) {
     speed,
     skills,
     skillPoints,
-    weapons
+    weapons,
+    // Stage 3 play state.
+    play
   };
 }

@@ -16,11 +16,13 @@ Each stage fits one ~5-hour session and ends at a stop point (lint + tests + bui
 - [x] Combat: Defense & Movement card (AC/touch/flat-footed w/ maxDex + size), initiative, CMB/CMD, speed, Weapons card with computed to-hit iteratives & damage strings
 - [x] Verification: lint/93 tests/build green; browser hand-check passed (AC 17/11/16, CMB +5/CMD 16, Spellcraft +11, ACP −1 applied, budget 35)
 
-## Stage 3 — Play mode
+## Stage 3 — Play mode (DONE 2026-07-17)
 
-- [ ] Quick-toggle buff system through the modifier engine + starter buff library
-- [ ] Resource trackers: HP (damage/heal), spell points, martial focus, custom per-day
-- [ ] Conditions checklist as modifier sources
+- [x] Quick-toggle buff system (Play tab, BuffsCard) + starter library (buffLibrary.json, 16 buffs) + custom buff editor
+- [x] Resource trackers: HP damage/heal + nonlethal, spell points, martial focus pips, custom trackers
+- [x] Conditions checklist (conditions.json, 12 conditions) as modifier sources, incl. skill.all target
+- [x] Rules fix found in verification: manual defense inputs now stack as typed bonuses with `ac` effects (Mage Armor over worn armor no longer double-counts); deflection reaches CMD
+- [x] Verification: lint/114 tests/build green; browser check passed (Mage Armor no-op over armor 4, Barkskin 17→19, Shaken −2 everywhere, HP/SP trackers)
 
 ## Stage 4 — Data QoL
 

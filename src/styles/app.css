@@ -514,3 +514,228 @@
   flex-wrap: wrap;
 }
 
+/* ---------- Play tab: HP / resources ---------- */
+.hp-display, .resource-display {
+  font-family: var(--font-mono);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--ink-950);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.hp-current, .resource-current {
+  color: var(--arcane-600);
+}
+.hp-current.hp-danger {
+  color: var(--ember-500);
+}
+.hp-sep {
+  opacity: 0.4;
+  margin: 0 4px;
+}
+.hp-max {
+  font-size: 1.4rem;
+  opacity: 0.6;
+}
+.hp-nonlethal {
+  font-size: 0.82rem;
+  color: var(--ink-700);
+  opacity: 0.75;
+  margin-bottom: 10px;
+}
+
+.tracker-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.tracker-amount {
+  width: 64px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  background: #fffdf8;
+  color: var(--ink-950);
+}
+
+.focus-pips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.focus-pip {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--arcane-500);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.focus-pip.filled {
+  background: var(--arcane-500);
+}
+
+.tracker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tracker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  background: #fffdf8;
+}
+.tracker-name {
+  font-weight: 600;
+  flex: 1 1 100px;
+  min-width: 0;
+}
+.tracker-count {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--ink-800);
+  white-space: nowrap;
+}
+.tracker-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tracker-add-name {
+  flex: 1 1 160px;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  background: #fffdf8;
+  color: var(--ink-950);
+}
+.tracker-add-max {
+  width: 80px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  background: #fffdf8;
+  color: var(--ink-950);
+}
+
+/* ---------- Play tab: buffs & effects ---------- */
+.buff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.buff-row {
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.buff-row-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: #fffdf8;
+}
+.buff-name {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.buff-summary {
+  font-size: 0.8rem;
+  color: var(--ink-700);
+  opacity: 0.8;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.buff-row-body {
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--parchment-300);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.effect-edit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 90px 32px;
+  gap: 8px;
+  align-items: end;
+}
+@media (max-width: 640px) {
+  .effect-edit-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.buff-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.buff-add-row select {
+  flex: 1 1 200px;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  background: #fffdf8;
+  color: var(--ink-950);
+}
+
+/* ---------- Play tab: conditions ---------- */
+.conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 720px) {
+  .conditions-grid { grid-template-columns: 1fr; }
+}
+.condition-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  background: #fffdf8;
+  cursor: pointer;
+}
+.condition-item input {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.condition-name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+.condition-desc {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--ink-700);
+  opacity: 0.75;
+  margin-top: 2px;
+}
+

@@ -7,6 +7,7 @@ import TraitList from './TraitList.jsx';
 import SkillsTab from './SkillsTab.jsx';
 import DefenseCard from './DefenseCard.jsx';
 import WeaponsCard from './WeaponsCard.jsx';
+import PlayTab from './PlayTab.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
@@ -63,6 +64,12 @@ export default function CharacterSheet({ character, onChange }) {
           onClick={() => setActiveTab('main')}
         >
           Character
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'play' ? ' active' : ''}`}
+          onClick={() => setActiveTab('play')}
+        >
+          Play
         </button>
         <button
           className={`pill-tab${activeTab === 'skills' ? ' active' : ''}`}
@@ -378,6 +385,10 @@ export default function CharacterSheet({ character, onChange }) {
         itemNoun="feature"
       />
       </>
+      )}
+
+      {activeTab === 'play' && (
+        <PlayTab character={character} onChange={onChange} sheet={sheet} />
       )}
 
       {activeTab === 'skills' && (
