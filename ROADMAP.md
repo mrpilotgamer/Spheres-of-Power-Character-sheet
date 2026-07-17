@@ -24,10 +24,12 @@ Each stage fits one ~5-hour session and ends at a stop point (lint + tests + bui
 - [x] Rules fix found in verification: manual defense inputs now stack as typed bonuses with `ac` effects (Mage Armor over worn armor no longer double-counts); deflection reaches CMD
 - [x] Verification: lint/114 tests/build green; browser check passed (Mage Armor no-op over armor 4, Barkskin 17→19, Shaken −2 everywhere, HP/SP trackers)
 
-## Stage 4 — Data QoL
+## Stage 4 — Data QoL (DONE 2026-07-17)
 
-- [ ] Name index (sphere/talent/feat names + wikidot URLs) → autocomplete + wiki links in freeform editors
-- [ ] JSON export/import, character duplication; stretch: share-as-URL
+- [x] Name index (`src/data/sphereIndex.json`: magic/combat/skill sphere names + wikidot URLs) → autocomplete (`<datalist>`) + "wiki ↗" links in `SphereBuilder`, wired for the three sphere tabs (not Equipment, which has no index)
+- [x] JSON export (active character, pretty-printed Blob download) / import (file input, inline error on bad JSON, never `alert()`) / duplicate (per-row "⧉") in Sidebar + storage.js (`duplicateCharacter`, `importCharacter`)
+- [ ] Stretch (not done): share-as-URL
+- [x] Verification: lint/123 tests (+9 new in `storage.test.js`)/build green; browser check passed (autocomplete + wiki link on Alteration, Equipment tab confirmed to have no datalist, duplicate + export + bad/good import all verified against a throwaway character, cleaned up afterward without touching the real saved character)
 
 ## Stage 5 — Design & polish
 

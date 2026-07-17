@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import CharacterSheet from './components/CharacterSheet.jsx';
 import SphereMark from './components/SphereMark.jsx';
-import { listCharacters, saveCharacter, deleteCharacter } from './engine/storage.js';
+import {
+  listCharacters,
+  saveCharacter,
+  deleteCharacter,
+  duplicateCharacter,
+  importCharacter
+} from './engine/storage.js';
 import { blankCharacter } from './engine/newCharacter.js';
 
 export default function App() {
@@ -41,6 +47,18 @@ export default function App() {
     }
   }
 
+  function handleDuplicate(id) {
+    const copy = duplicateCharacter(id);
+    setCharacters(listCharacters());
+    setActiveId(copy.id);
+  }
+
+  function handleImport(parsed) {
+    const saved = importCharacter(parsed);
+    setCharacters(listCharacters());
+    setActiveId(saved.id);
+  }
+
   return (
     <div className="app-shell">
       <Sidebar
@@ -49,6 +67,8 @@ export default function App() {
         onSelect={setActiveId}
         onNew={handleNew}
         onDelete={handleDelete}
+        onDuplicate={handleDuplicate}
+        onImport={handleImport}
       />
       <main className="main">
         {active ? (

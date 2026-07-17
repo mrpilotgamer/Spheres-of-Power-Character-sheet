@@ -129,6 +129,37 @@
   opacity: 0.65;
 }
 
+.char-list-item-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.sidebar-io {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-import-label {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.sidebar-import-label input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.import-error {
+  font-size: 0.76rem;
+  color: var(--ember-500);
+  line-height: 1.4;
+}
+
 .sidebar-footer {
   margin-top: auto;
   font-size: 0.72rem;
@@ -356,6 +387,15 @@
 .sphere-edit-head .field {
   min-width: 0;
 }
+.sphere-wiki-link {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--arcane-600);
+  text-decoration: none;
+  white-space: nowrap;
+  padding-bottom: 9px;
+}
+.sphere-wiki-link:hover { text-decoration: underline; }
 
 .sphere-row-body {
   padding: 12px 14px 14px;

@@ -4,6 +4,7 @@ import { ABILITY_KEYS, formatMod } from '../engine/abilities.js';
 import { computeSheet } from '../engine/computeSheet.js';
 import SphereBuilder from './SphereBuilder.jsx';
 import TraitList from './TraitList.jsx';
+import sphereIndex from '../data/sphereIndex.json';
 import SkillsTab from './SkillsTab.jsx';
 import DefenseCard from './DefenseCard.jsx';
 import WeaponsCard from './WeaponsCard.jsx';
@@ -402,6 +403,7 @@ export default function CharacterSheet({ character, onChange }) {
         character={character}
         onChange={onChange}
         spheresKey="customSpheres"
+        nameIndex={sphereIndex.magic}
       />
 
       <SphereBuilder
@@ -409,6 +411,7 @@ export default function CharacterSheet({ character, onChange }) {
         character={character}
         onChange={onChange}
         spheresKey="customCombatSpheres"
+        nameIndex={sphereIndex.combat}
       />
 
       <SphereBuilder
@@ -416,6 +419,7 @@ export default function CharacterSheet({ character, onChange }) {
         character={character}
         onChange={onChange}
         spheresKey="customSkillSpheres"
+        nameIndex={sphereIndex.skill}
       />
       </>
       )}

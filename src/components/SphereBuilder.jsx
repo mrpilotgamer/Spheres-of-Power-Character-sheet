@@ -1,3 +1,6 @@
+import { useId, useMemo } from 'react';
+import sphereIndex from '../data/sphereIndex.json';
+
 function newId() {
   return Math.random().toString(36).slice(2, 10);
 }
@@ -9,12 +12,23 @@ export default function SphereBuilder({
   spheresKey,
   groupNoun = 'Sphere',
   groupNounPlural = `${groupNoun}s`,
-  itemNoun = 'Talent'
+  itemNoun = 'Talent',
+  nameIndex
 }) {
   const spheres = character[spheresKey] || [];
   const groupNounLower = groupNoun.toLowerCase();
   const groupNounPluralLower = groupNounPlural.toLowerCase();
   const itemNounLower = itemNoun.toLowerCase();
+  const datalistId = useId();
+
+  // Map lower-cased name -> index entry, so the wiki link lookup is case-insensitive
+  // without re-scanning the array on every keystroke.
+  const byLowerName = useMemo(() => {
+    if (!nameIndex) return null;
+    const map = new Map();
+    for (const entry of nameIndex) map.set(entry.name.toLowerCase(), entry);
+    return map;
+  }, [nameIndex]);
 
   function update(nextSpheres) {
     onChange({ ...character, [spheresKey]: nextSpheres });
@@ -64,8 +78,18 @@ export default function SphereBuilder({
         </p>
       )}
 
+      {nameIndex && (
+        <datalist id={datalistId}>
+          {nameIndex.map((entry) => (
+            <option key={entry.slug} value={entry.name} />
+          ))}
+        </datalist>
+      )}
+
       <div className="sphere-list">
-        {spheres.map((sphere) => (
+        {spheres.map((sphere) => {
+          const wikiEntry = byLowerName?.get(sphere.name.trim().toLowerCase());
+          return (
           <div className="sphere-row" key={sphere.id}>
             <div className="sphere-edit-head">
               <div className="field" style={{ flex: 2 }}>
@@ -73,8 +97,20 @@ export default function SphereBuilder({
                   placeholder={`${groupNoun} name`}
                   value={sphere.name}
                   onChange={(e) => updateSphere(sphere.id, { name: e.target.value })}
+                  list={nameIndex ? datalistId : undefined}
                 />
               </div>
+              {wikiEntry && (
+                <a
+                  className="sphere-wiki-link"
+                  href={sphereIndex._urlBase + wikiEntry.slug}
+                  target="_blank"
+                  rel="noopener"
+                  title={`Look up "${wikiEntry.name}" on the Spheres wiki`}
+                >
+                  wiki ↗
+                </a>
+              )}
               <div className="field" style={{ flex: 3 }}>
                 <input
                   placeholder="Theme / tagline (optional)"
@@ -109,7 +145,8 @@ export default function SphereBuilder({
               <button className="btn btn-ghost btn-sm" onClick={() => addTalent(sphere.id)}>+ Add {itemNounLower}</button>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addSphere}>+ Add {groupNounLower}</button>
