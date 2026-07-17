@@ -11,9 +11,32 @@ import {
   magicSkillBonus,
   magicSkillDefense
 } from './progression.js';
-import { collectBonuses, collectMany } from './modifiers.js';
+import { collectBonuses, collectMany, stackEffects } from './modifiers.js';
+import skillsData from '../data/skills.json';
+import {
+  fixedSkills,
+  placeholdersByFamily,
+  customSkillEntry,
+  isClassSkill,
+  skillTotal,
+  skillPointsBudget
+} from './skills.js';
 
 const MENTAL = ['int', 'wis', 'cha'];
+
+// PF1e size modifier to AC and attack rolls (Table: Size Modifiers). CMB/CMD
+// use the "special size modifier", which is the inverse of this value.
+export const SIZE_MODS = {
+  fine: 8,
+  diminutive: 4,
+  tiny: 2,
+  small: 1,
+  medium: 0,
+  large: -1,
+  huge: -2,
+  gargantuan: -4,
+  colossal: -8
+};
 
 // Pure derived-stats pipeline. Takes a character (schema in newCharacter.js)
 // and returns every stat CharacterSheet.jsx used to compute inline. UI
@@ -122,6 +145,129 @@ export function computeSheet(character, opts = {}) {
   // BAB/ability mods; exposed here so components never re-collect them.
   const bonuses = collectMany(sources, ['init', 'cmb', 'cmd', 'speed', 'attack', 'damage']);
 
+  // ---- Stage 2: skills, AC, CMB/CMD, init, speed, weapons ----
+
+  // Size modifiers. AC/attack use SIZE_MODS; CMB/CMD use its inverse.
+  const size = SIZE_MODS[character.size] != null ? character.size : 'medium';
+  const sizeMod = SIZE_MODS[size];
+  const specialSizeMod = -sizeMod;
+
+  // Defense inputs with graceful defaults for old saves.
+  const def = character.defense || {};
+  const armorBonus = def.armorBonus || 0;
+  const shieldBonus = def.shieldBonus || 0;
+  const naturalArmor = def.naturalArmor || 0;
+  const deflection = def.deflection || 0;
+  const dodgeMisc = def.dodgeMisc || 0;
+  const miscAc = def.miscAc || 0;
+  const maxDex = def.maxDex == null ? null : def.maxDex;
+  const acp = def.acp || 0; // stored positive; a penalty
+  const dexToAc = maxDex == null ? mods.dex : Math.min(mods.dex, maxDex);
+
+  // Raw `ac`-target effects, so we can split by type for touch/flat-footed.
+  const acEffects = [];
+  for (const src of sources) {
+    for (const eff of src.effects || []) {
+      if (eff.target === 'ac') acEffects.push(eff);
+    }
+  }
+  const NON_TOUCH_TYPES = new Set(['armor', 'shield', 'natural_armor']);
+  const acEffTotal = stackEffects(acEffects);
+  const acEffTouch = stackEffects(acEffects.filter((e) => !NON_TOUCH_TYPES.has(e.type || 'untyped')));
+  const acEffNoDodge = stackEffects(acEffects.filter((e) => (e.type || 'untyped') !== 'dodge'));
+  const acEffDodge = stackEffects(acEffects.filter((e) => (e.type || 'untyped') === 'dodge'));
+  const acTouchExtra = collectBonuses(sources, 'ac.touch');
+  const acFlatExtra = collectBonuses(sources, 'ac.flatFooted');
+
+  const acTotals = {
+    // Full AC: everything applies.
+    ac: 10 + armorBonus + shieldBonus + naturalArmor + deflection + dodgeMisc +
+        miscAc + dexToAc + sizeMod + acEffTotal,
+    // Touch: drop armor/shield/natural; keep dex, dodge, deflection, size, misc.
+    touch: 10 + deflection + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTouch + acTouchExtra,
+    // Flat-footed: drop dex and all dodge bonuses.
+    flatFooted: 10 + armorBonus + shieldBonus + naturalArmor + deflection + miscAc +
+        sizeMod + acEffNoDodge + acFlatExtra
+  };
+
+  const init = mods.dex + (character.initiativeMisc || 0) + bonuses.init;
+
+  const cmb = bab + mods.str + specialSizeMod + bonuses.cmb;
+  const cmd = 10 + bab + mods.str + dexToAc + specialSizeMod + bonuses.cmd +
+              deflection + dodgeMisc + acEffDodge;
+
+  const speed = (character.speed || 30) + bonuses.speed;
+
+  // Skills. Fixed skills (minus family placeholders) + custom instances.
+  const classSkillStrings = [];
+  for (const cl of classLevels) {
+    const cls = classesById[cl.classId];
+    for (const s of (cls && cls.classSkills) || []) classSkillStrings.push(s);
+  }
+  const placeholders = placeholdersByFamily(skillsData);
+  const skillEntries = [
+    ...fixedSkills(skillsData),
+    ...(character.customSkills || []).map((c) => customSkillEntry(c, placeholders))
+  ];
+  const charSkills = character.skills || {};
+  const skills = skillEntries.map((entry) => {
+    const state = charSkills[entry.id] || {};
+    const classSkill = state.classSkillOverride === true || isClassSkill(entry, classSkillStrings);
+    const { total, acpApplied, unusable } = skillTotal({
+      entry,
+      ranks: state.ranks || 0,
+      misc: state.misc || 0,
+      abilityMod: mods[entry.ability] ?? 0,
+      classSkill,
+      effectBonus: collectBonuses(sources, `skill.${entry.id}`),
+      acp
+    });
+    return {
+      id: entry.id,
+      name: entry.name,
+      ability: entry.ability,
+      total,
+      ranks: state.ranks || 0,
+      misc: state.misc || 0,
+      classSkill,
+      acpApplied,
+      unusable,
+      trainedOnly: !!entry.trainedOnly
+    };
+  });
+  const skillPoints = {
+    budget: skillPointsBudget(classLevels, classesById, mods.int, character.skillPointsMisc || 0),
+    spent: skills.reduce((sum, s) => sum + (s.ranks || 0), 0)
+  };
+
+  // Weapons. To-hit = each iterative + ability mod + size + attackMisc + effects.
+  // Damage bonus = floor(abilityMod x damageMult) + damageMisc + effects.
+  const weapons = (character.weapons || []).map((w) => {
+    const atkAbility = w.attackAbility === 'dex' ? 'dex' : 'str';
+    const atkMod = mods[atkAbility] ?? 0;
+    const toHit = atkMod + sizeMod + (w.attackMisc || 0) + bonuses.attack;
+    const dmgAbilityMod = w.damageAbility === 'none' ? 0 : (mods[w.damageAbility] ?? mods.str ?? 0);
+    const mult = w.damageMult || 1;
+    const dmgBonus = Math.floor(dmgAbilityMod * mult) + (w.damageMisc || 0) + bonuses.damage;
+    const dice = w.damageDice || '';
+    const damage = dmgBonus === 0
+      ? dice
+      : `${dice}${dmgBonus > 0 ? '+' : ''}${dmgBonus}`;
+    return {
+      id: w.id,
+      name: w.name,
+      attacks: attacks.map((a) => a + toHit),
+      damage,
+      attackAbility: atkAbility,
+      attackMisc: w.attackMisc || 0,
+      damageDice: dice,
+      damageAbility: w.damageAbility || 'str',
+      damageMult: mult,
+      damageMisc: w.damageMisc || 0,
+      notes: w.notes || ''
+    };
+  });
+
   return {
     castingRules,
     abilities: { scores, mods },
@@ -165,6 +311,17 @@ export function computeSheet(character, opts = {}) {
       cmb: bonuses.cmb,
       cmd: bonuses.cmd,
       speed: bonuses.speed
-    }
+    },
+    // Stage 2 assembled stats.
+    size,
+    acp,
+    acTotals,
+    init,
+    cmb,
+    cmd,
+    speed,
+    skills,
+    skillPoints,
+    weapons
   };
 }

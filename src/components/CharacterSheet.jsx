@@ -4,6 +4,9 @@ import { ABILITY_KEYS, formatMod } from '../engine/abilities.js';
 import { computeSheet } from '../engine/computeSheet.js';
 import SphereBuilder from './SphereBuilder.jsx';
 import TraitList from './TraitList.jsx';
+import SkillsTab from './SkillsTab.jsx';
+import DefenseCard from './DefenseCard.jsx';
+import WeaponsCard from './WeaponsCard.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
@@ -60,6 +63,12 @@ export default function CharacterSheet({ character, onChange }) {
           onClick={() => setActiveTab('main')}
         >
           Character
+        </button>
+        <button
+          className={`pill-tab${activeTab === 'skills' ? ' active' : ''}`}
+          onClick={() => setActiveTab('skills')}
+        >
+          Skills
         </button>
         <button
           className={`pill-tab${activeTab === 'spheres' ? ' active' : ''}`}
@@ -238,10 +247,12 @@ export default function CharacterSheet({ character, onChange }) {
         )}
       </div>
 
+      <DefenseCard character={character} onChange={onChange} sheet={sheet} />
+
       {/* Combat & caster stats */}
       <div className="card">
         <h2 className="card-title">Combat &amp; Caster Stats</h2>
-        <div className="grid-row grid-4" style={{ marginBottom: 12 }}>
+        <div className="grid-row grid-3" style={{ marginBottom: 12 }}>
           <div className="stat-box">
             <div className="stat-label">Base Attack</div>
             <div className="stat-value">{sheet.attacks.map((a) => formatMod(a)).join(' / ')}</div>
@@ -256,10 +267,6 @@ export default function CharacterSheet({ character, onChange }) {
           <div className="field">
             <label>HP Max</label>
             <input type="number" value={character.hpMax} onChange={(e) => update({ hpMax: parseInt(e.target.value, 10) || 0 })} />
-          </div>
-          <div className="field">
-            <label>Armor Class</label>
-            <input type="number" value={character.armorClass} onChange={(e) => update({ armorClass: parseInt(e.target.value, 10) || 0 })} />
           </div>
         </div>
 
@@ -361,6 +368,8 @@ export default function CharacterSheet({ character, onChange }) {
         )}
       </div>
 
+      <WeaponsCard character={character} onChange={onChange} sheet={sheet} />
+
       <TraitList
         title="Class Features"
         character={character}
@@ -369,6 +378,10 @@ export default function CharacterSheet({ character, onChange }) {
         itemNoun="feature"
       />
       </>
+      )}
+
+      {activeTab === 'skills' && (
+        <SkillsTab character={character} onChange={onChange} sheet={sheet} />
       )}
 
       {activeTab === 'spheres' && (

@@ -10,10 +10,11 @@ Each stage fits one ~5-hour session and ends at a stop point (lint + tests + bui
 - [x] Vitest + unit tests (54 tests: progression, abilities, stacking, both casting modes, old-save defaults)
 - [x] Verification: lint/tests/build green; browser smoke passed (Incanter 3 / Armorist 2: CL 4, SP 8/DC 15 house, SP 5/DC 12 standard-WIS; hand-checked)
 
-## Stage 2 — Skills & combat automation
+## Stage 2 — Skills & combat automation (DONE 2026-07-17)
 
-- [ ] Skills tab: full PF1e skill list (skills.json), ranks/class-skill/misc, ACP, totals, skill-point budget
-- [ ] Combat: AC breakdown (touch/flat-footed), initiative, CMB/CMD, weapons list with computed to-hit/damage
+- [x] Skills tab: full PF1e skill list (skills.json, 35 entries), ranks/class-skill (auto from class data + override)/misc, ACP, totals, budget from skillsPerLevel + INT, custom Craft/Perform/Profession
+- [x] Combat: Defense & Movement card (AC/touch/flat-footed w/ maxDex + size), initiative, CMB/CMD, speed, Weapons card with computed to-hit iteratives & damage strings
+- [x] Verification: lint/93 tests/build green; browser hand-check passed (AC 17/11/16, CMB +5/CMD 16, Spellcraft +11, ACP −1 applied, budget 35)
 
 ## Stage 3 — Play mode
 

@@ -219,12 +219,14 @@
   gap: 14px;
 }
 .grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 @media (max-width: 720px) {
   .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-2 { grid-template-columns: 1fr; }
 }
@@ -427,5 +429,88 @@
   background: var(--arcane-500);
   border-color: var(--arcane-500);
   color: white;
+}
+
+/* ---------- Skills table ---------- */
+.skills-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-md);
+}
+
+.skills-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 520px;
+}
+
+.skills-table th {
+  text-align: left;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-700);
+  font-weight: 700;
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--parchment-300);
+  white-space: nowrap;
+}
+
+.skills-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--parchment-300);
+  vertical-align: middle;
+}
+.skills-table tr:last-child td { border-bottom: none; }
+
+.skills-table td.skill-name-cell {
+  min-width: 180px;
+}
+
+.skills-table input[type='number'] {
+  width: 56px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  background: #fffdf8;
+  color: var(--ink-950);
+}
+
+.skills-table input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
+
+.skill-row-unusable {
+  opacity: 0.55;
+}
+
+.skill-ability {
+  font-size: 0.75rem;
+  color: var(--ink-700);
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+.skill-hint {
+  font-size: 0.68rem;
+  color: var(--ember-500);
+  opacity: 0.85;
+  margin-top: 1px;
+}
+
+.skill-total {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.skill-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
