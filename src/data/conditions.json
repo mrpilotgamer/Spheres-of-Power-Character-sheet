@@ -1,0 +1,116 @@
+[
+  {
+    "id": "blinded",
+    "name": "Blinded",
+    "description": "Loses Dex bonus to AC, takes a -4 penalty on most Strength- and Dexterity-based skill checks, and all attacks against it have a 50% miss chance from total concealment.",
+    "effects": [
+      { "target": "ac", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "dazzled",
+    "name": "Dazzled",
+    "description": "Takes a -1 penalty on attack rolls and Perception checks.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -1 },
+      { "target": "skill.perception", "type": "untyped", "value": -1 }
+    ]
+  },
+  {
+    "id": "deafened",
+    "name": "Deafened",
+    "description": "Takes a -4 penalty on initiative checks and automatically fails Perception checks based on sound.",
+    "effects": [
+      { "target": "init", "type": "untyped", "value": -4 }
+    ]
+  },
+  {
+    "id": "entangled",
+    "name": "Entangled",
+    "description": "Moves at half speed, cannot move at all if anchored, and must make a concentration check to cast spells.",
+    "effects": [
+      { "target": "ability.dex", "type": "untyped", "value": -4 },
+      { "target": "attack", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "exhausted",
+    "name": "Exhausted",
+    "description": "Moves at half speed; resting for 1 hour reduces exhausted to fatigued.",
+    "effects": [
+      { "target": "ability.str", "type": "untyped", "value": -6 },
+      { "target": "ability.dex", "type": "untyped", "value": -6 }
+    ]
+  },
+  {
+    "id": "fatigued",
+    "name": "Fatigued",
+    "description": "Cannot run or charge while fatigued.",
+    "effects": [
+      { "target": "ability.str", "type": "untyped", "value": -2 },
+      { "target": "ability.dex", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "frightened",
+    "name": "Frightened",
+    "description": "As shaken, but the creature must flee from the source of its fear as best it can.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -2 },
+      { "target": "save.fort", "type": "untyped", "value": -2 },
+      { "target": "save.ref", "type": "untyped", "value": -2 },
+      { "target": "save.will", "type": "untyped", "value": -2 },
+      { "target": "skill.all", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "grappled",
+    "name": "Grappled",
+    "description": "Cannot move away from its grappler and loses its Dexterity bonus to AC against opponents it isn't grappling.",
+    "effects": [
+      { "target": "ability.dex", "type": "untyped", "value": -4 },
+      { "target": "attack", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "prone",
+    "name": "Prone",
+    "description": "Gets +4 AC against ranged attacks but -4 AC against melee attacks; standing up provokes an attack of opportunity.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -4 }
+    ]
+  },
+  {
+    "id": "shaken",
+    "name": "Shaken",
+    "description": "Takes a -2 penalty on attack rolls, saving throws, and skill checks.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -2 },
+      { "target": "save.fort", "type": "untyped", "value": -2 },
+      { "target": "save.ref", "type": "untyped", "value": -2 },
+      { "target": "save.will", "type": "untyped", "value": -2 },
+      { "target": "skill.all", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "sickened",
+    "name": "Sickened",
+    "description": "Takes a -2 penalty on attack rolls, weapon damage rolls, saving throws, and skill checks.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -2 },
+      { "target": "damage", "type": "untyped", "value": -2 },
+      { "target": "save.fort", "type": "untyped", "value": -2 },
+      { "target": "save.ref", "type": "untyped", "value": -2 },
+      { "target": "save.will", "type": "untyped", "value": -2 },
+      { "target": "skill.all", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "stunned",
+    "name": "Stunned",
+    "description": "Drops anything held, can't take actions, and loses any Dexterity bonus to AC in addition to the AC penalty.",
+    "effects": [
+      { "target": "ac", "type": "untyped", "value": -2 }
+    ]
+  }
+]

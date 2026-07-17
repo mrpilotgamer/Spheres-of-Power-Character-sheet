@@ -24,7 +24,7 @@ export default function TraitList({ title, character, onChange, traitsKey, itemN
       <h2 className="card-title">{title}</h2>
 
       {items.length === 0 && (
-        <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+        <p className="empty-hint">
           No {itemNoun}s yet - add one below and name it whatever you like.
         </p>
       )}
@@ -39,7 +39,13 @@ export default function TraitList({ title, character, onChange, traitsKey, itemN
                 onChange={(e) => updateItem(t.id, { name: e.target.value })}
               />
             </div>
-            <button className="btn btn-danger btn-sm" onClick={() => removeItem(t.id)}>✕</button>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => removeItem(t.id)}
+              aria-label={`Remove ${t.name || itemNoun}`}
+            >
+              ✕
+            </button>
             <div className="field talent-edit-desc">
               <textarea
                 rows={2}

@@ -34,10 +34,10 @@ export default function DefenseCard({ character, onChange, sheet }) {
     <div className="card">
       <h2 className="card-title">Defense &amp; Movement</h2>
 
-      <div className="grid-row grid-5" style={{ marginBottom: 14 }}>
+      <div className="grid-row grid-5 mb-14">
         <div className="stat-box">
           <div className="stat-label">AC / Touch / Flat-footed</div>
-          <div className="stat-value" style={{ fontSize: '1.05rem' }}>
+          <div className="stat-value stat-value-md">
             {sheet.acTotals.ac} / {sheet.acTotals.touch} / {sheet.acTotals.flatFooted}
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function DefenseCard({ character, onChange, sheet }) {
         </div>
       </div>
 
-      <div className="grid-row grid-4" style={{ marginBottom: 14 }}>
+      <div className="grid-row grid-4 mb-14">
         <div className="field">
           <label>Armor bonus</label>
           <input type="number" value={defense.armorBonus ?? 0} onChange={(e) => updateDefenseNum('armorBonus', e.target.value)} />

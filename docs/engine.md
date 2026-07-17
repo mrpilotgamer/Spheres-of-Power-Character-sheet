@@ -152,3 +152,82 @@ All optional — `computeSheet` supplies defaults, so old saves never migrate.
 
 UI may render these result rows/totals; it must not recompute any of the math
 (no ability mods, size tables, class-skill matching, or dice assembly in JSX).
+
+## Stage 3: play-mode engine (`modifiers.js` + `computeSheet.js`)
+
+At-the-table state: buffs/conditions that flip on and off, and resources
+(HP, spell points, martial focus, custom trackers) that count down. Still pure —
+UI mutates the character and re-runs `computeSheet`; it never does the math.
+
+### New target: `skill.all`
+
+`skill.all` effects apply to **every** computed skill row. Per skill, its
+`skill.all` effects and that skill's own `skill.<id>` effects are pooled into a
+**single** stack, so normal typed-stacking applies across both (e.g. a
+competence bonus to all skills and a competence bonus to one skill do not both
+count — only the higher wins). `collectCombined(sources, targets)` is the
+primitive: it pools several target keys into one `stackEffects` call, unlike
+`collectMany`, which stacks each target independently.
+
+### Conditions flow
+
+- `character.conditions: []` — an array of condition **ids**.
+- `src/data/conditions.json`: `[{ id, name, description, effects:[{target,type,value}] }]`.
+  The `effects` shape is identical to a modifier source's, so an active
+  condition is treated as an always-on modifier source.
+- In `computeSheet`, each id is looked up in the library (unknown ids are
+  **skipped**), turned into a source `{ id:'condition:<id>', name, enabled:true,
+  effects }`, and appended to the character's **enabled** `modifiers`. Every
+  downstream collect (AC, saves, skills, CMB/CMD, attack/damage, …) sees them.
+- Conditions cannot be disabled individually — presence in the array **is**
+  active. To clear one, remove its id from `character.conditions`.
+- Buffs live in `src/data/buffLibrary.json` (same effect shape); adding a buff
+  copies its entry into `character.modifiers` as a toggleable source. Nothing in
+  the engine special-cases buffs — they are ordinary modifier sources.
+
+### Play state (`result.play`)
+
+```
+play: {
+  hp:          { max, current, nonlethal },
+  spellPoints: { max, spent, remaining },   // remaining clamped >= 0
+  martialFocus:{ max, current },            // current clamped [0, max]
+  trackers:    [{ id, name, max, current }] // current clamped [0, max]
+}
+```
+
+- `hp.max` = `hpMax`; `hp.current` = `hpCurrent`, but **missing** (undefined/null)
+  → `max` so old saves start unhurt — an explicit `0` stays `0` (downed).
+  `hp.nonlethal` = `hpNonlethal` (default 0).
+- `spellPoints.max` = the computed `casting.spellPoints` pool; `spent` =
+  `spellPointsSpent` (default 0); `remaining` = `max − spent`, floored at 0.
+- `martialFocus.max` = `martialFocusMax`; `current` = `martialFocusCurrent`, but
+  **missing** → `max` (starts focused), then clamped to `[0, max]`.
+- `trackers` pass through `character.trackers` with each `current` clamped to
+  `[0, max]` in the computed copy.
+
+### Schema additions (`newCharacter.js`)
+
+All optional — `computeSheet` supplies defaults, so old saves never migrate:
+`hpNonlethal: 0`, `spellPointsSpent: 0`, `martialFocusCurrent: 1`,
+`trackers: []`, `conditions: []` (`hpCurrent` already existed).
+
+### The recompute rule (UI contract)
+
+The UI never edits computed play numbers directly. To change table state it
+mutates the **character** and re-runs `computeSheet`:
+
+- Toggle a buff → set `character.modifiers[i].enabled = true|false`.
+- Toggle a condition → add/remove its id in `character.conditions`.
+- Spend/regain a resource → write `spellPointsSpent` / `martialFocusCurrent` /
+  `hpCurrent` / `hpNonlethal` / a tracker's `current`.
+
+Recompute does the rest (stacking, clamping, downstream stats).
+
+### AC stacking with manual defense inputs
+
+The manual `defense` inputs are typed: armor / shield / natural_armor /
+deflection seed the same stack as `ac`-targeted effects, so a worn-armor
+input and an armor-typed buff (Mage Armor) take the higher value rather than
+summing. `dodgeMisc` and `miscAc` are flat adds (dodge/untyped stack anyway).
+Deflection (input or effect) also feeds CMD, stacked once.

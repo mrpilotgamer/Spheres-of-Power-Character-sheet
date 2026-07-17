@@ -1,0 +1,145 @@
+[
+  {
+    "id": "barkskin",
+    "name": "Barkskin",
+    "description": "Grants a +2 bonus to natural armor (improves to +3/+4/+5 at higher caster levels).",
+    "effects": [
+      { "target": "ac", "type": "natural_armor", "value": 2 }
+    ]
+  },
+  {
+    "id": "bears-endurance",
+    "name": "Bear's Endurance",
+    "description": "Grants a +4 enhancement bonus to Constitution.",
+    "effects": [
+      { "target": "ability.con", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "bless",
+    "name": "Bless",
+    "description": "Grants a +1 morale bonus on attack rolls (and on saves against fear).",
+    "effects": [
+      { "target": "attack", "type": "morale", "value": 1 }
+    ]
+  },
+  {
+    "id": "bulls-strength",
+    "name": "Bull's Strength",
+    "description": "Grants a +4 enhancement bonus to Strength.",
+    "effects": [
+      { "target": "ability.str", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "cats-grace",
+    "name": "Cat's Grace",
+    "description": "Grants a +4 enhancement bonus to Dexterity.",
+    "effects": [
+      { "target": "ability.dex", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "eagles-splendor",
+    "name": "Eagle's Splendor",
+    "description": "Grants a +4 enhancement bonus to Charisma.",
+    "effects": [
+      { "target": "ability.cha", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "enlarge-person",
+    "name": "Enlarge Person",
+    "description": "Grows the target one size category larger; set Size to Large yourself for reach and CMB/CMD, since the size table already covers those.",
+    "effects": [
+      { "target": "ability.str", "type": "size", "value": 2 },
+      { "target": "ability.dex", "type": "size", "value": -2 },
+      { "target": "attack", "type": "size", "value": -1 },
+      { "target": "ac", "type": "size", "value": -1 }
+    ]
+  },
+  {
+    "id": "foxs-cunning",
+    "name": "Fox's Cunning",
+    "description": "Grants a +4 enhancement bonus to Intelligence.",
+    "effects": [
+      { "target": "ability.int", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "haste",
+    "name": "Haste",
+    "description": "Grants one extra attack at the highest bonus when making a full attack, in addition to the listed bonuses.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": 1 },
+      { "target": "ac", "type": "dodge", "value": 1 },
+      { "target": "save.ref", "type": "dodge", "value": 1 },
+      { "target": "speed", "type": "enhancement", "value": 30 }
+    ]
+  },
+  {
+    "id": "heroism",
+    "name": "Heroism",
+    "description": "Grants a +2 morale bonus on attack rolls, saving throws, and skill checks.",
+    "effects": [
+      { "target": "attack", "type": "morale", "value": 2 },
+      { "target": "save.fort", "type": "morale", "value": 2 },
+      { "target": "save.ref", "type": "morale", "value": 2 },
+      { "target": "save.will", "type": "morale", "value": 2 },
+      { "target": "skill.all", "type": "morale", "value": 2 }
+    ]
+  },
+  {
+    "id": "inspire-courage",
+    "name": "Inspire Courage",
+    "description": "Also grants a +1 morale bonus on saves against charm and fear effects; the competence bonuses scale up with bard level.",
+    "effects": [
+      { "target": "attack", "type": "competence", "value": 1 },
+      { "target": "damage", "type": "competence", "value": 1 }
+    ]
+  },
+  {
+    "id": "mage-armor",
+    "name": "Mage Armor",
+    "description": "Grants a +4 armor bonus to AC.",
+    "effects": [
+      { "target": "ac", "type": "armor", "value": 4 }
+    ]
+  },
+  {
+    "id": "owls-wisdom",
+    "name": "Owl's Wisdom",
+    "description": "Grants a +4 enhancement bonus to Wisdom.",
+    "effects": [
+      { "target": "ability.wis", "type": "enhancement", "value": 4 }
+    ]
+  },
+  {
+    "id": "power-attack-1",
+    "name": "Power Attack (-1/+2)",
+    "description": "Trades melee attack rolls for damage; the penalty/bonus ratio scales up as base attack bonus increases.",
+    "effects": [
+      { "target": "attack", "type": "untyped", "value": -1 },
+      { "target": "damage", "type": "untyped", "value": 2 }
+    ]
+  },
+  {
+    "id": "rage-barbarian",
+    "name": "Rage",
+    "description": "Grants a +4 morale bonus to Strength and Constitution and a +2 morale bonus on Will saves, but -2 to AC.",
+    "effects": [
+      { "target": "ability.str", "type": "morale", "value": 4 },
+      { "target": "ability.con", "type": "morale", "value": 4 },
+      { "target": "save.will", "type": "morale", "value": 2 },
+      { "target": "ac", "type": "untyped", "value": -2 }
+    ]
+  },
+  {
+    "id": "shield-spell",
+    "name": "Shield (spell)",
+    "description": "Grants a +4 shield bonus to AC and blocks magic missiles entirely.",
+    "effects": [
+      { "target": "ac", "type": "shield", "value": 4 }
+    ]
+  }
+]

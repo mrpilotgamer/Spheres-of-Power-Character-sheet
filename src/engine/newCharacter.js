@@ -14,6 +14,7 @@ export function blankCharacter() {
     classLevels: [{ classId: '', level: 1 }],
     hpMax: 0,
     hpCurrent: 0,
+    hpNonlethal: 0,
     armorClass: 10,
     customSpheres: [], // { id, name, tagline, talents: [{ id, name, description }] }
     customCombatSpheres: [],
@@ -21,6 +22,11 @@ export function blankCharacter() {
     customEquipment: [],
     martialFocusMax: 1,
     operativeAbilityOverride: null,
+    // Stage 3 play state. computeSheet supplies defaults, so old saves are fine.
+    spellPointsSpent: 0,
+    martialFocusCurrent: 1,
+    trackers: [], // generic at-the-table counters: { id, name, max, current }
+    conditions: [], // active condition ids; looked up in src/data/conditions.json
     practitionerAbilityOverride: null,
     castingRules: 'house', // 'house' (three mental stats) | 'standard' (one casting ability)
     castingAbility: 'int', // int | wis | cha — used only when castingRules === 'standard'

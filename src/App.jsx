@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import CharacterSheet from './components/CharacterSheet.jsx';
 import SphereMark from './components/SphereMark.jsx';
-import { listCharacters, saveCharacter, deleteCharacter } from './engine/storage.js';
+import {
+  listCharacters,
+  saveCharacter,
+  deleteCharacter,
+  duplicateCharacter,
+  importCharacter
+} from './engine/storage.js';
 import { blankCharacter } from './engine/newCharacter.js';
 
 export default function App() {
@@ -41,6 +47,18 @@ export default function App() {
     }
   }
 
+  function handleDuplicate(id) {
+    const copy = duplicateCharacter(id);
+    setCharacters(listCharacters());
+    setActiveId(copy.id);
+  }
+
+  function handleImport(parsed) {
+    const saved = importCharacter(parsed);
+    setCharacters(listCharacters());
+    setActiveId(saved.id);
+  }
+
   return (
     <div className="app-shell">
       <Sidebar
@@ -49,6 +67,8 @@ export default function App() {
         onSelect={setActiveId}
         onNew={handleNew}
         onDelete={handleDelete}
+        onDuplicate={handleDuplicate}
+        onImport={handleImport}
       />
       <main className="main">
         {active ? (
@@ -58,6 +78,14 @@ export default function App() {
             <SphereMark size={56} />
             <h1>No character selected</h1>
             <p>Create a new spherecaster to get started.</p>
+            <ol className="onboarding-steps">
+              <li>Create a character with the button in the sidebar.</li>
+              <li>Add your race, classes, and ability scores on the Character tab.</li>
+              <li>The sheet computes everything from there - skills, AC, DCs, and more.</li>
+            </ol>
+            <p className="onboarding-hint">
+              Once you're at the table, switch to the Play tab to track buffs, conditions, and HP.
+            </p>
           </div>
         )}
       </main>

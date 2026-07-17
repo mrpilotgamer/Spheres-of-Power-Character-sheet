@@ -63,3 +63,44 @@ export function deleteCharacter(id) {
 export function newCharacterId() {
   return 'char-' + Math.random().toString(36).slice(2, 10) + '-' + Date.now().toString(36);
 }
+
+// Deep-copies a saved character under a fresh id. Throws if the source id
+// isn't in storage (e.g. the row was deleted from another tab).
+export function duplicateCharacter(id) {
+  const all = readAll();
+  const source = all[id];
+  if (!source) throw new Error(`No character found with id "${id}".`);
+  const now = Date.now();
+  const copy = {
+    ...JSON.parse(JSON.stringify(source)),
+    id: newCharacterId(),
+    name: `${source.name || 'Unnamed'} (copy)`,
+    createdAt: now,
+    updatedAt: now
+  };
+  all[copy.id] = copy;
+  writeAll(all);
+  return copy;
+}
+
+// Saves a character parsed from an imported JSON file. Always assigns a
+// fresh id so importing never collides with (or overwrites) an existing
+// save. Any fields missing from the import are backfilled later by
+// normalizeCharacter() on read (listCharacters/getCharacter), so we don't
+// need to validate the full schema here - just that it's an object at all.
+export function importCharacter(parsed) {
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('That file is not a valid character export (expected a JSON object).');
+  }
+  const all = readAll();
+  const now = Date.now();
+  const toSave = {
+    ...parsed,
+    id: newCharacterId(),
+    createdAt: now,
+    updatedAt: now
+  };
+  all[toSave.id] = toSave;
+  writeAll(all);
+  return toSave;
+}

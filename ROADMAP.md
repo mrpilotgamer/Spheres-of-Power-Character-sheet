@@ -16,20 +16,29 @@ Each stage fits one ~5-hour session and ends at a stop point (lint + tests + bui
 - [x] Combat: Defense & Movement card (AC/touch/flat-footed w/ maxDex + size), initiative, CMB/CMD, speed, Weapons card with computed to-hit iteratives & damage strings
 - [x] Verification: lint/93 tests/build green; browser hand-check passed (AC 17/11/16, CMB +5/CMD 16, Spellcraft +11, ACP −1 applied, budget 35)
 
-## Stage 3 — Play mode
+## Stage 3 — Play mode (DONE 2026-07-17)
 
-- [ ] Quick-toggle buff system through the modifier engine + starter buff library
-- [ ] Resource trackers: HP (damage/heal), spell points, martial focus, custom per-day
-- [ ] Conditions checklist as modifier sources
+- [x] Quick-toggle buff system (Play tab, BuffsCard) + starter library (buffLibrary.json, 16 buffs) + custom buff editor
+- [x] Resource trackers: HP damage/heal + nonlethal, spell points, martial focus pips, custom trackers
+- [x] Conditions checklist (conditions.json, 12 conditions) as modifier sources, incl. skill.all target
+- [x] Rules fix found in verification: manual defense inputs now stack as typed bonuses with `ac` effects (Mage Armor over worn armor no longer double-counts); deflection reaches CMD
+- [x] Verification: lint/114 tests/build green; browser check passed (Mage Armor no-op over armor 4, Barkskin 17→19, Shaken −2 everywhere, HP/SP trackers)
 
-## Stage 4 — Data QoL
+## Stage 4 — Data QoL (DONE 2026-07-17)
 
-- [ ] Name index (sphere/talent/feat names + wikidot URLs) → autocomplete + wiki links in freeform editors
-- [ ] JSON export/import, character duplication; stretch: share-as-URL
+- [x] Name index (`src/data/sphereIndex.json`: magic/combat/skill sphere names + wikidot URLs) → autocomplete (`<datalist>`) + "wiki ↗" links in `SphereBuilder`, wired for the three sphere tabs (not Equipment, which has no index)
+- [x] JSON export (active character, pretty-printed Blob download) / import (file input, inline error on bad JSON, never `alert()`) / duplicate (per-row "⧉") in Sidebar + storage.js (`duplicateCharacter`, `importCharacter`)
+- [ ] Stretch (not done): share-as-URL
+- [x] Verification: lint/123 tests (+9 new in `storage.test.js`)/build green; browser check passed (autocomplete + wiki link on Alteration, Equipment tab confirmed to have no datalist, duplicate + export + bad/good import all verified against a throwaway character, cleaned up afterward without touching the real saved character)
 
 ## Stage 5 — Design & polish
 
-- [ ] Design-system pass, mobile audit, print stylesheet, onboarding/empty states
+- [x] Breakpoints consolidated to exactly two (`900px` layout collapse, `640px` compact) in `app.css`, migrated from the old 860/720/640 patchwork
+- [x] Rhythm: `--card-pad` CSS var (desktop + 640px value), shared `.empty-hint` class (traits/features/feats/spheres/equipment/weapons/trackers/buffs all consistent), small spacing utilities (`.mt-10`, `.mt-14`, `.mb-14`, `.text-left`, `.stat-value-md/-sm`, `.field-narrow`) replacing repeated inline `style={{}}` (true one-offs left inline)
+- [x] Onboarding: 3-step hint list + Play-tab mention in the no-character-selected empty state (`App.jsx`)
+- [x] Print stylesheet appended to `app.css` (`@media print`): white/near-black override, sidebar/pill-tabs/buttons/wiki-links hidden, 1px bordered cards with `break-inside: avoid`, underlined inputs; prints whichever tab is active (documented inline)
+- [x] A11y: aria-label added to every icon-only button (✕/⧉/−/+/focus pips) across all components
+- [x] Verification: lint/123 tests/build green; browser check passed - no page-level horizontal overflow at 375/768/1280 across all 7 tabs (skills table's own scroll container excepted), both breakpoints behave sensibly, print media rules parse, checked against a throwaway character and cleaned up without touching the real saved character
 - [ ] Deployment cleanup (retire GitHub Pages workflow if Vercel-only)
 
 ## Backlog

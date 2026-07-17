@@ -56,6 +56,23 @@ export function collectBonuses(sources, target) {
   return stackEffects(effects);
 }
 
+// Stacked signed total of every enabled effect whose target is any of
+// `targets`, pooled into ONE stack (unlike collectMany, which stacks each
+// target independently). Use when several target keys should combine under a
+// single set of typed-stacking rules — e.g. `skill.all` + `skill.<id>` for one
+// skill row, where a competence bonus to all skills and a competence bonus to
+// that specific skill must not both count.
+export function collectCombined(sources, targets) {
+  const wanted = targets instanceof Set ? targets : new Set(targets);
+  const effects = [];
+  for (const source of activeSources(sources)) {
+    for (const eff of source.effects || []) {
+      if (wanted.has(eff.target)) effects.push(eff);
+    }
+  }
+  return stackEffects(effects);
+}
+
 // Stack several targets in one pass over the sources. Returns a map keyed by
 // target; each target stacks independently of the others.
 export function collectMany(sources, targets) {

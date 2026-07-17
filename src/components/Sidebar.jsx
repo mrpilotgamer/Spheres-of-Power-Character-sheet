@@ -1,7 +1,43 @@
+import { useState } from 'react';
 import SphereMark from './SphereMark.jsx';
 import { classesById } from '../engine/classLoader.js';
 
-export default function Sidebar({ characters, activeId, onSelect, onNew, onDelete }) {
+export default function Sidebar({ characters, activeId, onSelect, onNew, onDelete, onDuplicate, onImport }) {
+  const [importError, setImportError] = useState(null);
+  const active = characters.find((c) => c.id === activeId) || null;
+
+  function handleExport() {
+    if (!active) return;
+    const json = JSON.stringify(active, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safeFileName(active.name)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files[0];
+    e.target.value = ''; // allow re-selecting the same file later
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        onImport(parsed);
+        setImportError(null);
+      } catch (err) {
+        setImportError(err.message || 'Could not import that file.');
+      }
+    };
+    reader.onerror = () => setImportError('Could not read that file.');
+    reader.readAsText(file);
+  }
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -29,18 +65,32 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
                 {summarizeClasses(c)}
               </div>
             </div>
-            <button
-              className="btn btn-danger btn-sm"
-              title="Delete character"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm(`Delete "${c.name || 'Unnamed'}"? This can't be undone.`)) {
-                  onDelete(c.id);
-                }
-              }}
-            >
-              ✕
-            </button>
+            <div className="char-list-item-actions">
+              <button
+                className="btn btn-ghost btn-sm"
+                title="Duplicate character"
+                aria-label={`Duplicate ${c.name || 'character'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDuplicate(c.id);
+                }}
+              >
+                ⧉
+              </button>
+              <button
+                className="btn btn-danger btn-sm"
+                title="Delete character"
+                aria-label={`Delete ${c.name || 'character'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm(`Delete "${c.name || 'Unnamed'}"? This can't be undone.`)) {
+                    onDelete(c.id);
+                  }
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </li>
         ))}
         {characters.length === 0 && (
@@ -49,6 +99,17 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
           </li>
         )}
       </ul>
+
+      <div className="sidebar-io">
+        <button className="btn btn-ghost btn-sm btn-block" onClick={handleExport} disabled={!active}>
+          Export active
+        </button>
+        <label className="btn btn-ghost btn-sm btn-block sidebar-import-label">
+          Import
+          <input type="file" accept="application/json" onChange={handleImportFile} />
+        </label>
+        {importError && <div className="import-error">{importError}</div>}
+      </div>
 
       <div className="sidebar-footer">
         Saved locally in this browser. Free &amp; open source —{' '}
@@ -59,6 +120,12 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
       </div>
     </aside>
   );
+}
+
+// Keeps exported filenames filesystem-safe across OSes without pulling in a dependency.
+function safeFileName(name) {
+  const trimmed = (name || 'character').trim() || 'character';
+  return trimmed.replace(/[\\/:*?"<>|]/g, '_');
 }
 
 function summarizeClasses(c) {
