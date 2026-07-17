@@ -1,92 +1,18 @@
 import { useState } from 'react';
 import { classesById, classesByCategory } from '../engine/classLoader.js';
-import {
-  ABILITY_KEYS,
-  abilityModifier,
-  finalScores,
-  formatMod
-} from '../engine/abilities.js';
-import {
-  babAtLevel,
-  attacksFromBab,
-  savesAtLevel,
-  totalCasterLevel,
-  totalCasterClassLevels,
-  spellPoints,
-  sphereDC,
-  magicSkillBonus,
-  magicSkillDefense
-} from '../engine/progression.js';
+import { ABILITY_KEYS, formatMod } from '../engine/abilities.js';
+import { computeSheet } from '../engine/computeSheet.js';
 import SphereBuilder from './SphereBuilder.jsx';
 import TraitList from './TraitList.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
 
+  const sheet = computeSheet(character);
   const abilityMods = character.abilityMods || {};
-  const scores = finalScores(character.baseAbilities, abilityMods);
-  const mods = Object.fromEntries(ABILITY_KEYS.map((k) => [k, abilityModifier(scores[k])]));
-
-  const classLevels = character.classLevels.filter((cl) => cl.classId);
-  const totalLevel = classLevels.reduce((s, cl) => s + (cl.level || 0), 0);
-
-  const mightLevels = classLevels.filter((cl) => classesById[cl.classId]?.system === 'might');
-  const guileLevels = classLevels.filter((cl) => classesById[cl.classId]?.system === 'guile');
-
-  // BAB stacks across all classes (Pathfinder multiclassing rule).
-  const totalBab = classLevels.reduce(
-    (s, cl) => s + babAtLevel(classesById[cl.classId]?.babType || 'half', cl.level),
-    0
-  );
-  const attacks = attacksFromBab(totalBab);
-
-  // Saves: take the best progression across all classes for each save (standard PF multiclass rule).
-  const saveTotals = { fort: 0, ref: 0, will: 0 };
-  for (const cl of classLevels) {
-    const cls = classesById[cl.classId];
-    if (!cls) continue;
-    const s = savesAtLevel(cls.goodSaves, cl.level);
-    saveTotals.fort += s.fort;
-    saveTotals.ref += s.ref;
-    saveTotals.will += s.will;
-  }
-
-  const casterLevel = totalCasterLevel(classLevels, classesById);
-  const casterClassLevels = totalCasterClassLevels(classLevels, classesById);
-
-  const primaryCasterClass = classLevels
-    .map((cl) => classesById[cl.classId])
-    .find((c) => c && c.casterType && c.casterType !== 'none');
-
-  // House rule (always on for this table): casters use all three mental
-  // stats instead of one fixed casting ability. Intelligence powers the
-  // spell pool, the highest mental mod sets DCs, Wisdom governs duration/
-  // targets, and Charisma governs damage/healing bonuses. The per-class
-  // "casterAbility" field is kept in the data for reference but no longer
-  // drives any of these calculations.
-  const highestMentalMod = Math.max(mods.int, mods.wis, mods.cha);
-
-  const pool = spellPoints(casterClassLevels, mods.int);
-  const dc = sphereDC(casterLevel, highestMentalMod);
-  const msb = magicSkillBonus(casterClassLevels);
-  const msd = magicSkillDefense(msb);
-
-  const primaryGuileClass = guileLevels.map((cl) => classesById[cl.classId]).find(Boolean);
-  const operativeAbilityKey = character.operativeAbilityOverride || 'wis';
-
-  const primaryMightClass = mightLevels.map((cl) => classesById[cl.classId]).find(Boolean);
-  const practitionerAbilityKey = character.practitionerAbilityOverride || 'wis';
-  const practitionerModFor = (cls) =>
-    cls?.practitionerAbility === 'higher_cha_int'
-      ? Math.max(mods.cha, mods.int)
-      : cls?.practitionerAbility === 'choice'
-        ? mods[practitionerAbilityKey] ?? 0
-        : mods[cls?.practitionerAbility] ?? 0;
-  // Multiclassing into a second practitioner class uses the higher modifier.
-  const mightClasses = mightLevels.map((cl) => classesById[cl.classId]).filter(Boolean);
-  const practitionerMod = mightClasses.length
-    ? Math.max(...mightClasses.map(practitionerModFor))
-    : 0;
+  const { scores, mods } = sheet.abilities;
+  const classLevels = sheet.classLevels;
+  const totalLevel = sheet.totalLevel;
 
   function update(patch) {
     onChange({ ...character, ...patch });
@@ -256,11 +182,36 @@ export default function CharacterSheet({ character, onChange }) {
         ))}
         <button className="btn btn-ghost btn-sm" onClick={addClassLevel}>+ Add class (multiclass)</button>
 
-        {primaryMightClass?.practitionerAbility === 'choice' && (
+        <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+          <label>Casting Rules</label>
+          <select
+            value={sheet.castingRules}
+            onChange={(e) => update({ castingRules: e.target.value })}
+          >
+            <option value="house">House rule (three mental stats)</option>
+            <option value="standard">Standard Spheres</option>
+          </select>
+        </div>
+
+        {sheet.castingRules === 'standard' && (
+          <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+            <label>Casting Ability</label>
+            <select
+              value={sheet.casting.castingAbility}
+              onChange={(e) => update({ castingAbility: e.target.value })}
+            >
+              <option value="int">Intelligence</option>
+              <option value="wis">Wisdom</option>
+              <option value="cha">Charisma</option>
+            </select>
+          </div>
+        )}
+
+        {sheet.combat.primaryMightClass?.practitionerAbility === 'choice' && (
           <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
             <label>Practitioner Ability</label>
             <select
-              value={practitionerAbilityKey}
+              value={sheet.combat.practitionerAbility}
               onChange={(e) => update({ practitionerAbilityOverride: e.target.value })}
             >
               <option value="int">Intelligence</option>
@@ -271,11 +222,11 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
         )}
 
-        {primaryGuileClass && (
+        {sheet.operative.primaryGuileClass && (
           <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
             <label>Operative Ability</label>
             <select
-              value={operativeAbilityKey}
+              value={sheet.operative.operativeAbility}
               onChange={(e) => update({ operativeAbilityOverride: e.target.value })}
             >
               <option value="int">Intelligence</option>
@@ -293,14 +244,14 @@ export default function CharacterSheet({ character, onChange }) {
         <div className="grid-row grid-4" style={{ marginBottom: 12 }}>
           <div className="stat-box">
             <div className="stat-label">Base Attack</div>
-            <div className="stat-value">{attacks.map((a) => formatMod(a)).join(' / ')}</div>
+            <div className="stat-value">{sheet.attacks.map((a) => formatMod(a)).join(' / ')}</div>
           </div>
           <div className="stat-box">
             <div className="stat-label">Fort / Ref / Will</div>
             <div className="stat-value" style={{ fontSize: '1.05rem' }}>
-              {formatMod(saveTotals.fort + mods.con)} / {formatMod(saveTotals.ref + mods.dex)} / {formatMod(saveTotals.will + mods.wis)}
+              {formatMod(sheet.saves.fort)} / {formatMod(sheet.saves.ref)} / {formatMod(sheet.saves.will)}
             </div>
-            <div className="stat-sub">base {saveTotals.fort}/{saveTotals.ref}/{saveTotals.will} + ability mod</div>
+            <div className="stat-sub">base {sheet.baseSaves.fort}/{sheet.baseSaves.ref}/{sheet.baseSaves.will} + ability mod</div>
           </div>
           <div className="field">
             <label>HP Max</label>
@@ -312,43 +263,51 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
         </div>
 
-        {casterClassLevels > 0 && (
+        {sheet.casting.casterClassLevels > 0 && (
           <div className="grid-row grid-4">
             <div className="stat-box">
               <div className="stat-label">Caster Level</div>
-              <div className="stat-value">{casterLevel}</div>
-              <div className="stat-sub">{primaryCasterClass ? primaryCasterClass.casterType + '-caster' : 'no caster class'}</div>
+              <div className="stat-value">{sheet.casting.casterLevel}</div>
+              <div className="stat-sub">{sheet.casting.primaryCasterClass ? sheet.casting.primaryCasterClass.casterType + '-caster' : 'no caster class'}</div>
             </div>
             <div className="stat-box">
               <div className="stat-label">Spell Points</div>
-              <div className="stat-value">{pool}</div>
-              <div className="stat-sub">class levels + {formatMod(mods.int)} INT</div>
+              <div className="stat-value">{sheet.casting.spellPoints}</div>
+              <div className="stat-sub">
+                {sheet.castingRules === 'standard'
+                  ? `class levels + ${sheet.casting.castingAbility.toUpperCase()}`
+                  : `class levels + ${formatMod(mods.int)} INT`}
+              </div>
             </div>
             <div className="stat-box">
               <div className="stat-label">Sphere DC</div>
-              <div className="stat-value">{dc}</div>
-              <div className="stat-sub">10 + ½CL + highest mental mod</div>
+              <div className="stat-value">{sheet.casting.sphereDC}</div>
+              <div className="stat-sub">
+                {sheet.castingRules === 'standard'
+                  ? `10 + ½CL + ${sheet.casting.castingAbility.toUpperCase()}`
+                  : '10 + ½CL + highest mental mod'}
+              </div>
             </div>
             <div className="stat-box">
               <div className="stat-label">MSB / MSD</div>
-              <div className="stat-value">{msb} / {msd}</div>
+              <div className="stat-value">{sheet.casting.msb} / {sheet.casting.msd}</div>
               <div className="stat-sub">caster-class levels</div>
             </div>
           </div>
         )}
 
-        {casterClassLevels > 0 && (
+        {sheet.casting.casterClassLevels > 0 && sheet.castingRules !== 'standard' && (
           <div className="grid-row grid-2" style={{ marginTop: 14 }}>
             <div className="stat-box">
               <div className="stat-label">Wisdom Bonus</div>
-              <div className="stat-value">{formatMod(mods.wis)}</div>
+              <div className="stat-value">{formatMod(sheet.casting.wisMod)}</div>
               <div className="stat-sub" style={{ textAlign: 'left' }}>
                 Add to duration whenever a talent says "per caster level" (rounds/minutes/hours). Add as extra targets for [mass]-tagged or multi-target abilities. Add half to Alteration trait count.
               </div>
             </div>
             <div className="stat-box">
               <div className="stat-label">Charisma Bonus</div>
-              <div className="stat-value">{formatMod(mods.cha)}</div>
+              <div className="stat-value">{formatMod(sheet.casting.chaMod)}</div>
               <div className="stat-sub" style={{ textAlign: 'left' }}>
                 Use for any effect that adds your casting ability modifier to damage dealt/healed, or to targets affected (e.g. Healing Aegis, Selective Blast).
               </div>
@@ -356,15 +315,15 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
         )}
 
-        {mightLevels.length > 0 && (
-          <div className="grid-row grid-4" style={{ marginTop: casterClassLevels > 0 ? 14 : 0 }}>
+        {sheet.combat.mightClassCount > 0 && (
+          <div className="grid-row grid-4" style={{ marginTop: sheet.casting.casterClassLevels > 0 ? 14 : 0 }}>
             <div className="stat-box">
               <div className="stat-label">Combat Sphere DC</div>
-              <div className="stat-value">{10 + Math.floor(totalBab / 2) + practitionerMod}</div>
+              <div className="stat-value">{sheet.combat.combatSphereDC}</div>
               <div className="stat-sub">
-                {mightClasses.length > 1
+                {sheet.combat.mightClassCount > 1
                   ? '10 + ½BAB + best practitioner mod'
-                  : `10 + ½BAB + ${primaryMightClass?.practitionerAbility === 'higher_cha_int' ? 'higher of CHA/INT' : (primaryMightClass?.practitionerAbility === 'choice' ? practitionerAbilityKey.toUpperCase() : (primaryMightClass?.practitionerAbility || 'wis').toUpperCase())}`}
+                  : `10 + ½BAB + ${sheet.combat.primaryMightClass?.practitionerAbility === 'higher_cha_int' ? 'higher of CHA/INT' : (sheet.combat.primaryMightClass?.practitionerAbility === 'choice' ? sheet.combat.practitionerAbility.toUpperCase() : (sheet.combat.primaryMightClass?.practitionerAbility || 'wis').toUpperCase())}`}
               </div>
             </div>
             <div className="field">
@@ -386,12 +345,12 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
         )}
 
-        {guileLevels.length > 0 && (
-          <div className="grid-row grid-4" style={{ marginTop: (casterClassLevels > 0 || mightLevels.length > 0) ? 14 : 0 }}>
+        {sheet.operative.primaryGuileClass && (
+          <div className="grid-row grid-4" style={{ marginTop: (sheet.casting.casterClassLevels > 0 || sheet.combat.mightClassCount > 0) ? 14 : 0 }}>
             <div className="stat-box">
               <div className="stat-label">Operative Mod</div>
-              <div className="stat-value">{formatMod(mods[operativeAbilityKey] ?? 0)}</div>
-              <div className="stat-sub">{operativeAbilityKey.toUpperCase()}, chosen above</div>
+              <div className="stat-value">{formatMod(sheet.operative.operativeMod)}</div>
+              <div className="stat-sub">{sheet.operative.operativeAbility.toUpperCase()}, chosen above</div>
             </div>
             <div className="stat-box" style={{ gridColumn: 'span 3' }}>
               <div className="stat-label">Skill Sphere DC</div>

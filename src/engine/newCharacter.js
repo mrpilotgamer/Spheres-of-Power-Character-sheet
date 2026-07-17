@@ -22,6 +22,9 @@ export function blankCharacter() {
     martialFocusMax: 1,
     operativeAbilityOverride: null,
     practitionerAbilityOverride: null,
+    castingRules: 'house', // 'house' (three mental stats) | 'standard' (one casting ability)
+    castingAbility: 'int', // int | wis | cha — used only when castingRules === 'standard'
+    modifiers: [], // typed-bonus modifier sources; see src/engine/modifiers.js
     classFeatures: [], // { id, name, description }
     feats: [],
     notes: '',
