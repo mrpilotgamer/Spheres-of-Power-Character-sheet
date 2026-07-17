@@ -73,7 +73,7 @@ export default function SphereBuilder({
       <h2 className="card-title">{title}</h2>
 
       {spheres.length === 0 && (
-        <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+        <p className="empty-hint">
           No {groupNounPluralLower} yet - add one below and name it whatever you like.
         </p>
       )}
@@ -92,7 +92,7 @@ export default function SphereBuilder({
           return (
           <div className="sphere-row" key={sphere.id}>
             <div className="sphere-edit-head">
-              <div className="field" style={{ flex: 2 }}>
+              <div className="field">
                 <input
                   placeholder={`${groupNoun} name`}
                   value={sphere.name}
@@ -118,7 +118,13 @@ export default function SphereBuilder({
                   onChange={(e) => updateSphere(sphere.id, { tagline: e.target.value })}
                 />
               </div>
-              <button className="btn btn-danger btn-sm" onClick={() => removeSphere(sphere.id)}>✕</button>
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={() => removeSphere(sphere.id)}
+                aria-label={`Remove ${sphere.name || groupNounLower}`}
+              >
+                ✕
+              </button>
             </div>
 
             <div className="sphere-row-body">
@@ -131,7 +137,13 @@ export default function SphereBuilder({
                       onChange={(e) => updateTalent(sphere.id, t.id, { name: e.target.value })}
                     />
                   </div>
-                  <button className="btn btn-danger btn-sm" onClick={() => removeTalent(sphere.id, t.id)}>✕</button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => removeTalent(sphere.id, t.id)}
+                    aria-label={`Remove ${t.name || itemNounLower}`}
+                  >
+                    ✕
+                  </button>
                   <div className="field talent-edit-desc">
                     <textarea
                       rows={2}
@@ -149,7 +161,7 @@ export default function SphereBuilder({
         })}
       </div>
 
-      <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addSphere}>+ Add {groupNounLower}</button>
+      <button className="btn btn-ghost btn-sm mt-10" onClick={addSphere}>+ Add {groupNounLower}</button>
     </div>
   );
 }

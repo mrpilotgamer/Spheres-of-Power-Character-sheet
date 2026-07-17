@@ -122,7 +122,13 @@ export default function SkillsTab({ character, onChange, sheet }) {
                     <div className="skill-name-wrap">
                       <span>{row.name} <span className="skill-ability">({row.ability.toUpperCase()})</span></span>
                       {isCustom && (
-                        <button className="btn btn-danger btn-sm" onClick={() => removeCustomSkill(row.id)}>✕</button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => removeCustomSkill(row.id)}
+                          aria-label={`Remove ${row.name}`}
+                        >
+                          ✕
+                        </button>
                       )}
                     </div>
                     {row.unusable && <div className="skill-hint">trained only</div>}

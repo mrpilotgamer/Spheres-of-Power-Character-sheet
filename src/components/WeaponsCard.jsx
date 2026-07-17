@@ -50,7 +50,7 @@ export default function WeaponsCard({ character, onChange, sheet }) {
       <h2 className="card-title">Weapons</h2>
 
       {weapons.length === 0 && (
-        <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+        <p className="empty-hint">
           No weapons yet - add one below.
         </p>
       )}
@@ -61,14 +61,20 @@ export default function WeaponsCard({ character, onChange, sheet }) {
           return (
             <div className="sphere-row" key={w.id}>
               <div className="sphere-edit-head">
-                <div className="field" style={{ flex: 2 }}>
+                <div className="field">
                   <input
                     placeholder="Weapon name"
                     value={w.name}
                     onChange={(e) => updateWeapon(w.id, { name: e.target.value })}
                   />
                 </div>
-                <button className="btn btn-danger btn-sm" onClick={() => removeWeapon(w.id)}>✕</button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => removeWeapon(w.id)}
+                  aria-label={`Remove ${w.name || 'weapon'}`}
+                >
+                  ✕
+                </button>
               </div>
 
               <div className="sphere-row-body">
@@ -113,7 +119,7 @@ export default function WeaponsCard({ character, onChange, sheet }) {
                   </div>
                 </div>
 
-                <div className="grid-row grid-3" style={{ marginTop: 10 }}>
+                <div className="grid-row grid-3 mt-10">
                   <div className="field">
                     <label>Damage multiplier</label>
                     <select
@@ -142,16 +148,16 @@ export default function WeaponsCard({ character, onChange, sheet }) {
                   </div>
                 </div>
 
-                <div className="grid-row grid-2" style={{ marginTop: 10 }}>
+                <div className="grid-row grid-2 mt-10">
                   <div className="stat-box">
                     <div className="stat-label">To-hit</div>
-                    <div className="stat-value" style={{ fontSize: '1.05rem' }}>
+                    <div className="stat-value stat-value-md">
                       {(c.attacks || []).map((a) => formatMod(a)).join(' / ')}
                     </div>
                   </div>
                   <div className="stat-box">
                     <div className="stat-label">Damage</div>
-                    <div className="stat-value" style={{ fontSize: '1.05rem' }}>{c.damage || '—'}</div>
+                    <div className="stat-value stat-value-md">{c.damage || '—'}</div>
                   </div>
                 </div>
               </div>
@@ -160,7 +166,7 @@ export default function WeaponsCard({ character, onChange, sheet }) {
         })}
       </div>
 
-      <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={addWeapon}>+ Add weapon</button>
+      <button className="btn btn-ghost btn-sm mt-10" onClick={addWeapon}>+ Add weapon</button>
     </div>
   );
 }

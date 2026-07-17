@@ -194,12 +194,19 @@ export default function CharacterSheet({ character, onChange }) {
                 onChange={(e) => updateClassLevel(idx, { level: Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 1)) })}
               />
             </div>
-            <button className="btn btn-danger btn-sm" style={{ height: 34 }} onClick={() => removeClassLevel(idx)}>✕</button>
+            <button
+              className="btn btn-danger btn-sm"
+              style={{ height: 34 }}
+              onClick={() => removeClassLevel(idx)}
+              aria-label="Remove class level"
+            >
+              ✕
+            </button>
           </div>
         ))}
         <button className="btn btn-ghost btn-sm" onClick={addClassLevel}>+ Add class (multiclass)</button>
 
-        <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+        <div className="field field-narrow">
           <label>Casting Rules</label>
           <select
             value={sheet.castingRules}
@@ -211,7 +218,7 @@ export default function CharacterSheet({ character, onChange }) {
         </div>
 
         {sheet.castingRules === 'standard' && (
-          <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+          <div className="field field-narrow">
             <label>Casting Ability</label>
             <select
               value={sheet.casting.castingAbility}
@@ -225,7 +232,7 @@ export default function CharacterSheet({ character, onChange }) {
         )}
 
         {sheet.combat.primaryMightClass?.practitionerAbility === 'choice' && (
-          <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+          <div className="field field-narrow">
             <label>Practitioner Ability</label>
             <select
               value={sheet.combat.practitionerAbility}
@@ -240,7 +247,7 @@ export default function CharacterSheet({ character, onChange }) {
         )}
 
         {sheet.operative.primaryGuileClass && (
-          <div className="field" style={{ marginTop: 14, maxWidth: 220 }}>
+          <div className="field field-narrow">
             <label>Operative Ability</label>
             <select
               value={sheet.operative.operativeAbility}
@@ -267,7 +274,7 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
           <div className="stat-box">
             <div className="stat-label">Fort / Ref / Will</div>
-            <div className="stat-value" style={{ fontSize: '1.05rem' }}>
+            <div className="stat-value stat-value-md">
               {formatMod(sheet.saves.fort)} / {formatMod(sheet.saves.ref)} / {formatMod(sheet.saves.will)}
             </div>
             <div className="stat-sub">base {sheet.baseSaves.fort}/{sheet.baseSaves.ref}/{sheet.baseSaves.will} + ability mod</div>
@@ -312,18 +319,18 @@ export default function CharacterSheet({ character, onChange }) {
         )}
 
         {sheet.casting.casterClassLevels > 0 && sheet.castingRules !== 'standard' && (
-          <div className="grid-row grid-2" style={{ marginTop: 14 }}>
+          <div className="grid-row grid-2 mt-14">
             <div className="stat-box">
               <div className="stat-label">Wisdom Bonus</div>
               <div className="stat-value">{formatMod(sheet.casting.wisMod)}</div>
-              <div className="stat-sub" style={{ textAlign: 'left' }}>
+              <div className="stat-sub text-left">
                 Add to duration whenever a talent says "per caster level" (rounds/minutes/hours). Add as extra targets for [mass]-tagged or multi-target abilities. Add half to Alteration trait count.
               </div>
             </div>
             <div className="stat-box">
               <div className="stat-label">Charisma Bonus</div>
               <div className="stat-value">{formatMod(sheet.casting.chaMod)}</div>
-              <div className="stat-sub" style={{ textAlign: 'left' }}>
+              <div className="stat-sub text-left">
                 Use for any effect that adds your casting ability modifier to damage dealt/healed, or to targets affected (e.g. Healing Aegis, Selective Blast).
               </div>
             </div>
@@ -331,7 +338,7 @@ export default function CharacterSheet({ character, onChange }) {
         )}
 
         {sheet.combat.mightClassCount > 0 && (
-          <div className="grid-row grid-4" style={{ marginTop: sheet.casting.casterClassLevels > 0 ? 14 : 0 }}>
+          <div className={`grid-row grid-4${sheet.casting.casterClassLevels > 0 ? ' mt-14' : ''}`}>
             <div className="stat-box">
               <div className="stat-label">Combat Sphere DC</div>
               <div className="stat-value">{sheet.combat.combatSphereDC}</div>
@@ -353,7 +360,7 @@ export default function CharacterSheet({ character, onChange }) {
             </div>
             <div className="stat-box" style={{ gridColumn: 'span 2' }}>
               <div className="stat-label">About Martial Focus</div>
-              <div className="stat-sub" style={{ textAlign: 'left' }}>
+              <div className="stat-sub text-left">
                 A single resource spent to trigger powerful combat talents or to treat a Fort/Ref save as a rolled 13. Regained after a minute of rest or by taking the total defense action (max once per round).
               </div>
             </div>
@@ -361,7 +368,7 @@ export default function CharacterSheet({ character, onChange }) {
         )}
 
         {sheet.operative.primaryGuileClass && (
-          <div className="grid-row grid-4" style={{ marginTop: (sheet.casting.casterClassLevels > 0 || sheet.combat.mightClassCount > 0) ? 14 : 0 }}>
+          <div className={`grid-row grid-4${(sheet.casting.casterClassLevels > 0 || sheet.combat.mightClassCount > 0) ? ' mt-14' : ''}`}>
             <div className="stat-box">
               <div className="stat-label">Operative Mod</div>
               <div className="stat-value">{formatMod(sheet.operative.operativeMod)}</div>
@@ -369,7 +376,7 @@ export default function CharacterSheet({ character, onChange }) {
             </div>
             <div className="stat-box" style={{ gridColumn: 'span 3' }}>
               <div className="stat-label">Skill Sphere DC</div>
-              <div className="stat-value" style={{ fontSize: '1rem' }}>10 + ½ ranks in the sphere's skill + operative mod</div>
+              <div className="stat-value stat-value-sm">10 + ½ ranks in the sphere's skill + operative mod</div>
               <div className="stat-sub">Varies per sphere/skill - calculate per use, ranks aren't tracked separately here yet.</div>
             </div>
           </div>

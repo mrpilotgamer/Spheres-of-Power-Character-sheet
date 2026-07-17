@@ -69,6 +69,7 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
               <button
                 className="btn btn-ghost btn-sm"
                 title="Duplicate character"
+                aria-label={`Duplicate ${c.name || 'character'}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onDuplicate(c.id);
@@ -79,6 +80,7 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
               <button
                 className="btn btn-danger btn-sm"
                 title="Delete character"
+                aria-label={`Delete ${c.name || 'character'}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (confirm(`Delete "${c.name || 'Unnamed'}"? This can't be undone.`)) {

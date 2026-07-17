@@ -103,13 +103,13 @@ export default function PlayTab({ character, onChange, sheet }) {
         <div className="grid-row grid-6">
           <div className="stat-box">
             <div className="stat-label">AC / Touch / FF</div>
-            <div className="stat-value" style={{ fontSize: '1rem' }}>
+            <div className="stat-value stat-value-sm">
               {sheet.acTotals.ac} / {sheet.acTotals.touch} / {sheet.acTotals.flatFooted}
             </div>
           </div>
           <div className="stat-box">
             <div className="stat-label">Fort / Ref / Will</div>
-            <div className="stat-value" style={{ fontSize: '1rem' }}>
+            <div className="stat-value stat-value-sm">
               {formatMod(sheet.saves.fort)} / {formatMod(sheet.saves.ref)} / {formatMod(sheet.saves.will)}
             </div>
           </div>
@@ -119,13 +119,13 @@ export default function PlayTab({ character, onChange, sheet }) {
           </div>
           <div className="stat-box">
             <div className="stat-label">Base Attack</div>
-            <div className="stat-value" style={{ fontSize: '1rem' }}>
+            <div className="stat-value stat-value-sm">
               {sheet.attacks.map((a) => formatMod(a)).join(' / ')}
             </div>
           </div>
           <div className="stat-box">
             <div className="stat-label">CMB / CMD</div>
-            <div className="stat-value" style={{ fontSize: '1rem' }}>
+            <div className="stat-value stat-value-sm">
               {formatMod(sheet.cmb)} / {sheet.cmd}
             </div>
           </div>
@@ -171,8 +171,8 @@ export default function PlayTab({ character, onChange, sheet }) {
             <span className="hp-max">{play.spellPoints.max}</span>
           </div>
           <div className="tracker-controls">
-            <button className="btn btn-ghost btn-sm" onClick={spendSpellPoint}>−</button>
-            <button className="btn btn-ghost btn-sm" onClick={regainSpellPoint}>+</button>
+            <button className="btn btn-ghost btn-sm" onClick={spendSpellPoint} aria-label="Spend spell point">−</button>
+            <button className="btn btn-ghost btn-sm" onClick={regainSpellPoint} aria-label="Regain spell point">+</button>
             <button className="btn btn-primary btn-sm" onClick={fullRestoreSpellPoints}>Full restore</button>
           </div>
         </div>
@@ -189,6 +189,7 @@ export default function PlayTab({ character, onChange, sheet }) {
                 className={`focus-pip${i < play.martialFocus.current ? ' filled' : ''}`}
                 onClick={() => setFocusPip(i)}
                 title={`Set focus to ${i + 1}`}
+                aria-label={`Set martial focus to ${i + 1}`}
               />
             ))}
           </div>
@@ -203,7 +204,7 @@ export default function PlayTab({ character, onChange, sheet }) {
       <div className="card">
         <h2 className="card-title">Custom Trackers</h2>
         {(play.trackers || []).length === 0 && (
-          <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+          <p className="empty-hint">
             No trackers yet - add one below (ki pool, bombs per day, rounds of rage, anything you count down).
           </p>
         )}
@@ -212,10 +213,10 @@ export default function PlayTab({ character, onChange, sheet }) {
             <div className="tracker-row" key={t.id}>
               <span className="tracker-name">{t.name}</span>
               <span className="tracker-count">{t.current} / {t.max}</span>
-              <button className="btn btn-ghost btn-sm" onClick={() => adjustTracker(t.id, -1)}>−</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => adjustTracker(t.id, 1)}>+</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => adjustTracker(t.id, -1)} aria-label={`Decrease ${t.name}`}>−</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => adjustTracker(t.id, 1)} aria-label={`Increase ${t.name}`}>+</button>
               <button className="btn btn-ghost btn-sm" onClick={() => resetTracker(t.id)}>Reset</button>
-              <button className="btn btn-danger btn-sm" onClick={() => removeTracker(t.id)}>✕</button>
+              <button className="btn btn-danger btn-sm" onClick={() => removeTracker(t.id)} aria-label={`Remove ${t.name} tracker`}>✕</button>
             </div>
           ))}
         </div>

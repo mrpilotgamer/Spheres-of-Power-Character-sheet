@@ -33,7 +33,12 @@ Each stage fits one ~5-hour session and ends at a stop point (lint + tests + bui
 
 ## Stage 5 — Design & polish
 
-- [ ] Design-system pass, mobile audit, print stylesheet, onboarding/empty states
+- [x] Breakpoints consolidated to exactly two (`900px` layout collapse, `640px` compact) in `app.css`, migrated from the old 860/720/640 patchwork
+- [x] Rhythm: `--card-pad` CSS var (desktop + 640px value), shared `.empty-hint` class (traits/features/feats/spheres/equipment/weapons/trackers/buffs all consistent), small spacing utilities (`.mt-10`, `.mt-14`, `.mb-14`, `.text-left`, `.stat-value-md/-sm`, `.field-narrow`) replacing repeated inline `style={{}}` (true one-offs left inline)
+- [x] Onboarding: 3-step hint list + Play-tab mention in the no-character-selected empty state (`App.jsx`)
+- [x] Print stylesheet appended to `app.css` (`@media print`): white/near-black override, sidebar/pill-tabs/buttons/wiki-links hidden, 1px bordered cards with `break-inside: avoid`, underlined inputs; prints whichever tab is active (documented inline)
+- [x] A11y: aria-label added to every icon-only button (✕/⧉/−/+/focus pips) across all components
+- [x] Verification: lint/123 tests/build green; browser check passed - no page-level horizontal overflow at 375/768/1280 across all 7 tabs (skills table's own scroll container excepted), both breakpoints behave sensibly, print media rules parse, checked against a throwaway character and cleaned up without touching the real saved character
 - [ ] Deployment cleanup (retire GitHub Pages workflow if Vercel-only)
 
 ## Backlog

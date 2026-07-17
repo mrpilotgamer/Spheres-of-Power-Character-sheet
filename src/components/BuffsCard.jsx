@@ -145,7 +145,7 @@ export default function BuffsCard({ character, onChange, sheet }) {
       <h2 className="card-title">Buffs &amp; Effects</h2>
 
       {modifiers.length === 0 && (
-        <p className="section-note" style={{ marginTop: -4, marginBottom: 12 }}>
+        <p className="empty-hint">
           No buffs yet - add one from the library or build a custom one below.
         </p>
       )}
@@ -169,7 +169,13 @@ export default function BuffsCard({ character, onChange, sheet }) {
                 <button className="btn btn-ghost btn-sm" onClick={() => toggleExpanded(mod.id)}>
                   {isOpen ? 'Done' : 'Edit'}
                 </button>
-                <button className="btn btn-danger btn-sm" onClick={() => removeModifier(mod.id)}>✕</button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => removeModifier(mod.id)}
+                  aria-label={`Remove ${mod.name || 'buff'}`}
+                >
+                  ✕
+                </button>
               </div>
 
               {isOpen && (
@@ -224,7 +230,13 @@ export default function BuffsCard({ character, onChange, sheet }) {
                           onChange={(e) => updateEffect(mod.id, idx, { value: parseInt(e.target.value, 10) || 0 })}
                         />
                       </div>
-                      <button className="btn btn-danger btn-sm" onClick={() => removeEffect(mod.id, idx)}>✕</button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => removeEffect(mod.id, idx)}
+                        aria-label="Remove effect"
+                      >
+                        ✕
+                      </button>
                     </div>
                   ))}
                   <button className="btn btn-ghost btn-sm" onClick={() => addEffect(mod.id)}>+ Add effect</button>

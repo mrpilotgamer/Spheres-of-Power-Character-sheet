@@ -4,15 +4,6 @@
   min-height: 100vh;
 }
 
-@media (max-width: 860px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-  }
-  .sidebar {
-    position: static !important;
-  }
-}
-
 /* ---------- Sidebar ---------- */
 .sidebar {
   background: var(--ink-900);
@@ -178,10 +169,6 @@
   min-width: 0;
 }
 
-@media (max-width: 640px) {
-  .main { padding: 20px 16px 60px; }
-}
-
 .empty-state {
   margin-top: 80px;
   text-align: center;
@@ -191,6 +178,25 @@
   font-family: var(--font-display);
   font-size: 2rem;
   color: var(--parchment-100);
+}
+.onboarding-steps {
+  max-width: 380px;
+  margin: 20px auto 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  color: var(--parchment-200);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.onboarding-hint {
+  max-width: 380px;
+  margin: 16px auto 0;
+  font-size: 0.82rem;
+  color: var(--parchment-300);
+  opacity: 0.8;
 }
 
 .sheet-header {
@@ -228,7 +234,7 @@
   color: var(--ink-950);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  padding: 22px 24px;
+  padding: var(--card-pad);
   margin-bottom: 22px;
 }
 
@@ -245,6 +251,25 @@
 
 .card-title .sphere-icon { flex-shrink: 0; }
 
+/* Small spacing utilities for repeated inline `style={{ marginTop/marginBottom }}`
+   patterns across components - keep true one-offs as inline styles. */
+.mt-10 { margin-top: 10px; }
+.mt-14 { margin-top: 14px; }
+.mb-14 { margin-bottom: 14px; }
+.text-left { text-align: left; }
+
+/* Compact numeric stat-value variants for multi-part values (e.g. "17 / 11 / 16")
+   that overflow the default 1.3rem size. */
+.stat-value-md { font-size: 1.05rem; }
+.stat-value-sm { font-size: 1rem; }
+
+/* Narrow field pushed below the preceding block - repeated across the
+   casting/practitioner/operative ability selects in CharacterSheet. */
+.field-narrow {
+  margin-top: 14px;
+  max-width: 220px;
+}
+
 .grid-row {
   display: grid;
   gap: 14px;
@@ -254,13 +279,6 @@
 .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-
-@media (max-width: 720px) {
-  .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-2 { grid-template-columns: 1fr; }
-}
 
 .field {
   display: flex;
@@ -386,6 +404,7 @@
 }
 .sphere-edit-head .field {
   min-width: 0;
+  flex: 2;
 }
 .sphere-wiki-link {
   font-size: 0.76rem;
@@ -431,15 +450,21 @@
 .trait-grid .talent-edit-row {
   margin-bottom: 0;
 }
-@media (max-width: 720px) {
-  .trait-grid { grid-template-columns: 1fr; }
-}
 
 .section-note {
   font-size: 0.78rem;
   color: var(--ink-700);
   opacity: 0.7;
   margin-top: 8px;
+}
+
+/* Shared one-line empty-state hint for list-ish areas (traits, class
+   features, feats, spheres, weapons, trackers, buffs). */
+.empty-hint {
+  font-size: 0.78rem;
+  color: var(--ink-700);
+  opacity: 0.7;
+  margin: -4px 0 12px;
 }
 
 .toolbar {
@@ -720,11 +745,6 @@
   gap: 8px;
   align-items: end;
 }
-@media (max-width: 640px) {
-  .effect-edit-row {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 .buff-add-row {
   display: flex;
   align-items: center;
@@ -748,9 +768,6 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-}
-@media (max-width: 720px) {
-  .conditions-grid { grid-template-columns: 1fr; }
 }
 .condition-item {
   display: flex;
@@ -779,3 +796,104 @@
   margin-top: 2px;
 }
 
+/* =====================================================================
+   Breakpoints - exactly two, consolidated from the previous 860/720/640
+   patchwork. 900px = layout collapse (sidebar stacking, grids to fewer
+   columns). 640px = compact (reduced paddings, smaller stat values,
+   wrapping pill tabs).
+   ===================================================================== */
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static !important;
+  }
+  .grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .trait-grid { grid-template-columns: 1fr; }
+  .conditions-grid { grid-template-columns: 1fr; }
+  .effect-edit-row { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --card-pad: 16px 16px;
+  }
+  .main { padding: 20px 16px 60px; }
+  .stat-box .stat-value { font-size: 1.1rem; }
+  .hp-display, .resource-display { font-size: 1.9rem; }
+  .hp-max { font-size: 1.1rem; }
+  /* Pill tabs already wrap at any width (flex-wrap: wrap on .pill-tabs);
+     this just tightens their spacing once they do. */
+  .pill-tabs { gap: 4px; }
+  .pill-tab { padding: 5px 10px; }
+}
+
+/* =====================================================================
+   Print - only the currently active tab's markup exists in the DOM
+   (React renders one tab at a time), so printing prints whatever tab
+   is on screen when the user prints.
+   ===================================================================== */
+
+@media print {
+  :root {
+    --ink-950: #111111;
+    --ink-900: #111111;
+    --ink-800: #222222;
+    --ink-700: #333333;
+    --parchment-100: #000000;
+    --parchment-200: #111111;
+    --parchment-300: #999999;
+  }
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+  .sidebar,
+  .pill-tabs,
+  .sidebar-io,
+  .import-error,
+  .sphere-wiki-link,
+  button {
+    display: none !important;
+  }
+  .app-shell {
+    display: block;
+  }
+  .main {
+    max-width: none;
+    padding: 0;
+  }
+  .card {
+    background: #ffffff;
+    color: #000000;
+    box-shadow: none;
+    border: 1px solid #999999;
+    break-inside: avoid;
+  }
+  .ability-box,
+  .stat-box,
+  .sphere-row,
+  .talent-edit-row,
+  .tracker-row,
+  .buff-row,
+  .condition-item {
+    background: #ffffff;
+    border: 1px solid #999999;
+    box-shadow: none;
+  }
+  input,
+  select,
+  textarea {
+    background: transparent;
+    color: #000000;
+    border: none;
+    border-bottom: 1px solid #999999;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

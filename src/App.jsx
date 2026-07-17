@@ -78,6 +78,14 @@ export default function App() {
             <SphereMark size={56} />
             <h1>No character selected</h1>
             <p>Create a new spherecaster to get started.</p>
+            <ol className="onboarding-steps">
+              <li>Create a character with the button in the sidebar.</li>
+              <li>Add your race, classes, and ability scores on the Character tab.</li>
+              <li>The sheet computes everything from there - skills, AC, DCs, and more.</li>
+            </ol>
+            <p className="onboarding-hint">
+              Once you're at the table, switch to the Play tab to track buffs, conditions, and HP.
+            </p>
           </div>
         )}
       </main>
