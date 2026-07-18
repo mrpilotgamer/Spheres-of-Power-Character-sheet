@@ -67,10 +67,11 @@ export function computeSheet(character, opts = {}) {
       effects: c.effects || []
     }));
 
-  // Only enabled sources contribute; old saves have no `modifiers` field.
-  // Active conditions are always-on sources appended here.
+  // Sources contribute unless explicitly disabled (missing `enabled` counts as
+  // on), matching modifiers.js's activeSources() semantics. Old saves have no
+  // `modifiers` field. Active conditions are always-on sources appended here.
   const sources = [
-    ...(character.modifiers || []).filter((s) => s && s.enabled === true),
+    ...(character.modifiers || []).filter((s) => s && s.enabled !== false),
     ...conditionSources
   ];
 
@@ -213,11 +214,19 @@ export function computeSheet(character, opts = {}) {
   const acEffNoDodge = stackEffects(
     [...acSeeds, ...acEffects].filter((e) => (e.type || 'untyped') !== 'dodge')
   );
-  const acEffDodge = stackEffects(acEffects.filter((e) => (e.type || 'untyped') === 'dodge'));
-  // Deflection applies to CMD too (stacked with the seed so same-type
-  // deflection effects don't double up).
-  const cmdDeflection = stackEffects(
-    [...acSeeds, ...acEffects].filter((e) => e.type === 'deflection')
+  // PF1e RAW: circumstance, deflection, dodge, insight, luck, morale, profane,
+  // and sacred bonuses to AC also apply to CMD; penalties to AC always apply to
+  // CMD regardless of type. Armor/shield/natural/enhancement/competence/size
+  // (etc.) positive AC bonuses do NOT reach CMD.
+  const CMD_AC_TYPES = new Set([
+    'circumstance', 'deflection', 'dodge', 'insight', 'luck', 'morale', 'profane', 'sacred'
+  ]);
+  const acEffCmd = stackEffects(
+    [...acSeeds, ...acEffects].filter((e) => {
+      const value = e.value || 0;
+      if (value < 0) return true; // AC penalties always apply to CMD
+      return CMD_AC_TYPES.has(e.type || 'untyped');
+    })
   );
   const acTouchExtra = collectBonuses(sources, 'ac.touch');
   const acFlatExtra = collectBonuses(sources, 'ac.flatFooted');
@@ -235,7 +244,7 @@ export function computeSheet(character, opts = {}) {
 
   const cmb = bab + mods.str + specialSizeMod + bonuses.cmb;
   const cmd = 10 + bab + mods.str + dexToAc + specialSizeMod + bonuses.cmd +
-              cmdDeflection + dodgeMisc + acEffDodge;
+              acEffCmd + dodgeMisc;
 
   const speed = (character.speed || 30) + bonuses.speed;
 

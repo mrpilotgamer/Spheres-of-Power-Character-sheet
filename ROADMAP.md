@@ -1,46 +1,43 @@
 # Roadmap
 
-Each stage fits one ~5-hour session and ends at a stop point (lint + tests + build + browser check green, this file updated). Owner decisions, locked in: freeform authoring with autocomplete (no scraped talent DB) · house rule is a per-character toggle · localStorage + JSON export/import (no cloud yet) · automation before data QoL.
+## Shipped (v1, merged to main 2026-07-17, PR #11)
 
-## Stage 1 — Foundation & core engine (DONE 2026-07-17)
+Stages 1–5 of the original build plan: modifier/stacking engine + `computeSheet()` pipeline · per-character house/standard casting rules · full skills & combat automation (AC/touch/FF, init, CMB/CMD, weapons) · Play mode (quick-toggle buffs, conditions, HP/spell-point/focus/custom trackers) · sphere autocomplete + wiki links · JSON export/import/duplicate · design polish, print stylesheet, a11y sweep. 123+ unit tests. Full audit: `docs/audit-2026-07.md` (criticals fixed same day; open items feed the tiers below).
 
-- [x] CLAUDE.md + ROADMAP.md, delete stray `app.css.tmp.*`
-- [x] Modifier engine: typed-bonus stacking (PF1e rules) + `computeSheet()` pipeline (`src/engine/modifiers.js` + `computeSheet.js`, spec in `docs/engine.md`)
-- [x] House-rule toggle: `castingRules: 'house' | 'standard'` + `castingAbility`; logic moved from CharacterSheet.jsx into engine
-- [x] Vitest + unit tests (54 tests: progression, abilities, stacking, both casting modes, old-save defaults)
-- [x] Verification: lint/tests/build green; browser smoke passed (Incanter 3 / Armorist 2: CL 4, SP 8/DC 15 house, SP 5/DC 12 standard-WIS; hand-checked)
+Working agreements: 5-hour staged sessions with stop points · Fable leads/verifies, Opus designs core logic, Sonnet/Haiku implement · rules math only in `src/engine/` (pure, tested) · never break old localStorage saves.
 
-## Stage 2 — Skills & combat automation (DONE 2026-07-17)
+## Needed (correctness / data safety — audit follow-ups)
 
-- [x] Skills tab: full PF1e skill list (skills.json, 35 entries), ranks/class-skill (auto from class data + override)/misc, ACP, totals, budget from skillsPerLevel + INT, custom Craft/Perform/Profession
-- [x] Combat: Defense & Movement card (AC/touch/flat-footed w/ maxDex + size), initiative, CMB/CMD, speed, Weapons card with computed to-hit iteratives & damage strings
-- [x] Verification: lint/93 tests/build green; browser hand-check passed (AC 17/11/16, CMB +5/CMD 16, Spellcraft +11, ACP −1 applied, budget 35)
+- [ ] Storage-full handling: surface `writeAll` failures as a visible banner; don't optimistically update React state on failed persist (audit #7)
+- [ ] `loseDexToAc` effect capability so blinded/stunned/grappled compute real AC (audit #8)
+- [ ] Input hardening sweep: NaN-safe level/BAB path, clamp negative acp/maxDex/HP-max/speed, martial focus max, rank cap at character level, clear-and-retype friendly number inputs (audit #10–12, #17, #18, #22)
+- [ ] Verify casterProgression mid/low tables vs the published Table: Caster Level, levels 2–4 (audit #13)
+- [ ] Owner decision then cleanup: GitHub Pages vs Vercel-only (then fix SETUP.md — audit #23)
 
-## Stage 3 — Play mode (DONE 2026-07-17)
+## Should have (core play value)
 
-- [x] Quick-toggle buff system (Play tab, BuffsCard) + starter library (buffLibrary.json, 16 buffs) + custom buff editor
-- [x] Resource trackers: HP damage/heal + nonlethal, spell points, martial focus pips, custom trackers
-- [x] Conditions checklist (conditions.json, 12 conditions) as modifier sources, incl. skill.all target
-- [x] Rules fix found in verification: manual defense inputs now stack as typed bonuses with `ac` effects (Mage Armor over worn armor no longer double-counts); deflection reaches CMD
-- [x] Verification: lint/114 tests/build green; browser check passed (Mage Armor no-op over armor 4, Barkskin 17→19, Shaken −2 everywhere, HP/SP trackers)
+- [ ] Casting traditions & drawbacks/boons (the biggest unmodeled SoP subsystem: tradition picks casting ability in standard mode, drawbacks grant extra spell points)
+- [ ] Talent-count budget: talents-known tracker vs talents-spent across spheres (mirrors the Google Sheet's tracking)
+- [ ] Favored-class-bonus tracking (+1 HP or +1 skill point per level, per class)
+- [ ] Encumbrance & carry weight from Strength + equipment weights
+- [ ] Level-up helper: guided "add a level" flow (HP roll, skill points, new talents note)
+- [ ] Share-as-URL (compressed character in the hash) — deferred Stage 4 stretch
+- [ ] Import robustness: deep-merge nested schema objects, file-size guard, SphereBuilder field guards (audit #15, #19, #20)
 
-## Stage 4 — Data QoL (DONE 2026-07-17)
+## Nice to have
 
-- [x] Name index (`src/data/sphereIndex.json`: magic/combat/skill sphere names + wikidot URLs) → autocomplete (`<datalist>`) + "wiki ↗" links in `SphereBuilder`, wired for the three sphere tabs (not Equipment, which has no index)
-- [x] JSON export (active character, pretty-printed Blob download) / import (file input, inline error on bad JSON, never `alert()`) / duplicate (per-row "⧉") in Sidebar + storage.js (`duplicateCharacter`, `importCharacter`)
-- [ ] Stretch (not done): share-as-URL
-- [x] Verification: lint/123 tests (+9 new in `storage.test.js`)/build green; browser check passed (autocomplete + wiki link on Alteration, Equipment tab confirmed to have no datalist, duplicate + export + bad/good import all verified against a throwaway character, cleaned up afterward without touching the real saved character)
+- [ ] Full talent database + pickers (revisits the owner's earlier freeform-only decision; scraper → JSON per sphere)
+- [ ] Cloud sync / accounts (characters across devices; Supabase-class free tier)
+- [ ] Party/GM view (multiple characters side by side, initiative order)
+- [ ] Light theme + theme toggle
+- [ ] Dice roller wired to computed modifiers (click a save/skill/attack to roll)
 
-## Stage 5 — Design & polish
+## Quality of life
 
-- [x] Breakpoints consolidated to exactly two (`900px` layout collapse, `640px` compact) in `app.css`, migrated from the old 860/720/640 patchwork
-- [x] Rhythm: `--card-pad` CSS var (desktop + 640px value), shared `.empty-hint` class (traits/features/feats/spheres/equipment/weapons/trackers/buffs all consistent), small spacing utilities (`.mt-10`, `.mt-14`, `.mb-14`, `.text-left`, `.stat-value-md/-sm`, `.field-narrow`) replacing repeated inline `style={{}}` (true one-offs left inline)
-- [x] Onboarding: 3-step hint list + Play-tab mention in the no-character-selected empty state (`App.jsx`)
-- [x] Print stylesheet appended to `app.css` (`@media print`): white/near-black override, sidebar/pill-tabs/buttons/wiki-links hidden, 1px bordered cards with `break-inside: avoid`, underlined inputs; prints whichever tab is active (documented inline)
-- [x] A11y: aria-label added to every icon-only button (✕/⧉/−/+/focus pips) across all components
-- [x] Verification: lint/123 tests/build green; browser check passed - no page-level horizontal overflow at 375/768/1280 across all 7 tabs (skills table's own scroll container excepted), both breakpoints behave sensibly, print media rules parse, checked against a throwaway character and cleaned up without touching the real saved character
-- [ ] Deployment cleanup (retire GitHub Pages workflow if Vercel-only)
-
-## Backlog
-
-Encumbrance/wealth · level-up wizard · cloud sync/accounts · full talent database (if owner changes mind)
+- [ ] Undo/redo (character-state history)
+- [ ] Autosave indicator ("saved" tick, storage-usage meter)
+- [ ] Collapsible cards + remembered per-tab scroll positions
+- [ ] Skill search/filter and hide-untrained toggle
+- [ ] Print-all-tabs mode (single print document instead of active tab only)
+- [ ] Drag-reorder for freeform lists (traits, feats, spheres, weapons)
+- [ ] Keyboard navigation polish; unique SVG gradient ids; stable effect-row keys (audit #16, #21)

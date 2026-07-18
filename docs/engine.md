@@ -19,7 +19,9 @@ A **modifier source** is a toggleable bundle of effects:
 - `value` — signed integer (positive bonus / negative penalty).
 
 `character.modifiers` is an array of these (may be `undefined` on old saves —
-treat as `[]`). `computeSheet` applies only sources with `enabled === true`.
+treat as `[]`). `computeSheet` applies every source except those with
+`enabled === false` (missing `enabled` counts as on), matching modifiers.js's
+`activeSources()` semantics.
 
 ### Target keys
 
@@ -141,8 +143,13 @@ All optional — `computeSheet` supplies defaults, so old saves never migrate.
   bonuses, plus `ac.flatFooted` effects.
 - `init` = dex + `initiativeMisc` + `init` effects. `speed` = base + `speed`.
 - `cmb` = BAB + str + special size + `cmb` effects. `cmd` = 10 + BAB + str +
-  dex(capped) + special size + `cmd` effects + deflection + dodgeMisc + dodge-type
-  `ac` effects.
+  dex(capped) + special size + `cmd` effects + dodgeMisc + a stacked total of
+  the manual defense inputs and `ac` effects, filtered per PF1e RAW ("circumstance,
+  deflection, dodge, insight, luck, morale, profane, and sacred bonuses to AC
+  also apply to CMD; penalties to AC also apply"): all negative-value effects
+  regardless of type, plus positive effects whose type is one of circumstance/
+  deflection/dodge/insight/luck/morale/profane/sacred. Armor/shield/natural/
+  enhancement/competence/size-typed positive AC bonuses do not reach CMD.
 - `weapons[]`: `attacks` = each BAB iterative + ability mod + size + attackMisc +
   `attack` effects; `damage` = `damageDice` + (floor(abilityMod × damageMult) +
   damageMisc + `damage` effects), rendered as a dice string.
@@ -230,4 +237,6 @@ The manual `defense` inputs are typed: armor / shield / natural_armor /
 deflection seed the same stack as `ac`-targeted effects, so a worn-armor
 input and an armor-typed buff (Mage Armor) take the higher value rather than
 summing. `dodgeMisc` and `miscAc` are flat adds (dodge/untyped stack anyway).
-Deflection (input or effect) also feeds CMD, stacked once.
+Deflection (input or effect), and any other CMD-eligible-typed AC bonus/any AC
+penalty, also feeds CMD (see the CMB/CMD/init/speed/weapons section above),
+stacked once alongside the AC stack rather than summed separately.

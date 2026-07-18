@@ -50,12 +50,10 @@
   {
     "id": "enlarge-person",
     "name": "Enlarge Person",
-    "description": "Grows the target one size category larger; set Size to Large yourself for reach and CMB/CMD, since the size table already covers those.",
+    "description": "Set Size to Large - the size change itself applies the -1 attack/AC and CMB/CMD shifts; this buff adds the Str/Dex changes.",
     "effects": [
       { "target": "ability.str", "type": "size", "value": 2 },
-      { "target": "ability.dex", "type": "size", "value": -2 },
-      { "target": "attack", "type": "size", "value": -1 },
-      { "target": "ac", "type": "size", "value": -1 }
+      { "target": "ability.dex", "type": "size", "value": -2 }
     ]
   },
   {

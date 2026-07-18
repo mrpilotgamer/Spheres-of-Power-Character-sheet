@@ -169,10 +169,18 @@ describe('conditions - stacking, unknown ids, and old saves', () => {
 });
 
 describe('play state - hp', () => {
-  it('a brand-new blankCharacter has hpMax 0 and explicit hpCurrent 0, so both stay 0', () => {
+  it('a brand-new blankCharacter has hpMax 0 and hpCurrent defaults (null) to max, so both are 0', () => {
     const sheet = computeSheet(blankCharacter(), opts);
     expect(sheet.play.hp.max).toBe(0);
-    expect(sheet.play.hp.current).toBe(0); // explicit 0, not defaulted to max
+    expect(sheet.play.hp.current).toBe(0); // hpCurrent null -> defaults to max, which is 0 here
+  });
+
+  it('blankCharacter with hpMax set starts at full HP (hpCurrent null -> current = max)', () => {
+    const character = { ...blankCharacter(), hpMax: 20 };
+    expect(character.hpCurrent).toBeNull(); // blank default, not 0
+    const sheet = computeSheet(character, opts);
+    expect(sheet.play.hp.current).toBe(sheet.play.hp.max);
+    expect(sheet.play.hp.current).toBe(20);
   });
 
   it('an old save with hpCurrent undefined and hpMax 20 starts at full (current = max)', () => {

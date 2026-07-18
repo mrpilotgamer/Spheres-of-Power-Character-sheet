@@ -9,7 +9,9 @@
 
 // Families whose single skills.json entry is a placeholder to be instantiated,
 // not a skill in its own right. Knowledge is NOT here: its entries are concrete.
-export const PLACEHOLDER_FAMILIES = new Set(['Craft', 'Perform', 'Profession']);
+// Artistry and Lore (Pathfinder Unchained, Int-based) follow the same
+// Craft-style instantiation pattern.
+export const PLACEHOLDER_FAMILIES = new Set(['Craft', 'Perform', 'Profession', 'Lore', 'Artistry']);
 
 // Concrete fixed skills to display: everything in skills.json except the
 // Craft/Perform/Profession placeholders.

@@ -13,7 +13,7 @@ export function blankCharacter() {
     racialTraits: [], // { id, name, description }
     classLevels: [{ classId: '', level: 1 }],
     hpMax: 0,
-    hpCurrent: 0,
+    hpCurrent: null, // null = untouched save; computeSheet treats missing as "start at max"
     hpNonlethal: 0,
     armorClass: 10,
     customSpheres: [], // { id, name, tagline, talents: [{ id, name, description }] }

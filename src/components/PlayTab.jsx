@@ -39,6 +39,9 @@ export default function PlayTab({ character, onChange, sheet }) {
     const amt = parseInt(hpAmount, 10) || 0;
     update({ hpNonlethal: Math.max(0, play.hp.nonlethal - amt) });
   }
+  function fullHeal() {
+    update({ hpCurrent: play.hp.max, hpNonlethal: 0 });
+  }
   const hpDanger = play.hp.current <= 0 || play.hp.nonlethal >= play.hp.current;
 
   // ---- Spell points ----
@@ -158,6 +161,7 @@ export default function PlayTab({ character, onChange, sheet }) {
           <button className="btn btn-primary btn-sm" onClick={applyHeal}>Heal</button>
           <button className="btn btn-ghost btn-sm" onClick={applyNlDamage}>NL dmg</button>
           <button className="btn btn-ghost btn-sm" onClick={applyNlHeal}>NL heal</button>
+          <button className="btn btn-primary btn-sm" onClick={fullHeal}>Full heal</button>
         </div>
       </div>
 

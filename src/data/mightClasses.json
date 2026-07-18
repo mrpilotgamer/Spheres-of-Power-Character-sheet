@@ -73,7 +73,7 @@
     "babType": "full",
     "goodSaves": ["fort"],
     "skillsPerLevel": 4,
-    "classSkills": ["Acrobatics", "Climb", "Craft", "Diplomacy", "Disguise", "Fly", "Heal", "Intimidate", "Knowledge (all except arcana)", "Linguistics", "Perform", "Profession", "Sense Motive", "Swim"],
+    "classSkills": ["Acrobatics", "Climb", "Craft", "Diplomacy", "Disguise", "Fly", "Heal", "Intimidate", "Knowledge (dungeoneering)", "Knowledge (engineering)", "Knowledge (geography)", "Knowledge (history)", "Knowledge (local)", "Knowledge (nature)", "Knowledge (nobility)", "Knowledge (planes)", "Knowledge (religion)", "Linguistics", "Perform", "Profession", "Sense Motive", "Swim"],
     "casterType": "none",
     "practitionerAbility": "choice",
     "description": "Officially a Thaumaturge (Spheres of Power) archetype, but replaces virtually every class feature - including BAB and saves - so it functions as a fully separate martial class here. Still qualifies for Thaumaturge-prerequisite feats. Proficient (half) combat talent progression.",

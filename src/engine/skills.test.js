@@ -150,7 +150,7 @@ describe('skillPointsBudget', () => {
 });
 
 describe('customSkillEntry / placeholdersByFamily / fixedSkills', () => {
-  it('fixedSkills excludes the Craft/Perform/Profession placeholders', () => {
+  it('fixedSkills excludes the Craft/Perform/Profession/Lore/Artistry placeholders', () => {
     const fixed = fixedSkills(skillsData);
     for (const entry of fixed) {
       expect(PLACEHOLDER_FAMILIES.has(entry.family)).toBe(false);
@@ -158,8 +158,8 @@ describe('customSkillEntry / placeholdersByFamily / fixedSkills', () => {
     // Knowledge is concrete, not a placeholder family, so all 10 remain.
     const knowledgeCount = fixed.filter((s) => s.family === 'Knowledge').length;
     expect(knowledgeCount).toBe(10);
-    // Total fixed = all entries minus the 3 placeholders (craft/perform/profession).
-    expect(fixed.length).toBe(skillsData.length - 3);
+    // Total fixed = all entries minus the 5 placeholders (craft/perform/profession/lore/artistry).
+    expect(fixed.length).toBe(skillsData.length - 5);
   });
 
   it('placeholdersByFamily maps each placeholder family to its entry', () => {
@@ -167,6 +167,8 @@ describe('customSkillEntry / placeholdersByFamily / fixedSkills', () => {
     expect(placeholders.Craft.id).toBe('craft');
     expect(placeholders.Perform.id).toBe('perform');
     expect(placeholders.Profession.id).toBe('profession');
+    expect(placeholders.Lore.id).toBe('lore');
+    expect(placeholders.Artistry.id).toBe('artistry');
   });
 
   it('customSkillEntry inherits ability/acp/trainedOnly from the family placeholder', () => {
@@ -187,5 +189,35 @@ describe('customSkillEntry / placeholdersByFamily / fixedSkills', () => {
     expect(entry.acp).toBe(false);
     expect(entry.trainedOnly).toBe(false);
     expect(entry.name).toBe('Mystery'); // falls back to family when no name given
+  });
+});
+
+describe('Lore / Artistry placeholder skills (Pathfinder Unchained)', () => {
+  it('customSkillEntry for a Lore instance inherits int ability and trainedOnly from the Lore placeholder', () => {
+    const placeholders = placeholdersByFamily(skillsData);
+    const entry = customSkillEntry({ id: 'lore-pirates', family: 'Lore', name: 'Lore (Pirates)' }, placeholders);
+
+    expect(entry.ability).toBe('int');
+    expect(entry.trainedOnly).toBe(true);
+    expect(entry.acp).toBe(false);
+    expect(entry.family).toBe('Lore');
+    expect(entry.name).toBe('Lore (Pirates)');
+  });
+
+  it('customSkillEntry for an Artistry instance inherits int ability and is not trained-only', () => {
+    const placeholders = placeholdersByFamily(skillsData);
+    const entry = customSkillEntry({ id: 'artistry-poetry', family: 'Artistry', name: 'Artistry (Poetry)' }, placeholders);
+
+    expect(entry.ability).toBe('int');
+    expect(entry.trainedOnly).toBe(false);
+    expect(entry.family).toBe('Artistry');
+  });
+
+  it('a bare "Lore" class-skill string (Agent-style class list) marks a Lore instance as a class skill', () => {
+    const placeholders = placeholdersByFamily(skillsData);
+    const loreEntry = customSkillEntry({ id: 'lore-pirates', family: 'Lore', name: 'Lore (Pirates)' }, placeholders);
+
+    expect(isClassSkill(loreEntry, ['Lore'])).toBe(true);
+    expect(isClassSkill(loreEntry, ['Craft', 'Bluff'])).toBe(false);
   });
 });

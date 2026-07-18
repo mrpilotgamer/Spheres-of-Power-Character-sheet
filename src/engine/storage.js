@@ -4,8 +4,29 @@ const KEY = 'sop-characters-v1';
 
 // Fill in fields added to the schema after a character was saved, so
 // older stored characters don't feed undefined into controlled inputs.
+//
+// Also guards against wrong-typed fields (corrupt/foreign imports, hand-edited
+// JSON): for every key in blankCharacter(), if the blank default is an Array
+// but the stored value isn't, or the blank default is a plain object but the
+// stored value isn't a plain object (null/array/primitive both disqualify),
+// fall back to the blank default rather than passing the bad value through to
+// computeSheet()/JSX. Driven generically off blankCharacter()'s shape so new
+// schema fields are covered automatically - no hand-maintained field list.
 function normalizeCharacter(stored) {
-  return { ...blankCharacter(), ...stored, id: stored.id };
+  const blank = blankCharacter();
+  const merged = { ...blank, ...stored, id: stored.id ?? blank.id };
+  for (const key of Object.keys(blank)) {
+    if (key === 'id') continue;
+    const blankVal = blank[key];
+    if (Array.isArray(blankVal)) {
+      if (!Array.isArray(merged[key])) merged[key] = blankVal;
+    } else if (blankVal !== null && typeof blankVal === 'object') {
+      const val = merged[key];
+      const isPlainObject = val !== null && typeof val === 'object' && !Array.isArray(val);
+      if (!isPlainObject) merged[key] = blankVal;
+    }
+  }
+  return merged;
 }
 
 function readAll() {

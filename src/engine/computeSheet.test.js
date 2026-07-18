@@ -111,6 +111,19 @@ describe('computeSheet - modifier effects', () => {
     expect(boosted.casting.sphereDC).toBe(base.casting.sphereDC + 1);
   });
 
+  it('a modifier source with no `enabled` key at all still contributes (enabled !== false semantics)', () => {
+    const character = makeCharacter({
+      modifiers: [
+        // no `enabled` key - a hand-built source, per modifiers.js activeSources().
+        { id: 'no-enabled-key', name: 'Ancient Buff', effects: [{ target: 'ac', type: 'untyped', value: 1 }] }
+      ]
+    });
+    const base = computeSheet(makeCharacter(), opts);
+    const sheet = computeSheet(character, opts);
+
+    expect(sheet.acTotals.ac).toBe(base.acTotals.ac + 1);
+  });
+
   it('disabled modifier sources are ignored', () => {
     const character = makeCharacter({
       modifiers: [

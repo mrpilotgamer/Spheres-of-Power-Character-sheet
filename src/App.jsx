@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import CharacterSheet from './components/CharacterSheet.jsx';
 import SphereMark from './components/SphereMark.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import {
   listCharacters,
   saveCharacter,
@@ -72,7 +73,9 @@ export default function App() {
       />
       <main className="main">
         {active ? (
-          <CharacterSheet character={active} onChange={handleChange} />
+          <ErrorBoundary key={active.id} onDelete={() => handleDelete(active.id)}>
+            <CharacterSheet character={active} onChange={handleChange} />
+          </ErrorBoundary>
         ) : (
           <div className="empty-state">
             <SphereMark size={56} />

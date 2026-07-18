@@ -9,6 +9,7 @@ import {
   newCharacterId
 } from './storage.js';
 import { blankCharacter } from './newCharacter.js';
+import { computeSheet } from './computeSheet.js';
 
 // storage.js talks to the browser localStorage API directly; stub an
 // in-memory version so these tests can run under plain Node/vitest.
@@ -113,6 +114,63 @@ describe('importCharacter', () => {
     expect(() => importCharacter('just a string')).toThrow();
     expect(() => importCharacter(42)).toThrow();
     expect(() => importCharacter([1, 2, 3])).toThrow();
+  });
+});
+
+describe('normalizeCharacter - wrong-typed fields coerce back to blank defaults', () => {
+  it('a stored string for an array field, and an array for an object field, become their blank defaults on read', () => {
+    const junk = {
+      name: 'Corrupted',
+      classLevels: 'oops',
+      skills: [1, 2],
+      baseAbilities: null
+    };
+    const saved = importCharacter(junk);
+
+    const viaGetCharacter = getCharacter(saved.id);
+    const viaListCharacters = listCharacters().find((c) => c.id === saved.id);
+
+    for (const normalized of [viaGetCharacter, viaListCharacters]) {
+      expect(Array.isArray(normalized.classLevels)).toBe(true);
+      expect(normalized.classLevels).toEqual(blankCharacter().classLevels);
+      expect(typeof normalized.skills).toBe('object');
+      expect(Array.isArray(normalized.skills)).toBe(false);
+      expect(normalized.skills).toEqual({});
+      expect(normalized.baseAbilities).toEqual(blankCharacter().baseAbilities);
+    }
+
+    // computeSheet must not throw on the normalized, corrected result.
+    expect(() => computeSheet(viaGetCharacter)).not.toThrow();
+  });
+
+  it('coerces every array-default field back to an array, generically, when given the wrong type', () => {
+    const arrayFields = [
+      'racialTraits', 'customSpheres', 'customCombatSpheres', 'customSkillSpheres',
+      'customEquipment', 'classFeatures', 'feats', 'modifiers', 'conditions',
+      'trackers', 'weapons', 'customSkills'
+    ];
+    const junk = { name: 'Junk' };
+    for (const field of arrayFields) junk[field] = 'not-an-array';
+
+    const saved = importCharacter(junk);
+    const normalized = getCharacter(saved.id);
+
+    for (const field of arrayFields) {
+      expect(Array.isArray(normalized[field])).toBe(true);
+      expect(normalized[field]).toEqual([]);
+    }
+  });
+
+  it('coerces every object-default field back to a plain object when given null or an array', () => {
+    const saved = importCharacter({
+      name: 'Junk2',
+      abilityMods: null,
+      defense: [1, 2, 3]
+    });
+    const normalized = getCharacter(saved.id);
+
+    expect(normalized.abilityMods).toEqual(blankCharacter().abilityMods);
+    expect(normalized.defense).toEqual(blankCharacter().defense);
   });
 });
 
