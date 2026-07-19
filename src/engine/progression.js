@@ -71,6 +71,33 @@ export function spellPoints(totalCasterClassLevels, castingAbilityMod) {
   return Math.max(1, totalCasterClassLevels + castingAbilityMod);
 }
 
+// Spheres of Power casting traditions: general drawbacks not exchanged for boons
+// grant bonus spell points, scaling with levels in casting classes. Closed forms
+// derived from the RAW table (spheresofpower.wikidot.com/casting-traditions):
+//   drawbacks | RAW description              | closed form at caster-class level L
+//     0       | —                            | 0
+//     1       | +1, +1 per 6 levels          | 1 + floor(L / 6)
+//     2       | +1, +1 per 3 levels          | 1 + floor(L / 3)
+//     3       | +1 per odd level (1,3,5,…)   | ceil(L / 2)
+//     4       | +1, +1 per 1.5 levels        | 1 + floor(2L / 3)
+//     5       | +1 per level                 | L
+// Row 4's "+1 per 1.5 levels" increments (on top of the base +1 at L1) land at
+// levels 2,3,5,6,8,9,… which 1 + floor(2L/3) reproduces exactly. More than 5
+// unexchanged drawbacks is undefined by the table; clamp to the 5-drawback rate
+// (L). No casting-class levels ⇒ 0.
+export function traditionSpellPoints(unexchangedDrawbacks, casterClassLevels) {
+  const L = casterClassLevels || 0;
+  const d = unexchangedDrawbacks || 0;
+  if (L <= 0 || d <= 0) return 0;
+  switch (d) {
+    case 1: return 1 + Math.floor(L / 6);
+    case 2: return 1 + Math.floor(L / 3);
+    case 3: return Math.ceil(L / 2);
+    case 4: return 1 + Math.floor((2 * L) / 3);
+    default: return L; // 5 or more, clamped
+  }
+}
+
 // DC = 10 + 1/2 caster level + casting ability modifier.
 export function sphereDC(casterLevel, castingAbilityMod) {
   return 10 + Math.floor(casterLevel / 2) + castingAbilityMod;

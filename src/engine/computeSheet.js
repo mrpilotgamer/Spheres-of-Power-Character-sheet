@@ -7,6 +7,7 @@ import {
   totalCasterLevel,
   totalCasterClassLevels,
   spellPoints,
+  traditionSpellPoints,
   sphereDC,
   magicSkillBonus,
   magicSkillDefense
@@ -146,7 +147,30 @@ export function computeSheet(character, opts = {}) {
     poolAbilityMod = mods.int;
     dcAbilityMod = Math.max(mods.int, mods.wis, mods.cha);
   }
-  const pool = spellPoints(casterClassLevels, poolAbilityMod);
+  // Casting tradition (Stage 7). General drawbacks buy boons at 2 drawbacks each
+  // (a countsAsTwo drawback pays for 2); drawbacks not spent on boons grant bonus
+  // spell points per traditionSpellPoints(). Missing/old-save castingTradition ⇒
+  // all zeros, so the pool is unchanged. The tradition's casting ability is the
+  // castingAbility field above (standard mode); this object holds no ability.
+  const tradition = character.castingTradition || {};
+  const traditionDrawbacks = Array.isArray(tradition.drawbacks) ? tradition.drawbacks : [];
+  const traditionBoons = Array.isArray(tradition.boons) ? tradition.boons : [];
+  const drawbackPoints = traditionDrawbacks.reduce(
+    (sum, d) => sum + (d && d.countsAsTwo ? 2 : 1),
+    0
+  );
+  const boonCost = 2 * traditionBoons.length;
+  const unexchangedDrawbacks = Math.max(0, drawbackPoints - boonCost);
+  // boonDeficit: bought more boons than drawbacks afford (boonCost > drawbackPoints).
+  // Still compute (unexchanged floors at 0), just flag it for the UI.
+  const boonDeficit = boonCost > drawbackPoints;
+  // Bonus only applies to a character with casting-class levels (else no pool).
+  const traditionBonus = casterClassLevels > 0
+    ? traditionSpellPoints(unexchangedDrawbacks, casterClassLevels) +
+      (tradition.bonusSpellPointsMisc || 0)
+    : 0;
+
+  const pool = spellPoints(casterClassLevels, poolAbilityMod) + traditionBonus;
   const dc = sphereDC(casterLevel, dcAbilityMod);
   const msb = magicSkillBonus(casterClassLevels);
   const msd = magicSkillDefense(msb);
@@ -418,7 +442,15 @@ export function computeSheet(character, opts = {}) {
       dcAbilityMod,
       wisMod: mods.wis, // house-rule: duration/target note
       chaMod: mods.cha, // house-rule: damage/healing note
-      primaryCasterClass
+      primaryCasterClass,
+      tradition: {
+        name: tradition.name || '',
+        drawbackPoints,
+        boonCount: traditionBoons.length,
+        unexchanged: unexchangedDrawbacks,
+        bonusSpellPoints: traditionBonus,
+        boonDeficit
+      }
     },
     combat: {
       practitionerMod,

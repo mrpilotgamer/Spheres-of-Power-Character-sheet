@@ -266,3 +266,74 @@ summing. `dodgeMisc` and `miscAc` are flat adds (dodge/untyped stack anyway).
 Deflection (input or effect), and any other CMD-eligible-typed AC bonus/any AC
 penalty, also feeds CMD (see the CMB/CMD/init/speed/weapons section above),
 stacked once alongside the AC stack rather than summed separately.
+
+## Stage 7: casting traditions (`progression.js` + `computeSheet.js`)
+
+A **casting tradition** (RAW: spheresofpower.wikidot.com/casting-traditions) is a
+casting ability modifier plus a set of general drawbacks (and optional boons).
+"No tradition" is innate magic defaulting to Charisma. Boons are bought with
+general drawbacks at **2 drawbacks per boon** (a drawback flagged `countsAsTwo`
+pays for two). Drawbacks **not** exchanged for boons grant bonus spell points
+scaling with levels in casting classes.
+
+### The bonus-spell-point table (closed forms)
+
+`traditionSpellPoints(unexchangedDrawbacks, casterClassLevels)` — `L` = levels in
+casting classes (`casterClassLevels`), returns 0 when either arg is ≤ 0:
+
+| unexchanged | RAW description            | closed form       |
+| ----------- | -------------------------- | ----------------- |
+| 0           | —                          | `0`               |
+| 1           | +1, +1 per 6 levels        | `1 + floor(L/6)`  |
+| 2           | +1, +1 per 3 levels        | `1 + floor(L/3)`  |
+| 3           | +1 per odd level (1,3,5,…)  | `ceil(L/2)`       |
+| 4           | +1, +1 per 1.5 levels      | `1 + floor(2L/3)` |
+| 5           | +1 per level               | `L`               |
+
+Row 4's "+1 per 1.5 levels" increments (over the base +1 at L1) land at levels
+2, 3, 5, 6, 8, 9, … which `1 + floor(2L/3)` reproduces exactly. **More than 5**
+unexchanged drawbacks is not defined by the table — the engine **clamps to the
+5-drawback rate (`L`)**.
+
+### Schema additions (`newCharacter.js`)
+
+Optional — `computeSheet` supplies defaults, so old saves never migrate:
+
+- `castingTradition: { name, drawbacks: [], boons: [], bonusSpellPointsMisc: 0 }`
+  - `drawbacks[]` — `{ id, name, description, countsAsTwo: false }`
+  - `boons[]` — `{ id, name, description }`
+
+The tradition's **casting ability** is **not** stored here — it reuses the
+existing `character.castingAbility` field. A missing `castingTradition` (old
+save) resolves to all-zeros and leaves the pool unchanged.
+
+### Precedence (ability source)
+
+- **standard** mode: `character.castingAbility` (int/wis/cha) IS the tradition's
+  casting ability — it drives both the spell pool and sphere DC.
+- **house** mode: ignores `castingAbility` (INT drives the pool, highest mental
+  mod drives the DC). The tradition's drawback/boon bonus applies to the pool in
+  **both** modes.
+
+### computeSheet wiring
+
+Only when `casterClassLevels > 0`:
+
+- `drawbackPoints` = Σ over drawbacks of `countsAsTwo ? 2 : 1`.
+- `boonCost` = `2 × boons.length`; `unexchanged` = `max(0, drawbackPoints − boonCost)`.
+- `traditionBonus` = `traditionSpellPoints(unexchanged, casterClassLevels)
+  + (bonusSpellPointsMisc || 0)`, **added to the spell pool** (house and standard).
+
+Exposed at `result.casting.tradition`:
+
+```
+tradition: {
+  name,
+  drawbackPoints,
+  boonCount,          // boons.length
+  unexchanged,
+  bonusSpellPoints,   // == traditionBonus (0 when casterClassLevels == 0)
+  boonDeficit         // true when boonCost > drawbackPoints (over-bought boons;
+                      // unexchanged still floors at 0, just flagged)
+}
+```

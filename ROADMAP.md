@@ -17,7 +17,7 @@ Working agreements: 5-hour staged sessions with stop points · Fable leads/verif
 
 ## Should have (core play value)
 
-- [ ] Casting traditions & drawbacks/boons (the biggest unmodeled SoP subsystem: tradition picks casting ability in standard mode, drawbacks grant extra spell points)
+- [x] Casting traditions & drawbacks/boons (Stage 7, 2026-07-19: TraditionCard + engine per RAW — boons cost 2 drawbacks, unexchanged drawbacks grant bonus spell points via the published 5-row table)
 - [ ] Talent-count budget: talents-known tracker vs talents-spent across spheres (mirrors the Google Sheet's tracking)
 - [ ] Favored-class-bonus tracking (+1 HP or +1 skill point per level, per class)
 - [ ] Encumbrance & carry weight from Strength + equipment weights

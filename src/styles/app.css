@@ -491,6 +491,47 @@
   opacity: 0.7;
   margin-top: 8px;
 }
+.section-note-warning {
+  color: var(--ember-500);
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+.card-subtitle {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: var(--ink-900);
+}
+
+.tradition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.tradition-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 32px;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--parchment-300);
+  border-radius: var(--radius-md);
+  background: #fffdf8;
+}
+.tradition-row .talent-edit-desc {
+  grid-column: 1 / -1;
+}
+.tradition-row-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--ink-700);
+  white-space: nowrap;
+}
 
 /* Shared one-line empty-state hint for list-ish areas (traits, class
    features, feats, spheres, weapons, trackers, buffs). */
@@ -851,6 +892,8 @@
   .trait-grid { grid-template-columns: 1fr; }
   .conditions-grid { grid-template-columns: 1fr; }
   .effect-edit-row { grid-template-columns: 1fr 1fr; }
+  .tradition-row { grid-template-columns: 1fr 32px; }
+  .tradition-row-checkbox { grid-column: 1 / -1; }
 }
 
 @media (max-width: 640px) {
@@ -914,6 +957,7 @@
   .stat-box,
   .sphere-row,
   .talent-edit-row,
+  .tradition-row,
   .tracker-row,
   .buff-row,
   .condition-item {

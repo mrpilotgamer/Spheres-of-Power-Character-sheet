@@ -30,6 +30,15 @@ export function blankCharacter() {
     practitionerAbilityOverride: null,
     castingRules: 'house', // 'house' (three mental stats) | 'standard' (one casting ability)
     castingAbility: 'int', // int | wis | cha — used only when castingRules === 'standard'
+    // Stage 7: casting tradition. The tradition's casting ability reuses the
+    // castingAbility field above; this object holds only drawbacks/boons/misc.
+    // Missing on old saves — computeSheet treats absence as all-zeros (no change).
+    castingTradition: {
+      name: '',
+      drawbacks: [], // { id, name, description, countsAsTwo: false }
+      boons: [], // { id, name, description }
+      bonusSpellPointsMisc: 0
+    },
     modifiers: [], // typed-bonus modifier sources; see src/engine/modifiers.js
     classFeatures: [], // { id, name, description }
     feats: [],

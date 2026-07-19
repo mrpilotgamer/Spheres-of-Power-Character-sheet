@@ -10,6 +10,7 @@ import SkillsTab from './SkillsTab.jsx';
 import DefenseCard from './DefenseCard.jsx';
 import WeaponsCard from './WeaponsCard.jsx';
 import PlayTab from './PlayTab.jsx';
+import TraditionCard from './TraditionCard.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
@@ -219,20 +220,6 @@ export default function CharacterSheet({ character, onChange }) {
           </select>
         </div>
 
-        {sheet.castingRules === 'standard' && (
-          <div className="field field-narrow">
-            <label>Casting Ability</label>
-            <select
-              value={sheet.casting.castingAbility}
-              onChange={(e) => update({ castingAbility: e.target.value })}
-            >
-              <option value="int">Intelligence</option>
-              <option value="wis">Wisdom</option>
-              <option value="cha">Charisma</option>
-            </select>
-          </div>
-        )}
-
         {sheet.combat.primaryMightClass?.practitionerAbility === 'choice' && (
           <div className="field field-narrow">
             <label>Practitioner Ability</label>
@@ -265,6 +252,10 @@ export default function CharacterSheet({ character, onChange }) {
       </div>
 
       <DefenseCard character={character} onChange={onChange} sheet={sheet} />
+
+      {sheet.casting.casterClassLevels > 0 && (
+        <TraditionCard character={character} onChange={onChange} sheet={sheet} />
+      )}
 
       {/* Combat & caster stats */}
       <div className="card">
@@ -306,6 +297,7 @@ export default function CharacterSheet({ character, onChange }) {
                 {sheet.castingRules === 'standard'
                   ? `class levels + ${sheet.casting.castingAbility.toUpperCase()}`
                   : `class levels + ${formatMod(mods.int)} INT`}
+                {sheet.casting.tradition.bonusSpellPoints !== 0 && ` + ${sheet.casting.tradition.bonusSpellPoints} tradition`}
               </div>
             </div>
             <div className="stat-box">
