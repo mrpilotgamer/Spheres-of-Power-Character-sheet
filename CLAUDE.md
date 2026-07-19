@@ -32,4 +32,4 @@ Read `ROADMAP.md` for the staged plan and current stage before doing anything. S
 
 ## Team workflow
 
-Fable (team lead): plans, writes specs, verifies stage acceptance, reports to owner. Opus agents: design + implement core engine modules. Sonnet/Haiku agents: UI wiring, data files, tests from specs. Each stage ends at a stop point: lint + tests + build + browser smoke test all green, `ROADMAP.md` updated.
+Lead Opus agent (team lead): plans, writes specs, verifies stage acceptance, reports to owner. (Role held by Fable through 2026-07-18; handed to the lead Opus agent on 2026-07-19 as Fable is Max-only and the owner is on Pro.) Additional Opus agents: design + implement core engine modules. Sonnet/Haiku agents: UI wiring, data files, tests from specs. Each stage ends at a stop point: lint + tests + build + browser smoke test all green, `ROADMAP.md` updated.
