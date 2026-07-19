@@ -46,7 +46,7 @@ export default function SphereBuilder({
     update(
       spheres.map((s) =>
         s.id === sphereId
-          ? { ...s, talents: [...s.talents, { id: newId(), name: '', description: '' }] }
+          ? { ...s, talents: [...(s.talents || []), { id: newId(), name: '', description: '' }] }
           : s
       )
     );
@@ -55,7 +55,7 @@ export default function SphereBuilder({
     update(
       spheres.map((s) =>
         s.id === sphereId
-          ? { ...s, talents: s.talents.map((t) => (t.id === talentId ? { ...t, ...patch } : t)) }
+          ? { ...s, talents: (s.talents || []).map((t) => (t.id === talentId ? { ...t, ...patch } : t)) }
           : s
       )
     );
@@ -63,7 +63,7 @@ export default function SphereBuilder({
   function removeTalent(sphereId, talentId) {
     update(
       spheres.map((s) =>
-        s.id === sphereId ? { ...s, talents: s.talents.filter((t) => t.id !== talentId) } : s
+        s.id === sphereId ? { ...s, talents: (s.talents || []).filter((t) => t.id !== talentId) } : s
       )
     );
   }
@@ -88,14 +88,14 @@ export default function SphereBuilder({
 
       <div className="sphere-list">
         {spheres.map((sphere) => {
-          const wikiEntry = byLowerName?.get(sphere.name.trim().toLowerCase());
+          const wikiEntry = byLowerName?.get((sphere.name || '').trim().toLowerCase());
           return (
           <div className="sphere-row" key={sphere.id}>
             <div className="sphere-edit-head">
               <div className="field">
                 <input
                   placeholder={`${groupNoun} name`}
-                  value={sphere.name}
+                  value={sphere.name || ''}
                   onChange={(e) => updateSphere(sphere.id, { name: e.target.value })}
                   list={nameIndex ? datalistId : undefined}
                 />
@@ -128,7 +128,7 @@ export default function SphereBuilder({
             </div>
 
             <div className="sphere-row-body">
-              {sphere.talents.map((t) => (
+              {(sphere.talents || []).map((t) => (
                 <div className="talent-edit-row" key={t.id}>
                   <div className="field">
                     <input

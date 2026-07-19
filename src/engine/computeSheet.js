@@ -64,7 +64,10 @@ export function computeSheet(character, opts = {}) {
       id: `condition:${c.id}`,
       name: c.name,
       enabled: true,
-      effects: c.effects || []
+      effects: c.effects || [],
+      // Capability flags (e.g. 'loseDexToAc') ride along on the source so the
+      // downstream AC/CMD assembly can react to them, same as a custom buff.
+      flags: c.flags || []
     }));
 
   // Sources contribute unless explicitly disabled (missing `enabled` counts as
@@ -96,10 +99,12 @@ export function computeSheet(character, opts = {}) {
   const guileLevels = classLevels.filter((cl) => classesById[cl.classId]?.system === 'guile');
 
   // BAB stacks across all classes (PF multiclassing). Iteratives come from BAB.
-  const bab = classLevels.reduce(
-    (s, cl) => s + babAtLevel(classesById[cl.classId]?.babType || 'half', cl.level),
-    0
-  );
+  // A class row with a cleared level (undefined) coerces to 0 here, same as
+  // totalLevel above, instead of feeding NaN through babAtLevel.
+  const bab = classLevels.reduce((s, cl) => {
+    const lvl = cl.level || 0;
+    return s + babAtLevel(classesById[cl.classId]?.babType || 'half', lvl);
+  }, 0);
   const attacks = attacksFromBab(bab);
 
   // Saves: sum each class's progression (best-progression stacking), then add
@@ -108,7 +113,8 @@ export function computeSheet(character, opts = {}) {
   for (const cl of classLevels) {
     const cls = classesById[cl.classId];
     if (!cls) continue;
-    const s = savesAtLevel(cls.goodSaves, cl.level);
+    const lvl = cl.level || 0;
+    const s = savesAtLevel(cls.goodSaves, lvl);
     baseSaves.fort += s.fort;
     baseSaves.ref += s.ref;
     baseSaves.will += s.will;
@@ -186,9 +192,22 @@ export function computeSheet(character, opts = {}) {
   const deflection = def.deflection || 0;
   const dodgeMisc = def.dodgeMisc || 0;
   const miscAc = def.miscAc || 0;
-  const maxDex = def.maxDex == null ? null : def.maxDex;
-  const acp = def.acp || 0; // stored positive; a penalty
+  // Negative acp/maxDex are unvalidated garbage (never authored by the UI,
+  // which already clamps) - clamp to >= 0 here too; null still means uncapped.
+  const maxDex = def.maxDex == null ? null : Math.max(0, def.maxDex);
+  const acp = Math.max(0, def.acp || 0); // stored positive; a penalty
   const dexToAc = maxDex == null ? mods.dex : Math.min(mods.dex, maxDex);
+
+  // "Denied Dex to AC" capability (PF1e RAW). A creature denied its Dex bonus
+  // to AC loses its *positive* Dex modifier (a negative Dex still applies) and
+  // loses all dodge bonuses to AC/CMD. Any active source — a condition like
+  // blinded/stunned, or a custom buff — carrying the `loseDexToAc` flag trips
+  // it. Deflection/armor/natural/etc. are unaffected.
+  const denyDex = sources.some(
+    (s) => Array.isArray(s.flags) && s.flags.includes('loseDexToAc')
+  );
+  // Under denyDex the Dex term to AC/CMD is clamped so only a penalty survives.
+  const dexToAcApplied = denyDex ? Math.min(dexToAc, 0) : dexToAc;
 
   // Raw `ac`-target effects, so we can split by type for touch/flat-footed.
   const acEffects = [];
@@ -214,6 +233,13 @@ export function computeSheet(character, opts = {}) {
   const acEffNoDodge = stackEffects(
     [...acSeeds, ...acEffects].filter((e) => (e.type || 'untyped') !== 'dodge')
   );
+  // Touch stack with dodge also stripped — used for touch AC under denyDex,
+  // which loses dodge on top of the usual armor/shield/natural exclusion.
+  const acEffTouchNoDodge = stackEffects(
+    [...acSeeds, ...acEffects].filter(
+      (e) => !NON_TOUCH_TYPES.has(e.type || 'untyped') && (e.type || 'untyped') !== 'dodge'
+    )
+  );
   // PF1e RAW: circumstance, deflection, dodge, insight, luck, morale, profane,
   // and sacred bonuses to AC also apply to CMD; penalties to AC always apply to
   // CMD regardless of type. Armor/shield/natural/enhancement/competence/size
@@ -228,23 +254,42 @@ export function computeSheet(character, opts = {}) {
       return CMD_AC_TYPES.has(e.type || 'untyped');
     })
   );
+  // CMD stack with positive dodge dropped — used under denyDex, which loses
+  // dodge bonuses. Penalties (including any dodge-typed penalty) still apply,
+  // matching CMD's "penalties always reach CMD" rule.
+  const acEffCmdNoDodge = stackEffects(
+    [...acSeeds, ...acEffects].filter((e) => {
+      const value = e.value || 0;
+      if (value < 0) return true; // AC penalties always apply to CMD
+      if ((e.type || 'untyped') === 'dodge') return false; // drop positive dodge
+      return CMD_AC_TYPES.has(e.type || 'untyped');
+    })
+  );
   const acTouchExtra = collectBonuses(sources, 'ac.touch');
   const acFlatExtra = collectBonuses(sources, 'ac.flatFooted');
 
+  // Under denyDex, drop dodgeMisc and any dodge-typed `ac` effects from AC and
+  // touch, and clamp the Dex term to <= 0 (a negative Dex still applies).
+  const acDodgeMisc = denyDex ? 0 : dodgeMisc;
   const acTotals = {
-    // Full AC: everything applies.
-    ac: 10 + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTotal,
-    // Touch: drop armor/shield/natural; keep dex, dodge, deflection, size, misc.
-    touch: 10 + dodgeMisc + miscAc + dexToAc + sizeMod + acEffTouch + acTouchExtra,
-    // Flat-footed: drop dex and all dodge bonuses.
+    // Full AC: everything applies (minus dodge/positive-Dex under denyDex).
+    ac: 10 + acDodgeMisc + miscAc + dexToAcApplied + sizeMod + (denyDex ? acEffNoDodge : acEffTotal),
+    // Touch: drop armor/shield/natural; keep dex, dodge, deflection, size, misc
+    // (dodge and positive Dex additionally dropped under denyDex).
+    touch: 10 + acDodgeMisc + miscAc + dexToAcApplied + sizeMod +
+           (denyDex ? acEffTouchNoDodge : acEffTouch) + acTouchExtra,
+    // Flat-footed: drop dex and all dodge bonuses. Already models denied-Dex, so
+    // denyDex leaves it unchanged.
     flatFooted: 10 + miscAc + sizeMod + acEffNoDodge + acFlatExtra
   };
 
   const init = mods.dex + (character.initiativeMisc || 0) + bonuses.init;
 
   const cmb = bab + mods.str + specialSizeMod + bonuses.cmb;
-  const cmd = 10 + bab + mods.str + dexToAc + specialSizeMod + bonuses.cmd +
-              acEffCmd + dodgeMisc;
+  // CMD mirrors AC under denyDex: clamp the Dex term to <= 0, drop dodgeMisc and
+  // positive dodge-typed AC effects; a flat-footed CMD keeps every other bonus.
+  const cmd = 10 + bab + mods.str + dexToAcApplied + specialSizeMod + bonuses.cmd +
+              (denyDex ? acEffCmdNoDodge : acEffCmd) + acDodgeMisc;
 
   const speed = (character.speed || 30) + bonuses.speed;
 
@@ -396,6 +441,7 @@ export function computeSheet(character, opts = {}) {
     // Stage 2 assembled stats.
     size,
     acp,
+    denyDex,
     acTotals,
     init,
     cmb,

@@ -6,13 +6,14 @@ Stages 1–5 of the original build plan: modifier/stacking engine + `computeShee
 
 Working agreements: 5-hour staged sessions with stop points · Fable leads/verifies, Opus designs core logic, Sonnet/Haiku implement · rules math only in `src/engine/` (pure, tested) · never break old localStorage saves.
 
-## Needed (correctness / data safety — audit follow-ups)
+## Needed — DONE (Stage 6, 2026-07-19)
 
-- [ ] Storage-full handling: surface `writeAll` failures as a visible banner; don't optimistically update React state on failed persist (audit #7)
-- [ ] `loseDexToAc` effect capability so blinded/stunned/grappled compute real AC (audit #8)
-- [ ] Input hardening sweep: NaN-safe level/BAB path, clamp negative acp/maxDex/HP-max/speed, martial focus max, rank cap at character level, clear-and-retype friendly number inputs (audit #10–12, #17, #18, #22)
-- [ ] Verify casterProgression mid/low tables vs the published Table: Caster Level, levels 2–4 (audit #13)
-- [ ] Owner decision then cleanup: GitHub Pages vs Vercel-only (then fix SETUP.md — audit #23)
+- [x] Storage-full handling: write-failure subscription + visible banner, auto-clears on recovery (audit #7)
+- [x] `loseDexToAc` capability on blinded/stunned (and custom buffs) — AC/touch/CMD drop positive Dex + dodge per RAW (audit #8)
+- [x] Input hardening sweep: NaN-safe level path, clamps (acp/maxDex/HP/speed/focus/ranks-at-level), clear-and-retype ability & level inputs (audit #10–12, #17, #18, #22)
+- [x] casterProgression verified cell-by-cell vs published Table: Caster Level — already correct (audit #13)
+- [x] Vercel-only: Pages workflow retired, vite base '/', SETUP.md rewritten (audit #23)
+- [x] Import robustness pulled forward from Should-have: deep-merge nested objects, 2 MB cap, SphereBuilder guards (audit #15, #19, #20)
 
 ## Should have (core play value)
 
@@ -22,7 +23,6 @@ Working agreements: 5-hour staged sessions with stop points · Fable leads/verif
 - [ ] Encumbrance & carry weight from Strength + equipment weights
 - [ ] Level-up helper: guided "add a level" flow (HP roll, skill points, new talents note)
 - [ ] Share-as-URL (compressed character in the hash) — deferred Stage 4 stretch
-- [ ] Import robustness: deep-merge nested schema objects, file-size guard, SphereBuilder field guards (audit #15, #19, #20)
 
 ## Nice to have
 

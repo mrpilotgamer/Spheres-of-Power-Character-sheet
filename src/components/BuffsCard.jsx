@@ -72,7 +72,7 @@ function formatEffect(effect, skillLabels) {
 }
 
 function emptyEffect() {
-  return { target: '', type: 'untyped', value: 0 };
+  return { id: newId(), target: '', type: 'untyped', value: 0 };
 }
 
 // Buffs & effects card: toggleable modifier sources (character.modifiers).
@@ -114,7 +114,9 @@ export default function BuffsCard({ character, onChange, sheet }) {
         id: newId(),
         name: entry.name,
         enabled: true,
-        effects: (entry.effects || []).map((e) => ({ ...e }))
+        // Stable per-row id on creation (library data doesn't carry one),
+        // so React keys survive deleting a middle effect row.
+        effects: (entry.effects || []).map((e) => ({ id: newId(), ...e }))
       }
     ]);
     setLibraryPick('');
@@ -189,7 +191,10 @@ export default function BuffsCard({ character, onChange, sheet }) {
                   </div>
 
                   {(mod.effects || []).map((effect, idx) => (
-                    <div className="effect-edit-row" key={idx}>
+                    // Legacy saves may have effect rows without an id (from
+                    // before this field existed) - fall back to a positional
+                    // key just for those rather than breaking the row keying.
+                    <div className="effect-edit-row" key={effect.id || `${mod.id}-${idx}`}>
                       <div className="field">
                         <label>Target</label>
                         <select

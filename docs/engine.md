@@ -231,6 +231,32 @@ mutates the **character** and re-runs `computeSheet`:
 
 Recompute does the rest (stacking, clamping, downstream stats).
 
+### Source flags: `loseDexToAc`
+
+A modifier source (or condition source) may carry a `flags: string[]` array of
+capability flags alongside its `effects`. The engine currently understands one:
+
+- **`loseDexToAc`** — the source denies the creature its Dexterity bonus to AC
+  (PF1e RAW). `computeSheet` sets `denyDex = true` when *any* active source has
+  this flag, so a custom buff can deny Dex just as a condition does. `blinded`
+  and `stunned` in `src/data/conditions.json` carry it (their −2 AC penalties are
+  separate `effects`, applied on top).
+
+When `denyDex`:
+
+- `acTotals.ac` and `acTotals.touch` use `Math.min(dexMod, 0)` for the Dex term
+  (a **negative** Dex still applies; a positive one is lost) and drop **all**
+  dodge contributions — `dodgeMisc` and every dodge-typed `ac` effect.
+  Deflection / armor / natural / etc. are unaffected.
+- `acTotals.flatFooted` already models denied-Dex (no Dex, no dodge), so it is
+  unchanged.
+- `cmd` gets the same treatment: `Math.min(dexMod, 0)` for the Dex term, minus
+  `dodgeMisc` and positive dodge-typed AC effects. Per RAW a flat-footed CMD
+  keeps its other bonuses and all penalties (AC penalties always reach CMD).
+
+`denyDex` (boolean) is exposed at the top level of the result (next to `acp`) so
+the UI can badge the state.
+
 ### AC stacking with manual defense inputs
 
 The manual `defense` inputs are typed: armor / shield / natural_armor /

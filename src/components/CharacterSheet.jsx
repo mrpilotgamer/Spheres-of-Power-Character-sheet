@@ -3,6 +3,7 @@ import { classesById, classesByCategory } from '../engine/classLoader.js';
 import { ABILITY_KEYS, formatMod } from '../engine/abilities.js';
 import { computeSheet } from '../engine/computeSheet.js';
 import SphereBuilder from './SphereBuilder.jsx';
+import DraftNumberInput from './DraftNumberInput.jsx';
 import TraitList from './TraitList.jsx';
 import sphereIndex from '../data/sphereIndex.json';
 import SkillsTab from './SkillsTab.jsx';
@@ -22,8 +23,7 @@ export default function CharacterSheet({ character, onChange }) {
   function update(patch) {
     onChange({ ...character, ...patch });
   }
-  function updateAbility(key, value) {
-    const n = Math.max(1, Math.min(40, parseInt(value, 10) || 0));
+  function updateAbility(key, n) {
     update({ baseAbilities: { ...character.baseAbilities, [key]: n } });
   }
   function updateAbilityMod(key, value) {
@@ -136,10 +136,12 @@ export default function CharacterSheet({ character, onChange }) {
           {ABILITY_KEYS.map((key) => (
             <div className="ability-box" key={key}>
               <div className="ab-label">{key}</div>
-              <input
-                type="number"
+              <DraftNumberInput
+                id={`ability-${key}`}
                 value={character.baseAbilities[key]}
-                onChange={(e) => updateAbility(key, e.target.value)}
+                min={1}
+                max={40}
+                onCommit={(n) => updateAbility(key, n)}
               />
               <input
                 type="number"
@@ -186,12 +188,12 @@ export default function CharacterSheet({ character, onChange }) {
             </div>
             <div className="field">
               <label>Level</label>
-              <input
-                type="number"
+              <DraftNumberInput
+                id={`class-level-${idx}`}
+                value={cl.level}
                 min={1}
                 max={20}
-                value={cl.level}
-                onChange={(e) => updateClassLevel(idx, { level: Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 1)) })}
+                onCommit={(n) => updateClassLevel(idx, { level: n })}
               />
             </div>
             <button
@@ -281,7 +283,12 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
           <div className="field">
             <label>HP Max</label>
-            <input type="number" value={character.hpMax} onChange={(e) => update({ hpMax: parseInt(e.target.value, 10) || 0 })} />
+            <input
+              type="number"
+              min={0}
+              value={character.hpMax}
+              onChange={(e) => update({ hpMax: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+            />
           </div>
         </div>
 
@@ -355,7 +362,7 @@ export default function CharacterSheet({ character, onChange }) {
                 min={0}
                 max={3}
                 value={character.martialFocusMax}
-                onChange={(e) => update({ martialFocusMax: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                onChange={(e) => update({ martialFocusMax: Math.max(0, Math.min(3, parseInt(e.target.value, 10) || 0)) })}
               />
             </div>
             <div className="stat-box" style={{ gridColumn: 'span 2' }}>

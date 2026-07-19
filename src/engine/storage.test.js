@@ -6,7 +6,9 @@ import {
   deleteCharacter,
   duplicateCharacter,
   importCharacter,
-  newCharacterId
+  newCharacterId,
+  lastWriteOk,
+  subscribeToWriteFailures
 } from './storage.js';
 import { blankCharacter } from './newCharacter.js';
 import { computeSheet } from './computeSheet.js';
@@ -174,6 +176,57 @@ describe('normalizeCharacter - wrong-typed fields coerce back to blank defaults'
   });
 });
 
+// Stage 6 hardening sweep (audit #15): a *partially* old/hand-edited nested
+// object shouldn't lose its valid sub-keys just because it's missing others -
+// deep-merge one level for defense/baseAbilities/abilityMods.
+describe('normalizeCharacter - deep-merges partially-present nested objects (audit #15)', () => {
+  it('a defense object missing every key but armorBonus keeps armorBonus and backfills the rest', () => {
+    const saved = importCharacter({
+      name: 'Partial Defense',
+      defense: { armorBonus: 3 }
+    });
+    const normalized = getCharacter(saved.id);
+
+    expect(normalized.defense).toEqual({ ...blankCharacter().defense, armorBonus: 3 });
+    // and computeSheet can consume the result without throwing
+    expect(() => computeSheet(normalized)).not.toThrow();
+  });
+
+  it('a wrong-typed sub-key within an otherwise-valid defense object falls back to its own default', () => {
+    const saved = importCharacter({
+      name: 'Bad Subkey',
+      defense: { armorBonus: 3, acp: 'oops', maxDex: 2 }
+    });
+    const normalized = getCharacter(saved.id);
+
+    expect(normalized.defense.armorBonus).toBe(3);
+    expect(normalized.defense.maxDex).toBe(2);
+    expect(normalized.defense.acp).toBe(0); // blank default, since the stored value was a string
+  });
+
+  it('a baseAbilities object missing some scores keeps the present ones and defaults the rest to 10', () => {
+    const saved = importCharacter({
+      name: 'Partial Abilities',
+      baseAbilities: { str: 16, dex: 14 }
+    });
+    const normalized = getCharacter(saved.id);
+
+    expect(normalized.baseAbilities).toEqual({ str: 16, dex: 14, con: 10, int: 10, wis: 10, cha: 10 });
+  });
+
+  it('drops non-object per-skill entries but keeps valid ones, and computeSheet does not throw', () => {
+    const saved = importCharacter({
+      name: 'Bad Skills',
+      skills: { acrobatics: 'oops', bluff: { ranks: 2, misc: 1 } }
+    });
+    const normalized = getCharacter(saved.id);
+
+    expect(normalized.skills.acrobatics).toBeUndefined();
+    expect(normalized.skills.bluff).toEqual({ ranks: 2, misc: 1 });
+    expect(() => computeSheet(normalized)).not.toThrow();
+  });
+});
+
 describe('deleteCharacter', () => {
   it('removes the character from storage', () => {
     const c = { ...blankCharacter(), name: 'Temp' };
@@ -188,5 +241,47 @@ describe('deleteCharacter', () => {
 describe('newCharacterId', () => {
   it('generates unique-looking ids', () => {
     expect(newCharacterId()).not.toBe(newCharacterId());
+  });
+});
+
+// Simulate a full disk: setItem throws the same DOMException-shaped error the
+// browser raises when the localStorage quota is exceeded.
+function throwQuotaExceeded() {
+  const err = new Error('The quota has been exceeded.');
+  err.name = 'QuotaExceededError';
+  throw err;
+}
+
+describe('write-failure observability', () => {
+  it('saveCharacter still returns the character, but the failure is observable', () => {
+    globalThis.localStorage.setItem = throwQuotaExceeded;
+
+    const c = { ...blankCharacter(), name: 'Full Disk' };
+    const saved = saveCharacter(c);
+
+    // return shape is unchanged - callers/tests still get the saved character
+    expect(saved.id).toBe(c.id);
+    expect(saved.name).toBe('Full Disk');
+    // ...but the silent failure is now observable
+    expect(lastWriteOk()).toBe(false);
+  });
+
+  it('notifies subscribers on failure and clears (ok=true) once a later write succeeds', () => {
+    const events = [];
+    const unsub = subscribeToWriteFailures((ok) => events.push(ok));
+
+    // first write fails
+    globalThis.localStorage.setItem = throwQuotaExceeded;
+    saveCharacter({ ...blankCharacter(), name: 'A' });
+    expect(lastWriteOk()).toBe(false);
+    expect(events.at(-1)).toBe(false);
+
+    // stub stops throwing (e.g. user deleted something to free space)
+    globalThis.localStorage = makeLocalStorageStub();
+    saveCharacter({ ...blankCharacter(), name: 'B' });
+    expect(lastWriteOk()).toBe(true);
+    expect(events.at(-1)).toBe(true);
+
+    unsub();
   });
 });

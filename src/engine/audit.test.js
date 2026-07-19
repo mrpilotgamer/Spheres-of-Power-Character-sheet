@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { computeSheet } from './computeSheet.js';
 import { blankCharacter } from './newCharacter.js';
-import { abilityModifier } from './abilities.js';
+import { abilityModifier, finalScores } from './abilities.js';
 import { isClassSkill } from './skills.js';
 import buffLibrary from '../data/buffLibrary.json';
 import mightClasses from '../data/mightClasses.json';
@@ -106,5 +106,83 @@ describe('data fix - Savant class-skill list uses explicit Knowledge subskills',
     for (const k of nonArcanaKnowledge) {
       expect(isClassSkill(k, savant.classSkills)).toBe(true);
     }
+  });
+});
+
+// Stage 6 hardening sweep: engine tolerance findings (audit #10-#12). A class
+// row with a cleared level, a character missing baseAbilities entirely, and
+// garbage negative defense inputs should all degrade to sane zeros rather
+// than NaN/crashes - none of these are reachable from the UI (which already
+// clamps), but corrupt saves and hand-edited imports can produce them.
+describe('engine tolerance - cleared class level (audit #10)', () => {
+  it('BAB and saves coerce a cleared (undefined) level to 0 instead of NaN', () => {
+    const character = {
+      ...blankCharacter(),
+      classLevels: [{ classId: 'fighter', level: undefined }]
+    };
+    const sheet = computeSheet(character, opts);
+
+    expect(sheet.bab).toBe(0);
+    expect(sheet.saves.fort).not.toBeNaN();
+    expect(sheet.saves.ref).not.toBeNaN();
+    expect(sheet.saves.will).not.toBeNaN();
+    // Belt-and-suspenders: NaN serializes as the bare token `NaN` is actually
+    // dropped by JSON.stringify (it becomes `null`), so a direct scan for the
+    // literal characters "NaN" catches any that slipped through untouched.
+    expect(JSON.stringify(sheet)).not.toMatch(/NaN/);
+  });
+
+  it('totalLevel already guarded this - still 0 for the same input', () => {
+    const character = {
+      ...blankCharacter(),
+      classLevels: [{ classId: 'fighter', level: undefined }]
+    };
+    expect(computeSheet(character, opts).totalLevel).toBe(0);
+  });
+});
+
+describe('engine tolerance - finalScores/computeSheet tolerate a missing baseAbilities (audit #11)', () => {
+  it('finalScores does not throw when baseScores is undefined and defaults every key to 10', () => {
+    expect(() => finalScores(undefined, {})).not.toThrow();
+    expect(finalScores(undefined, {})).toEqual({ str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
+  });
+
+  it('a character missing baseAbilities entirely still computes numeric, zeroed ability mods', () => {
+    const character = { ...blankCharacter(), classLevels: [{ classId: 'fighter', level: 1 }] };
+    delete character.baseAbilities;
+
+    expect(() => computeSheet(character, opts)).not.toThrow();
+    const sheet = computeSheet(character, opts);
+    for (const [key, mod] of Object.entries(sheet.abilities.mods)) {
+      expect(mod, `mods.${key}`).toBe(0);
+      expect(sheet.abilities.scores[key]).toBe(10);
+    }
+  });
+});
+
+describe('engine tolerance - defense acp/maxDex clamp at >= 0, null stays uncapped (audit #12)', () => {
+  function fighterWith(defensePatch, abilityPatch) {
+    return {
+      ...blankCharacter(),
+      baseAbilities: { ...blankCharacter().baseAbilities, ...abilityPatch },
+      classLevels: [{ classId: 'fighter', level: 1 }],
+      defense: { ...blankCharacter().defense, ...defensePatch }
+    };
+  }
+
+  it('a negative acp is treated as 0, not a bonus to skills', () => {
+    const sheet = computeSheet(fighterWith({ acp: -3 }), opts);
+    expect(sheet.acp).toBe(0);
+  });
+
+  it('a negative maxDex is treated as 0 (dex term clamped to 0), not below zero', () => {
+    const sheet = computeSheet(fighterWith({ maxDex: -1 }, { dex: 18 }), opts); // +4 dex mod
+    // 10 + sizeMod(0) + dexToAcApplied(clamped to 0) = 10, not 6.
+    expect(sheet.acTotals.ac).toBe(10);
+  });
+
+  it('maxDex: null (the default) still means uncapped', () => {
+    const sheet = computeSheet(fighterWith({}, { dex: 18 }), opts); // +4 dex mod, maxDex stays null
+    expect(sheet.acTotals.ac).toBe(14);
   });
 });
