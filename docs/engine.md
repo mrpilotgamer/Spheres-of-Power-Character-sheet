@@ -337,3 +337,61 @@ tradition: {
                       // unexchanged still floors at 0, just flagged)
 }
 ```
+
+## Stage 8: talent-count budget (`progression.js` + `computeSheet.js`)
+
+Talents-known vs talents-spent across spheres — mirrors the `skillPoints`
+`{ budget, spent }` pattern. Budget is **hybrid**: an auto base from class levels
+plus a manual misc field; spent is counted from the character's sphere arrays.
+Displayed as a **single combined total** (magic + combat + skill pooled).
+
+### Talent rates (`src/data/talentProgression.json`)
+
+Four cumulative talents-at-level tables (index 0 = level 1 … 19 = level 20),
+verified cell-by-cell against the wiki class tables:
+
+| rate | closed form | by 20 | granted by |
+| ---- | ----------- | ----- | ---------- |
+| `full`         | `L`                      | 20 | High casters · Expert (Might) · Journeyman (Guile) |
+| `threeQuarter` | `floor(3L/4)`            | 15 | Mid casters · Adept (Might) |
+| `half`         | `floor(L/2)`             | 10 | Low casters · Proficient (Might) · Genius (Guile, approx) |
+| `virtuoso`     | `ceil(3L/4)+floor(L/2)`  | 25 | Virtuoso (Guile) |
+
+`full`/`threeQuarter`/`half` are numerically identical to the standard BAB
+progressions and to `casterProgression` `high`/`mid`/`low`.
+
+### Class field: `talentProgression`
+
+Optional per-class string naming the rate. A **magic** class falls back to its
+`casterType` (`high→full`, `mid→threeQuarter`, `low→half`) when the field is
+absent, so only documented exceptions set it (e.g. Thaumaturge = `half` despite
+High caster level). **Might/Guile/Champion** classes (`casterType: 'none'` or
+blended pools) set it explicitly; without it they contribute 0. Per-class *bonus*
+talents (Incanter odd-level, class free talents, feats, races) are **not**
+auto-counted — they go in the manual field.
+
+### Engine (`progression.js`)
+
+- `talentsAtLevel(rateKey, level)` — cumulative talents from `level` levels on a
+  rate; unknown/absent rate ⇒ 0 (no min-1 clamp, unlike `casterLevelAtLevel`).
+- `talentBudgetBase(classLevels, classesById)` — Σ `talentsAtLevel(rate, level)`
+  across classes (RAW: talents from multiple classes stack), rate =
+  `class.talentProgression || casterType→rate`.
+
+### Result shape (`result.talents`)
+
+```
+talents: {
+  spent,     // Σ talents.length across customSpheres/CombatSpheres/SkillSpheres
+             //   (NOT customEquipment, which reuses SphereBuilder)
+  budget,    // autoBase + misc
+  autoBase,  // talentBudgetBase(...)
+  misc,      // character.talentsKnownMisc || 0
+  bySystem   // { magic, combat, skill } spent counts — computed, not displayed
+}
+```
+
+### Schema (`newCharacter.js`)
+
+`talentsKnownMisc: 0` — optional; `computeSheet` defaults missing to 0, so old
+saves never migrate.

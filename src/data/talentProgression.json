@@ -1,0 +1,13 @@
+{
+  "_source": "Spheres of Power/Might/Guile talent progressions, verified cell-by-cell against the wiki class tables (spheresofpower.wikidot.com). full/threeQuarter/half are the standard 1/level, 3/4, and 1/2 progressions (identical to babAtLevel and to casterProgression high/mid/low); virtuoso is the Guile 'Any + Utility' total (verified vs Envoy). Cumulative talents known at each character level 1-20.",
+  "_verifiedAgainst": {
+    "full": "Fey Adept/Incanter base (High magic), Conscript (Expert combat), Agent Any+Utility total (Journeyman skill)",
+    "threeQuarter": "Elementalist Magic Talents column (Mid magic), Commander/Technician (Adept combat)",
+    "half": "Armiger Combat Talents column (Proficient combat); = casterProgression.low (Low magic)",
+    "virtuoso": "Envoy Any+Utility total (Virtuoso skill) = ceil(3L/4) + floor(L/2)"
+  },
+  "full":         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "threeQuarter": [0, 1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 11, 12, 12, 13, 14, 15],
+  "half":         [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10],
+  "virtuoso":     [1, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 18, 19, 20, 21, 23, 24, 25]
+}

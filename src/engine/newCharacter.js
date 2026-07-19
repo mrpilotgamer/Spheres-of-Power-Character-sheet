@@ -47,6 +47,9 @@ export function blankCharacter() {
     skills: {}, // skill id -> { ranks, misc, classSkillOverride }
     customSkills: [], // user-instantiated Craft/Perform/Profession: { id, family, name }
     skillPointsMisc: 0, // extra skill points (human, FCB, etc.)
+    // Stage 8: manual adjustment to the auto-computed talent budget (class-granted
+    // bonus talents, feats, races, traits). computeSheet defaults missing to 0.
+    talentsKnownMisc: 0,
     size: 'medium',
     defense: {
       armorBonus: 0,

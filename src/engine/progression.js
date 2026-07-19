@@ -1,4 +1,5 @@
 import casterProgression from '../data/casterProgression.json';
+import talentProgression from '../data/talentProgression.json';
 
 // Standard Pathfinder base attack bonus progressions.
 export function babAtLevel(babType, level) {
@@ -109,5 +110,41 @@ export function magicSkillBonus(totalCasterClassLevels) {
 }
 export function magicSkillDefense(msb) {
   return 11 + msb;
+}
+
+// Spheres talent budget (Stage 8). A class grants talents at one of four rates
+// (see src/data/talentProgression.json), verified vs the wiki class tables:
+//   full         1/level    High casters · Expert (Might) · Journeyman (Guile)
+//   threeQuarter floor(3L/4) Mid casters · Adept (Might)
+//   half         floor(L/2)  Low casters · Proficient (Might) · Genius (Guile, approx)
+//   virtuoso     ceil(3L/4)+floor(L/2)  Virtuoso (Guile)
+// A magic class's rate follows its casterType unless it sets an explicit
+// `talentProgression` (documented exceptions like the Thaumaturge, and every
+// blended-pool Champion, do). Per-class bonus talents (Incanter's odd-level
+// bonus, class free talents, feats, races) are NOT auto-counted — they belong
+// in the character's manual `talentsKnownMisc` field.
+const CASTER_TYPE_TO_TALENT_RATE = { high: 'full', mid: 'threeQuarter', low: 'half' };
+
+// Cumulative talents granted by `level` levels of a class on the named rate.
+// Unknown/absent rate (e.g. casterType 'none' with no talentProgression) => 0.
+export function talentsAtLevel(rateKey, level) {
+  const table = talentProgression[rateKey];
+  if (!table || !level || level < 1) return 0;
+  return table[Math.min(level, 20) - 1] || 0;
+}
+
+// Auto talent base: per class, talentsAtLevel(rate, level), summed across all
+// classes (RAW: talents from multiple magic/martial classes stack). A class's
+// explicit `talentProgression` wins; otherwise a caster falls back to its
+// casterType, and a non-caster with no rate contributes 0.
+export function talentBudgetBase(classLevels, classesById) {
+  let total = 0;
+  for (const cl of classLevels || []) {
+    if (!cl || !cl.classId) continue;
+    const cls = (classesById && classesById[cl.classId]) || {};
+    const rate = cls.talentProgression || CASTER_TYPE_TO_TALENT_RATE[cls.casterType];
+    total += talentsAtLevel(rate, cl.level || 0);
+  }
+  return total;
 }
 

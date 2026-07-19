@@ -404,6 +404,30 @@ export default function CharacterSheet({ character, onChange }) {
 
       {activeTab === 'spheres' && (
       <>
+      <div className="card">
+        <h2 className="card-title">Talents</h2>
+        <div className="grid-row grid-2" style={{ marginBottom: 6 }}>
+          <div className="stat-box">
+            <div className="stat-label">Talents (spent / known)</div>
+            <div className="stat-value">{sheet.talents.spent} / {sheet.talents.budget}</div>
+          </div>
+          <div className="field">
+            <label>Bonus talents (misc)</label>
+            <input
+              type="number"
+              value={character.talentsKnownMisc ?? 0}
+              onChange={(e) => update({ talentsKnownMisc: parseInt(e.target.value, 10) || 0 })}
+            />
+          </div>
+        </div>
+        <div className="section-note">
+          Known talents are auto-computed from your class levels ({sheet.talents.autoBase} from
+          classes) plus the bonus talents you enter here — for class-granted bonus talents (e.g. the
+          Incanter&apos;s odd-level talents), feats, races, and traits, which aren&apos;t tracked
+          automatically. Spent counts every talent you add to the spheres below.
+        </div>
+      </div>
+
       <SphereBuilder
         title="Magic Spheres (Power)"
         character={character}

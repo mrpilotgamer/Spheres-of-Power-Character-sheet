@@ -18,19 +18,15 @@ Working agreements: 5-hour staged sessions with stop points · Fable leads/verif
 ## Should have (core play value)
 
 - [x] Casting traditions & drawbacks/boons (Stage 7, 2026-07-19: TraditionCard + engine per RAW — boons cost 2 drawbacks, unexchanged drawbacks grant bonus spell points via the published 5-row table)
-- [ ] Talent-count budget: talents-known tracker vs talents-spent across spheres (mirrors the Google Sheet's tracking)
+- [x] Talent-count budget (Stage 8, 2026-07-19: `result.talents` {spent, budget, autoBase, misc, bySystem} + Talents card on the Spheres tab. Hybrid budget — auto base from class levels via `talentBudgetBase`/`talentProgression.json` (four rates full/threeQuarter/half/virtuoso, verified cell-by-cell vs the wiki class tables) plus a manual `talentsKnownMisc`. Single combined total across magic/combat/skill; equipment excluded. Per-class `talentProgression` overrides on all Might/Guile/Champion + exception magic classes; magic falls back to casterType)
 - [ ] Favored-class-bonus tracking (+1 HP or +1 skill point per level, per class)
 - [ ] Encumbrance & carry weight from Strength + equipment weights
 - [ ] Level-up helper: guided "add a level" flow (HP roll, skill points, new talents note)
-- [ ] Share-as-URL (compressed character in the hash) — deferred Stage 4 stretch
 
 ## Nice to have
 
-- [ ] Full talent database + pickers (revisits the owner's earlier freeform-only decision; scraper → JSON per sphere)
 - [ ] Cloud sync / accounts (characters across devices; Supabase-class free tier)
 - [ ] Party/GM view (multiple characters side by side, initiative order)
-- [ ] Light theme + theme toggle
-- [ ] Dice roller wired to computed modifiers (click a save/skill/attack to roll)
 
 ## Quality of life
 

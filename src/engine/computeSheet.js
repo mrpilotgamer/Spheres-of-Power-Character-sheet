@@ -10,7 +10,8 @@ import {
   traditionSpellPoints,
   sphereDC,
   magicSkillBonus,
-  magicSkillDefense
+  magicSkillDefense,
+  talentBudgetBase
 } from './progression.js';
 import { collectBonuses, collectCombined, collectMany, stackEffects } from './modifiers.js';
 import skillsData from '../data/skills.json';
@@ -361,6 +362,28 @@ export function computeSheet(character, opts = {}) {
     spent: skills.reduce((sum, s) => sum + (s.ranks || 0), 0)
   };
 
+  // Talent budget (Stage 8): talents known (auto base from class levels + manual
+  // misc) vs talents spent. Spent counts talents added under the three sphere
+  // arrays only — customEquipment reuses SphereBuilder but is not a talent pool.
+  const countTalents = (arr) =>
+    (arr || []).reduce((n, s) => n + ((s && s.talents ? s.talents.length : 0)), 0);
+  const talentsSpentBySystem = {
+    magic: countTalents(character.customSpheres),
+    combat: countTalents(character.customCombatSpheres),
+    skill: countTalents(character.customSkillSpheres)
+  };
+  const talentAutoBase = talentBudgetBase(classLevels, classesById);
+  const talentMisc = character.talentsKnownMisc || 0;
+  const talents = {
+    spent: talentsSpentBySystem.magic + talentsSpentBySystem.combat + talentsSpentBySystem.skill,
+    budget: talentAutoBase + talentMisc,
+    autoBase: talentAutoBase,
+    misc: talentMisc,
+    // Per-pool spent counts, computed but not displayed (owner chose a single
+    // combined total); keeps a future per-pool split a pure-UI change.
+    bySystem: talentsSpentBySystem
+  };
+
   // Weapons. To-hit = each iterative + ability mod + size + attackMisc + effects.
   // Damage bonus = floor(abilityMod x damageMult) + damageMisc + effects.
   const weapons = (character.weapons || []).map((w) => {
@@ -481,6 +504,7 @@ export function computeSheet(character, opts = {}) {
     speed,
     skills,
     skillPoints,
+    talents,
     weapons,
     // Stage 3 play state.
     play
