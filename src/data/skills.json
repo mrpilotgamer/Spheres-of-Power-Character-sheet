@@ -1,6 +1,7 @@
 [
   { "id": "acrobatics", "name": "Acrobatics", "ability": "dex", "acp": true, "trainedOnly": false, "family": null },
   { "id": "appraise", "name": "Appraise", "ability": "int", "acp": false, "trainedOnly": false, "family": null },
+  { "id": "artistry", "name": "Artistry", "ability": "int", "acp": false, "trainedOnly": false, "family": "Artistry" },
   { "id": "bluff", "name": "Bluff", "ability": "cha", "acp": false, "trainedOnly": false, "family": null },
   { "id": "climb", "name": "Climb", "ability": "str", "acp": true, "trainedOnly": false, "family": null },
   { "id": "craft", "name": "Craft", "ability": "int", "acp": false, "trainedOnly": false, "family": "Craft" },
@@ -23,6 +24,7 @@
   { "id": "knowledge-planes", "name": "Knowledge (planes)", "ability": "int", "acp": false, "trainedOnly": true, "family": "Knowledge" },
   { "id": "knowledge-religion", "name": "Knowledge (religion)", "ability": "int", "acp": false, "trainedOnly": true, "family": "Knowledge" },
   { "id": "linguistics", "name": "Linguistics", "ability": "int", "acp": false, "trainedOnly": true, "family": null },
+  { "id": "lore", "name": "Lore", "ability": "int", "acp": false, "trainedOnly": true, "family": "Lore" },
   { "id": "perception", "name": "Perception", "ability": "wis", "acp": false, "trainedOnly": false, "family": null },
   { "id": "perform", "name": "Perform", "ability": "cha", "acp": false, "trainedOnly": false, "family": "Perform" },
   { "id": "profession", "name": "Profession", "ability": "wis", "acp": false, "trainedOnly": true, "family": "Profession" },

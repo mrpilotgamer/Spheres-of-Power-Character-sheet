@@ -27,7 +27,7 @@ export default function DefenseCard({ character, onChange, sheet }) {
       return;
     }
     const n = parseInt(value, 10);
-    updateDefense({ maxDex: Number.isNaN(n) ? null : n });
+    updateDefense({ maxDex: Number.isNaN(n) ? null : Math.max(0, n) });
   }
 
   return (
@@ -117,8 +117,9 @@ export default function DefenseCard({ character, onChange, sheet }) {
           <label>Speed (ft)</label>
           <input
             type="number"
+            min={0}
             value={character.speed ?? 30}
-            onChange={(e) => update({ speed: parseInt(e.target.value, 10) || 0 })}
+            onChange={(e) => update({ speed: Math.max(0, parseInt(e.target.value, 10) || 0) })}
           />
         </div>
         <div className="field">

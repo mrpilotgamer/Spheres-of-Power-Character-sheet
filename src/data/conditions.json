@@ -3,6 +3,7 @@
     "id": "blinded",
     "name": "Blinded",
     "description": "Loses Dex bonus to AC, takes a -4 penalty on most Strength- and Dexterity-based skill checks, and all attacks against it have a 50% miss chance from total concealment.",
+    "flags": ["loseDexToAc"],
     "effects": [
       { "target": "ac", "type": "untyped", "value": -2 }
     ]
@@ -109,6 +110,7 @@
     "id": "stunned",
     "name": "Stunned",
     "description": "Drops anything held, can't take actions, and loses any Dexterity bonus to AC in addition to the AC penalty.",
+    "flags": ["loseDexToAc"],
     "effects": [
       { "target": "ac", "type": "untyped", "value": -2 }
     ]

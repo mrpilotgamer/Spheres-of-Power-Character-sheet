@@ -10,9 +10,12 @@ import {
   spellPoints,
   sphereDC,
   magicSkillBonus,
-  magicSkillDefense
+  magicSkillDefense,
+  talentsAtLevel,
+  talentBudgetBase
 } from './progression.js';
 import casterProgression from '../data/casterProgression.json';
+import talentProgression from '../data/talentProgression.json';
 
 describe('babAtLevel', () => {
   it('full BAB equals level', () => {
@@ -183,5 +186,87 @@ describe('magicSkillBonus / magicSkillDefense', () => {
 
   it('MSD is 11 + MSB', () => {
     expect(magicSkillDefense(7)).toBe(18);
+  });
+});
+
+describe('talentsAtLevel', () => {
+  it('full rate is 1 per level (20 by 20th)', () => {
+    expect(talentsAtLevel('full', 1)).toBe(1);
+    expect(talentsAtLevel('full', 10)).toBe(10);
+    expect(talentsAtLevel('full', 20)).toBe(20);
+  });
+
+  it('threeQuarter and half match the published tables', () => {
+    expect(talentsAtLevel('threeQuarter', 1)).toBe(0);
+    expect(talentsAtLevel('threeQuarter', 20)).toBe(15);
+    expect(talentsAtLevel('half', 1)).toBe(0);
+    expect(talentsAtLevel('half', 20)).toBe(10);
+  });
+
+  it('virtuoso reaches 25 by 20th (Guile Any + Utility total)', () => {
+    expect(talentsAtLevel('virtuoso', 1)).toBe(1);
+    expect(talentsAtLevel('virtuoso', 6)).toBe(8);
+    expect(talentsAtLevel('virtuoso', 20)).toBe(25);
+  });
+
+  it('full/threeQuarter/half equal casterProgression high/mid/low', () => {
+    for (let L = 1; L <= 20; L++) {
+      expect(talentsAtLevel('full', L)).toBe(casterProgression.high[L - 1]);
+      expect(talentsAtLevel('threeQuarter', L)).toBe(casterProgression.mid[L - 1]);
+      expect(talentsAtLevel('half', L)).toBe(casterProgression.low[L - 1]);
+    }
+  });
+
+  it('clamps above 20 and returns 0 for unknown/absent rate or level < 1', () => {
+    expect(talentsAtLevel('full', 25)).toBe(talentProgression.full[19]);
+    expect(talentsAtLevel('nonsense', 5)).toBe(0);
+    expect(talentsAtLevel(undefined, 5)).toBe(0);
+    expect(talentsAtLevel('full', 0)).toBe(0);
+  });
+});
+
+// Fake class table mirroring the real rate-resolution rules: explicit
+// talentProgression wins; a caster with none falls back to casterType; a
+// non-caster with neither contributes 0.
+const talentClasses = {
+  fullCaster: { id: 'fullCaster', casterType: 'high' }, // -> full via casterType
+  midCaster: { id: 'midCaster', casterType: 'mid' }, // -> threeQuarter
+  lowCaster: { id: 'lowCaster', casterType: 'low' }, // -> half
+  thaumaturge: { id: 'thaumaturge', casterType: 'high', talentProgression: 'half' }, // override
+  expertMartial: { id: 'expertMartial', casterType: 'none', talentProgression: 'full' },
+  virtuosoOp: { id: 'virtuosoOp', casterType: 'none', talentProgression: 'virtuoso' },
+  plainMartial: { id: 'plainMartial', casterType: 'none' } // no rate -> 0
+};
+
+describe('talentBudgetBase', () => {
+  it('resolves a caster rate from casterType when no explicit progression', () => {
+    expect(talentBudgetBase([{ classId: 'fullCaster', level: 10 }], talentClasses)).toBe(10);
+    expect(talentBudgetBase([{ classId: 'midCaster', level: 20 }], talentClasses)).toBe(15);
+    expect(talentBudgetBase([{ classId: 'lowCaster', level: 20 }], talentClasses)).toBe(10);
+  });
+
+  it('an explicit talentProgression overrides casterType (Thaumaturge = half)', () => {
+    expect(talentBudgetBase([{ classId: 'thaumaturge', level: 20 }], talentClasses)).toBe(10);
+  });
+
+  it('sums across classes (multiclass talents stack)', () => {
+    const cls = [
+      { classId: 'fullCaster', level: 5 }, // full@5 = 5
+      { classId: 'expertMartial', level: 5 } // full@5 = 5
+    ];
+    expect(talentBudgetBase(cls, talentClasses)).toBe(10);
+  });
+
+  it('a non-caster with no talentProgression contributes 0', () => {
+    expect(talentBudgetBase([{ classId: 'plainMartial', level: 20 }], talentClasses)).toBe(0);
+  });
+
+  it('ignores empty/blank class rows', () => {
+    const cls = [
+      { classId: '', level: 5 },
+      null,
+      { classId: 'virtuosoOp', level: 20 } // virtuoso@20 = 25
+    ];
+    expect(talentBudgetBase(cls, talentClasses)).toBe(25);
   });
 });

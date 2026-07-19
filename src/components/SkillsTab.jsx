@@ -36,7 +36,8 @@ export default function SkillsTab({ character, onChange, sheet }) {
     updateSkillState(row.id, { classSkillOverride: !isOverride });
   }
   function updateRanks(id, value) {
-    const n = Math.max(0, parseInt(value, 10) || 0);
+    // PF1e max ranks = character level.
+    const n = Math.max(0, Math.min(sheet.totalLevel, parseInt(value, 10) || 0));
     updateSkillState(id, { ranks: n });
   }
   function updateMisc(id, value) {
@@ -135,7 +136,13 @@ export default function SkillsTab({ character, onChange, sheet }) {
                     {row.acpApplied > 0 && <div className="skill-hint">−{row.acpApplied} armor</div>}
                   </td>
                   <td>
-                    <input type="number" value={row.ranks} onChange={(e) => updateRanks(row.id, e.target.value)} />
+                    <input
+                      type="number"
+                      min={0}
+                      max={sheet.totalLevel}
+                      value={row.ranks}
+                      onChange={(e) => updateRanks(row.id, e.target.value)}
+                    />
                   </td>
                   <td>
                     <input type="number" value={row.misc} onChange={(e) => updateMisc(row.id, e.target.value)} />

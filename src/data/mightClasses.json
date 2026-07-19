@@ -11,6 +11,7 @@
     "skillsPerLevel": 4,
     "classSkills": ["Climb", "Craft", "Handle Animal", "Knowledge (local)", "Perception", "Profession", "Survival", "Swim"],
     "casterType": "none",
+    "talentProgression": "full",
     "practitionerAbility": "choice",
     "description": "The 'fighter' of Spheres of Might - Expert (full) combat talent progression, and its class skill list includes three additional skills of the player's choice at character creation.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -27,6 +28,7 @@
     "skillsPerLevel": 4,
     "classSkills": ["Acrobatics", "Climb", "Craft", "Intimidate", "Knowledge (dungeoneering)", "Knowledge (geography)", "Knowledge (local)", "Knowledge (nobility)", "Perception", "Profession", "Ride", "Sense Motive", "Sleight of Hand", "Survival", "Swim"],
     "casterType": "none",
+    "talentProgression": "half",
     "practitionerAbility": "choice",
     "description": "A weapon-focused martial who bonds with a customizable 'signature weapon' that adapts to whatever fighting style the player wants. Proficient (half) combat talent progression despite full BAB.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -43,6 +45,7 @@
     "skillsPerLevel": 4,
     "classSkills": ["Appraise", "Climb", "Craft", "Disable Device", "Intimidate", "Knowledge (engineering)", "Knowledge (local)", "Perception", "Profession", "Survival", "Swim", "Use Magic Device"],
     "casterType": "none",
+    "talentProgression": "full",
     "practitionerAbility": "con",
     "description": "A martial artisan who enhances allies' gear and breaks down enemy equipment, built around the Equipment sphere. Expert (full) combat talent progression, practitioner modifier fixed to Constitution.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -59,6 +62,7 @@
     "skillsPerLevel": 6,
     "classSkills": ["Appraise", "Bluff", "Climb", "Craft", "Diplomacy", "Handle Animal", "Intimidate", "Knowledge (engineering)", "Knowledge (geography)", "Knowledge (history)", "Knowledge (local)", "Knowledge (nobility)", "Linguistics", "Perception", "Profession", "Ride", "Sense Motive", "Survival", "Swim"],
     "casterType": "none",
+    "talentProgression": "threeQuarter",
     "practitionerAbility": "higher_cha_int",
     "description": "A battlefield tactician built around the Warleader sphere. Adept (3/4) combat talent progression; practitioner modifier automatically uses whichever of Charisma or Intelligence is higher.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -73,8 +77,9 @@
     "babType": "full",
     "goodSaves": ["fort"],
     "skillsPerLevel": 4,
-    "classSkills": ["Acrobatics", "Climb", "Craft", "Diplomacy", "Disguise", "Fly", "Heal", "Intimidate", "Knowledge (all except arcana)", "Linguistics", "Perform", "Profession", "Sense Motive", "Swim"],
+    "classSkills": ["Acrobatics", "Climb", "Craft", "Diplomacy", "Disguise", "Fly", "Heal", "Intimidate", "Knowledge (dungeoneering)", "Knowledge (engineering)", "Knowledge (geography)", "Knowledge (history)", "Knowledge (local)", "Knowledge (nature)", "Knowledge (nobility)", "Knowledge (planes)", "Knowledge (religion)", "Linguistics", "Perform", "Profession", "Sense Motive", "Swim"],
     "casterType": "none",
+    "talentProgression": "half",
     "practitionerAbility": "choice",
     "description": "Officially a Thaumaturge (Spheres of Power) archetype, but replaces virtually every class feature - including BAB and saves - so it functions as a fully separate martial class here. Still qualifies for Thaumaturge-prerequisite feats. Proficient (half) combat talent progression.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -91,6 +96,7 @@
     "skillsPerLevel": 8,
     "classSkills": ["Appraise", "Bluff", "Craft", "Diplomacy", "Disable Device", "Disguise", "Escape Artist", "Handle Animal", "Heal", "Intimidate", "Knowledge (all)", "Linguistics", "Perception", "Perform", "Profession", "Sense Motive", "Sleight of Hand", "Spellcraft", "Stealth", "Survival", "Use Magic Device"],
     "casterType": "none",
+    "talentProgression": "half",
     "practitionerAbility": "int",
     "description": "A knowledge-focused martial hybrid with the widest skill list of any Might class (8 + Int) and the only 1/2-BAB base class in the system. Proficient (half) combat talent progression, practitioner modifier fixed to Intelligence.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -107,6 +113,7 @@
     "skillsPerLevel": 4,
     "classSkills": ["Bluff", "Climb", "Craft", "Diplomacy", "Handle Animal", "Heal", "Intimidate", "Knowledge (nobility)", "Perception", "Profession", "Ride", "Sense Motive", "Swim"],
     "casterType": "none",
+    "talentProgression": "full",
     "practitionerAbility": "wis",
     "description": "A defensive frontliner built around the Guardian sphere. The only d12 Hit Die class across both Power and Might. Expert (full) combat talent progression, practitioner modifier fixed to Wisdom.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -123,6 +130,7 @@
     "skillsPerLevel": 4,
     "classSkills": ["Acrobatics", "Climb", "Craft", "Escape Artist", "Fly", "Heal", "Intimidate", "Knowledge (nature)", "Perception", "Perform", "Profession", "Ride", "Sense Motive", "Sleight of Hand", "Stealth", "Survival", "Swim"],
     "casterType": "none",
+    "talentProgression": "full",
     "practitionerAbility": "con",
     "description": "A mobile, precision-focused martial who favors speed and decisive strikes. Expert (full) combat talent progression, practitioner modifier fixed to Constitution.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"
@@ -139,6 +147,7 @@
     "skillsPerLevel": 6,
     "classSkills": ["Appraise", "Bluff", "Climb", "Craft", "Diplomacy", "Disable Device", "Knowledge (dungeoneering)", "Knowledge (engineering)", "Knowledge (geography)", "Knowledge (local)", "Linguistics", "Perception", "Profession", "Sense Motive", "Sleight of Hand", "Stealth", "Swim", "Use Magic Device"],
     "casterType": "none",
+    "talentProgression": "threeQuarter",
     "practitionerAbility": "int",
     "description": "A gadgeteer solving problems with invented devices as much as weapons. Adept (3/4) combat talent progression, practitioner modifier fixed to Intelligence.",
     "source": "Spheres of Might - full chassis verified against class reference table + wiki"

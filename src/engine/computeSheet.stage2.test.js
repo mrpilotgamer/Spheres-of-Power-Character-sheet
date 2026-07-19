@@ -138,6 +138,52 @@ describe('computeSheet - cmb/cmd', () => {
     expect(abilityModifier(20)).toBe(5);
     expect(sheet.cmd).toBe(10 + bab + 0 /* str mod */ + 2 /* capped dex */ + 0 /* special size */ + 1 /* deflection */ + 2 /* dodgeMisc */);
   });
+
+  // PF1e RAW: circumstance, deflection, dodge, insight, luck, morale, profane,
+  // and sacred bonuses to AC also apply to CMD; AC penalties always apply to
+  // CMD too. Armor/shield/natural/enhancement/competence/size-typed positive
+  // AC bonuses do not.
+  it('an untyped AC penalty (e.g. the blinded condition) also lowers CMD', () => {
+    const base = computeSheet(makeCharacter(), opts);
+    const sheet = computeSheet(makeCharacter({ conditions: ['blinded'] }), opts);
+
+    expect(sheet.acTotals.ac).toBe(base.acTotals.ac - 2); // sanity: same -2 hits AC
+    expect(sheet.cmd).toBe(base.cmd - 2);
+  });
+
+  it('a positive insight-type AC effect also raises CMD', () => {
+    const base = computeSheet(makeCharacter(), opts);
+    const sheet = computeSheet(makeCharacter({
+      modifiers: [
+        { id: 'ins', name: 'Insight Buff', enabled: true, effects: [{ target: 'ac', type: 'insight', value: 1 }] }
+      ]
+    }), opts);
+
+    expect(sheet.acTotals.ac).toBe(base.acTotals.ac + 1);
+    expect(sheet.cmd).toBe(base.cmd + 1);
+  });
+
+  it('a positive armor-type AC effect raises AC but does NOT reach CMD', () => {
+    const base = computeSheet(makeCharacter(), opts);
+    const sheet = computeSheet(makeCharacter({
+      modifiers: [
+        { id: 'armor-buff', name: 'Armor Buff', enabled: true, effects: [{ target: 'ac', type: 'armor', value: 4 }] }
+      ]
+    }), opts);
+
+    expect(sheet.acTotals.ac).toBe(base.acTotals.ac + 4);
+    expect(sheet.cmd).toBe(base.cmd); // armor bonus does not carry over to CMD
+  });
+
+  it('the deflection defense input reaches CMD exactly once', () => {
+    const base = computeSheet(makeCharacter(), opts);
+    const sheet = computeSheet(makeCharacter({
+      defense: { armorBonus: 0, shieldBonus: 0, naturalArmor: 0, deflection: 3, dodgeMisc: 0, miscAc: 0, maxDex: null, acp: 0 }
+    }), opts);
+
+    expect(sheet.cmd).toBe(base.cmd + 3);
+    expect(sheet.acTotals.ac).toBe(base.acTotals.ac + 3);
+  });
 });
 
 describe('computeSheet - init/speed', () => {

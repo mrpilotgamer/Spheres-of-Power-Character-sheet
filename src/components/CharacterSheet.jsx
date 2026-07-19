@@ -3,12 +3,14 @@ import { classesById, classesByCategory } from '../engine/classLoader.js';
 import { ABILITY_KEYS, formatMod } from '../engine/abilities.js';
 import { computeSheet } from '../engine/computeSheet.js';
 import SphereBuilder from './SphereBuilder.jsx';
+import DraftNumberInput from './DraftNumberInput.jsx';
 import TraitList from './TraitList.jsx';
 import sphereIndex from '../data/sphereIndex.json';
 import SkillsTab from './SkillsTab.jsx';
 import DefenseCard from './DefenseCard.jsx';
 import WeaponsCard from './WeaponsCard.jsx';
 import PlayTab from './PlayTab.jsx';
+import TraditionCard from './TraditionCard.jsx';
 
 export default function CharacterSheet({ character, onChange }) {
   const [activeTab, setActiveTab] = useState('main');
@@ -22,8 +24,7 @@ export default function CharacterSheet({ character, onChange }) {
   function update(patch) {
     onChange({ ...character, ...patch });
   }
-  function updateAbility(key, value) {
-    const n = Math.max(1, Math.min(40, parseInt(value, 10) || 0));
+  function updateAbility(key, n) {
     update({ baseAbilities: { ...character.baseAbilities, [key]: n } });
   }
   function updateAbilityMod(key, value) {
@@ -136,10 +137,12 @@ export default function CharacterSheet({ character, onChange }) {
           {ABILITY_KEYS.map((key) => (
             <div className="ability-box" key={key}>
               <div className="ab-label">{key}</div>
-              <input
-                type="number"
+              <DraftNumberInput
+                id={`ability-${key}`}
                 value={character.baseAbilities[key]}
-                onChange={(e) => updateAbility(key, e.target.value)}
+                min={1}
+                max={40}
+                onCommit={(n) => updateAbility(key, n)}
               />
               <input
                 type="number"
@@ -186,12 +189,12 @@ export default function CharacterSheet({ character, onChange }) {
             </div>
             <div className="field">
               <label>Level</label>
-              <input
-                type="number"
+              <DraftNumberInput
+                id={`class-level-${idx}`}
+                value={cl.level}
                 min={1}
                 max={20}
-                value={cl.level}
-                onChange={(e) => updateClassLevel(idx, { level: Math.max(1, Math.min(20, parseInt(e.target.value, 10) || 1)) })}
+                onCommit={(n) => updateClassLevel(idx, { level: n })}
               />
             </div>
             <button
@@ -216,20 +219,6 @@ export default function CharacterSheet({ character, onChange }) {
             <option value="standard">Standard Spheres</option>
           </select>
         </div>
-
-        {sheet.castingRules === 'standard' && (
-          <div className="field field-narrow">
-            <label>Casting Ability</label>
-            <select
-              value={sheet.casting.castingAbility}
-              onChange={(e) => update({ castingAbility: e.target.value })}
-            >
-              <option value="int">Intelligence</option>
-              <option value="wis">Wisdom</option>
-              <option value="cha">Charisma</option>
-            </select>
-          </div>
-        )}
 
         {sheet.combat.primaryMightClass?.practitionerAbility === 'choice' && (
           <div className="field field-narrow">
@@ -264,6 +253,10 @@ export default function CharacterSheet({ character, onChange }) {
 
       <DefenseCard character={character} onChange={onChange} sheet={sheet} />
 
+      {sheet.casting.casterClassLevels > 0 && (
+        <TraditionCard character={character} onChange={onChange} sheet={sheet} />
+      )}
+
       {/* Combat & caster stats */}
       <div className="card">
         <h2 className="card-title">Combat &amp; Caster Stats</h2>
@@ -281,7 +274,12 @@ export default function CharacterSheet({ character, onChange }) {
           </div>
           <div className="field">
             <label>HP Max</label>
-            <input type="number" value={character.hpMax} onChange={(e) => update({ hpMax: parseInt(e.target.value, 10) || 0 })} />
+            <input
+              type="number"
+              min={0}
+              value={character.hpMax}
+              onChange={(e) => update({ hpMax: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+            />
           </div>
         </div>
 
@@ -299,6 +297,7 @@ export default function CharacterSheet({ character, onChange }) {
                 {sheet.castingRules === 'standard'
                   ? `class levels + ${sheet.casting.castingAbility.toUpperCase()}`
                   : `class levels + ${formatMod(mods.int)} INT`}
+                {sheet.casting.tradition.bonusSpellPoints !== 0 && ` + ${sheet.casting.tradition.bonusSpellPoints} tradition`}
               </div>
             </div>
             <div className="stat-box">
@@ -355,7 +354,7 @@ export default function CharacterSheet({ character, onChange }) {
                 min={0}
                 max={3}
                 value={character.martialFocusMax}
-                onChange={(e) => update({ martialFocusMax: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                onChange={(e) => update({ martialFocusMax: Math.max(0, Math.min(3, parseInt(e.target.value, 10) || 0)) })}
               />
             </div>
             <div className="stat-box" style={{ gridColumn: 'span 2' }}>
@@ -405,6 +404,30 @@ export default function CharacterSheet({ character, onChange }) {
 
       {activeTab === 'spheres' && (
       <>
+      <div className="card">
+        <h2 className="card-title">Talents</h2>
+        <div className="grid-row grid-2" style={{ marginBottom: 6 }}>
+          <div className="stat-box">
+            <div className="stat-label">Talents (spent / known)</div>
+            <div className="stat-value">{sheet.talents.spent} / {sheet.talents.budget}</div>
+          </div>
+          <div className="field">
+            <label>Bonus talents (misc)</label>
+            <input
+              type="number"
+              value={character.talentsKnownMisc ?? 0}
+              onChange={(e) => update({ talentsKnownMisc: parseInt(e.target.value, 10) || 0 })}
+            />
+          </div>
+        </div>
+        <div className="section-note">
+          Known talents are auto-computed from your class levels ({sheet.talents.autoBase} from
+          classes) plus the bonus talents you enter here — for class-granted bonus talents (e.g. the
+          Incanter&apos;s odd-level talents), feats, races, and traits, which aren&apos;t tracked
+          automatically. Spent counts every talent you add to the spheres below.
+        </div>
+      </div>
+
       <SphereBuilder
         title="Magic Spheres (Power)"
         character={character}

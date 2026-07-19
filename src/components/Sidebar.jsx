@@ -2,6 +2,8 @@ import { useState } from 'react';
 import SphereMark from './SphereMark.jsx';
 import { classesById } from '../engine/classLoader.js';
 
+const MAX_IMPORT_BYTES = 2 * 1024 * 1024; // 2 MB - a huge file freezes the tab reading it
+
 export default function Sidebar({ characters, activeId, onSelect, onNew, onDelete, onDuplicate, onImport }) {
   const [importError, setImportError] = useState(null);
   const active = characters.find((c) => c.id === activeId) || null;
@@ -24,6 +26,10 @@ export default function Sidebar({ characters, activeId, onSelect, onNew, onDelet
     const file = e.target.files[0];
     e.target.value = ''; // allow re-selecting the same file later
     if (!file) return;
+    if (file.size > MAX_IMPORT_BYTES) {
+      setImportError('File too large (max 2 MB)');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       try {

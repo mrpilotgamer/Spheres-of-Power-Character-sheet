@@ -13,7 +13,7 @@ export function blankCharacter() {
     racialTraits: [], // { id, name, description }
     classLevels: [{ classId: '', level: 1 }],
     hpMax: 0,
-    hpCurrent: 0,
+    hpCurrent: null, // null = untouched save; computeSheet treats missing as "start at max"
     hpNonlethal: 0,
     armorClass: 10,
     customSpheres: [], // { id, name, tagline, talents: [{ id, name, description }] }
@@ -30,6 +30,15 @@ export function blankCharacter() {
     practitionerAbilityOverride: null,
     castingRules: 'house', // 'house' (three mental stats) | 'standard' (one casting ability)
     castingAbility: 'int', // int | wis | cha — used only when castingRules === 'standard'
+    // Stage 7: casting tradition. The tradition's casting ability reuses the
+    // castingAbility field above; this object holds only drawbacks/boons/misc.
+    // Missing on old saves — computeSheet treats absence as all-zeros (no change).
+    castingTradition: {
+      name: '',
+      drawbacks: [], // { id, name, description, countsAsTwo: false }
+      boons: [], // { id, name, description }
+      bonusSpellPointsMisc: 0
+    },
     modifiers: [], // typed-bonus modifier sources; see src/engine/modifiers.js
     classFeatures: [], // { id, name, description }
     feats: [],
@@ -38,6 +47,9 @@ export function blankCharacter() {
     skills: {}, // skill id -> { ranks, misc, classSkillOverride }
     customSkills: [], // user-instantiated Craft/Perform/Profession: { id, family, name }
     skillPointsMisc: 0, // extra skill points (human, FCB, etc.)
+    // Stage 8: manual adjustment to the auto-computed talent budget (class-granted
+    // bonus talents, feats, races, traits). computeSheet defaults missing to 0.
+    talentsKnownMisc: 0,
     size: 'medium',
     defense: {
       armorBonus: 0,

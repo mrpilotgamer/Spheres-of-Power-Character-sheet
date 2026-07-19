@@ -19,7 +19,9 @@ A **modifier source** is a toggleable bundle of effects:
 - `value` — signed integer (positive bonus / negative penalty).
 
 `character.modifiers` is an array of these (may be `undefined` on old saves —
-treat as `[]`). `computeSheet` applies only sources with `enabled === true`.
+treat as `[]`). `computeSheet` applies every source except those with
+`enabled === false` (missing `enabled` counts as on), matching modifiers.js's
+`activeSources()` semantics.
 
 ### Target keys
 
@@ -141,8 +143,13 @@ All optional — `computeSheet` supplies defaults, so old saves never migrate.
   bonuses, plus `ac.flatFooted` effects.
 - `init` = dex + `initiativeMisc` + `init` effects. `speed` = base + `speed`.
 - `cmb` = BAB + str + special size + `cmb` effects. `cmd` = 10 + BAB + str +
-  dex(capped) + special size + `cmd` effects + deflection + dodgeMisc + dodge-type
-  `ac` effects.
+  dex(capped) + special size + `cmd` effects + dodgeMisc + a stacked total of
+  the manual defense inputs and `ac` effects, filtered per PF1e RAW ("circumstance,
+  deflection, dodge, insight, luck, morale, profane, and sacred bonuses to AC
+  also apply to CMD; penalties to AC also apply"): all negative-value effects
+  regardless of type, plus positive effects whose type is one of circumstance/
+  deflection/dodge/insight/luck/morale/profane/sacred. Armor/shield/natural/
+  enhancement/competence/size-typed positive AC bonuses do not reach CMD.
 - `weapons[]`: `attacks` = each BAB iterative + ability mod + size + attackMisc +
   `attack` effects; `damage` = `damageDice` + (floor(abilityMod × damageMult) +
   damageMisc + `damage` effects), rendered as a dice string.
@@ -224,10 +231,167 @@ mutates the **character** and re-runs `computeSheet`:
 
 Recompute does the rest (stacking, clamping, downstream stats).
 
+### Source flags: `loseDexToAc`
+
+A modifier source (or condition source) may carry a `flags: string[]` array of
+capability flags alongside its `effects`. The engine currently understands one:
+
+- **`loseDexToAc`** — the source denies the creature its Dexterity bonus to AC
+  (PF1e RAW). `computeSheet` sets `denyDex = true` when *any* active source has
+  this flag, so a custom buff can deny Dex just as a condition does. `blinded`
+  and `stunned` in `src/data/conditions.json` carry it (their −2 AC penalties are
+  separate `effects`, applied on top).
+
+When `denyDex`:
+
+- `acTotals.ac` and `acTotals.touch` use `Math.min(dexMod, 0)` for the Dex term
+  (a **negative** Dex still applies; a positive one is lost) and drop **all**
+  dodge contributions — `dodgeMisc` and every dodge-typed `ac` effect.
+  Deflection / armor / natural / etc. are unaffected.
+- `acTotals.flatFooted` already models denied-Dex (no Dex, no dodge), so it is
+  unchanged.
+- `cmd` gets the same treatment: `Math.min(dexMod, 0)` for the Dex term, minus
+  `dodgeMisc` and positive dodge-typed AC effects. Per RAW a flat-footed CMD
+  keeps its other bonuses and all penalties (AC penalties always reach CMD).
+
+`denyDex` (boolean) is exposed at the top level of the result (next to `acp`) so
+the UI can badge the state.
+
 ### AC stacking with manual defense inputs
 
 The manual `defense` inputs are typed: armor / shield / natural_armor /
 deflection seed the same stack as `ac`-targeted effects, so a worn-armor
 input and an armor-typed buff (Mage Armor) take the higher value rather than
 summing. `dodgeMisc` and `miscAc` are flat adds (dodge/untyped stack anyway).
-Deflection (input or effect) also feeds CMD, stacked once.
+Deflection (input or effect), and any other CMD-eligible-typed AC bonus/any AC
+penalty, also feeds CMD (see the CMB/CMD/init/speed/weapons section above),
+stacked once alongside the AC stack rather than summed separately.
+
+## Stage 7: casting traditions (`progression.js` + `computeSheet.js`)
+
+A **casting tradition** (RAW: spheresofpower.wikidot.com/casting-traditions) is a
+casting ability modifier plus a set of general drawbacks (and optional boons).
+"No tradition" is innate magic defaulting to Charisma. Boons are bought with
+general drawbacks at **2 drawbacks per boon** (a drawback flagged `countsAsTwo`
+pays for two). Drawbacks **not** exchanged for boons grant bonus spell points
+scaling with levels in casting classes.
+
+### The bonus-spell-point table (closed forms)
+
+`traditionSpellPoints(unexchangedDrawbacks, casterClassLevels)` — `L` = levels in
+casting classes (`casterClassLevels`), returns 0 when either arg is ≤ 0:
+
+| unexchanged | RAW description            | closed form       |
+| ----------- | -------------------------- | ----------------- |
+| 0           | —                          | `0`               |
+| 1           | +1, +1 per 6 levels        | `1 + floor(L/6)`  |
+| 2           | +1, +1 per 3 levels        | `1 + floor(L/3)`  |
+| 3           | +1 per odd level (1,3,5,…)  | `ceil(L/2)`       |
+| 4           | +1, +1 per 1.5 levels      | `1 + floor(2L/3)` |
+| 5           | +1 per level               | `L`               |
+
+Row 4's "+1 per 1.5 levels" increments (over the base +1 at L1) land at levels
+2, 3, 5, 6, 8, 9, … which `1 + floor(2L/3)` reproduces exactly. **More than 5**
+unexchanged drawbacks is not defined by the table — the engine **clamps to the
+5-drawback rate (`L`)**.
+
+### Schema additions (`newCharacter.js`)
+
+Optional — `computeSheet` supplies defaults, so old saves never migrate:
+
+- `castingTradition: { name, drawbacks: [], boons: [], bonusSpellPointsMisc: 0 }`
+  - `drawbacks[]` — `{ id, name, description, countsAsTwo: false }`
+  - `boons[]` — `{ id, name, description }`
+
+The tradition's **casting ability** is **not** stored here — it reuses the
+existing `character.castingAbility` field. A missing `castingTradition` (old
+save) resolves to all-zeros and leaves the pool unchanged.
+
+### Precedence (ability source)
+
+- **standard** mode: `character.castingAbility` (int/wis/cha) IS the tradition's
+  casting ability — it drives both the spell pool and sphere DC.
+- **house** mode: ignores `castingAbility` (INT drives the pool, highest mental
+  mod drives the DC). The tradition's drawback/boon bonus applies to the pool in
+  **both** modes.
+
+### computeSheet wiring
+
+Only when `casterClassLevels > 0`:
+
+- `drawbackPoints` = Σ over drawbacks of `countsAsTwo ? 2 : 1`.
+- `boonCost` = `2 × boons.length`; `unexchanged` = `max(0, drawbackPoints − boonCost)`.
+- `traditionBonus` = `traditionSpellPoints(unexchanged, casterClassLevels)
+  + (bonusSpellPointsMisc || 0)`, **added to the spell pool** (house and standard).
+
+Exposed at `result.casting.tradition`:
+
+```
+tradition: {
+  name,
+  drawbackPoints,
+  boonCount,          // boons.length
+  unexchanged,
+  bonusSpellPoints,   // == traditionBonus (0 when casterClassLevels == 0)
+  boonDeficit         // true when boonCost > drawbackPoints (over-bought boons;
+                      // unexchanged still floors at 0, just flagged)
+}
+```
+
+## Stage 8: talent-count budget (`progression.js` + `computeSheet.js`)
+
+Talents-known vs talents-spent across spheres — mirrors the `skillPoints`
+`{ budget, spent }` pattern. Budget is **hybrid**: an auto base from class levels
+plus a manual misc field; spent is counted from the character's sphere arrays.
+Displayed as a **single combined total** (magic + combat + skill pooled).
+
+### Talent rates (`src/data/talentProgression.json`)
+
+Four cumulative talents-at-level tables (index 0 = level 1 … 19 = level 20),
+verified cell-by-cell against the wiki class tables:
+
+| rate | closed form | by 20 | granted by |
+| ---- | ----------- | ----- | ---------- |
+| `full`         | `L`                      | 20 | High casters · Expert (Might) · Journeyman (Guile) |
+| `threeQuarter` | `floor(3L/4)`            | 15 | Mid casters · Adept (Might) |
+| `half`         | `floor(L/2)`             | 10 | Low casters · Proficient (Might) · Genius (Guile, approx) |
+| `virtuoso`     | `ceil(3L/4)+floor(L/2)`  | 25 | Virtuoso (Guile) |
+
+`full`/`threeQuarter`/`half` are numerically identical to the standard BAB
+progressions and to `casterProgression` `high`/`mid`/`low`.
+
+### Class field: `talentProgression`
+
+Optional per-class string naming the rate. A **magic** class falls back to its
+`casterType` (`high→full`, `mid→threeQuarter`, `low→half`) when the field is
+absent, so only documented exceptions set it (e.g. Thaumaturge = `half` despite
+High caster level). **Might/Guile/Champion** classes (`casterType: 'none'` or
+blended pools) set it explicitly; without it they contribute 0. Per-class *bonus*
+talents (Incanter odd-level, class free talents, feats, races) are **not**
+auto-counted — they go in the manual field.
+
+### Engine (`progression.js`)
+
+- `talentsAtLevel(rateKey, level)` — cumulative talents from `level` levels on a
+  rate; unknown/absent rate ⇒ 0 (no min-1 clamp, unlike `casterLevelAtLevel`).
+- `talentBudgetBase(classLevels, classesById)` — Σ `talentsAtLevel(rate, level)`
+  across classes (RAW: talents from multiple classes stack), rate =
+  `class.talentProgression || casterType→rate`.
+
+### Result shape (`result.talents`)
+
+```
+talents: {
+  spent,     // Σ talents.length across customSpheres/CombatSpheres/SkillSpheres
+             //   (NOT customEquipment, which reuses SphereBuilder)
+  budget,    // autoBase + misc
+  autoBase,  // talentBudgetBase(...)
+  misc,      // character.talentsKnownMisc || 0
+  bySystem   // { magic, combat, skill } spent counts — computed, not displayed
+}
+```
+
+### Schema (`newCharacter.js`)
+
+`talentsKnownMisc: 0` — optional; `computeSheet` defaults missing to 0, so old
+saves never migrate.

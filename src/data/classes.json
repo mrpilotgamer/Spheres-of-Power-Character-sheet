@@ -332,6 +332,7 @@
       "Use Magic Device"
     ],
     "casterType": "high",
+    "talentProgression": "half",
     "casterAbility": "choice",
     "description": "A studious caster who channels magic through crafted implements and careful research. High-Caster for caster level purposes, but a documented exception: gains magic talents at only half rate despite that, trading raw talent breadth for occult knowledge, forbidden lore, and bonus feats instead.",
     "source": "Ultimate Spheres of Power - full chassis verified against class reference table + wiki",
